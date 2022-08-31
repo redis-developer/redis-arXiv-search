@@ -1,6 +1,6 @@
 
 <div align="center">
-    <a href="https://github.com/spartee/redis-vector-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/master/app/vecsim_app/data/redis-logo.png?raw=true" width="30%"><img></a>
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/vecsim_app/data/redis-logo.png?raw=true" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">
