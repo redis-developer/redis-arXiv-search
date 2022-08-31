@@ -56,7 +56,17 @@ To launch app, run the following
 
 The first time you run `docker compose up` it will automatically build your Docker images based on the `Dockerfile`. However, in future passes when you need to rebuild, simply run: `docker compose up --build` to force a new build.
 
-### Running outside docker
+### Using a React development env
+It's typically easier to write front end code in an interactive environment (**outside of Docker**)where one can test out code changes in real time. In order to use this approach:
 
-#### Front End
-You can run the 
+1. Follow steps from previous section with Docker Compose to deploy the backend API.
+2. Skip the step about launching a browser at host/port.
+3. `cd gui/` directory and use `yarn` to install packages: `yarn install --no-optional` (you may need to use `npm` to install `yarn`).
+4. Use `yarn` to serve the application from your machine: `yarn start`.
+5. Navigate to `http://localhost:3000` in a browser.
+
+### Troubleshooting
+
+#### Issues building the container
+- Sometimes it works if you try again. Or maybe you need to clear out some Docker cache. Run `docker system prune`, restart Docker Desktop, and try again.
+- The generated `node_modules` folder (under `gui/` when running the app outside of Docker) can mess things up when building docker images. Delete that folder (if present) and try rebuilding again.
