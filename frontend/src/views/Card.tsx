@@ -47,9 +47,20 @@ export const Card = (props: Props) => {
       <div className="card mb-2 box-shadow" style={{alignContent : 'center'}}>
        <div className="card-body">
         <p className="card-text">
-            <strong>{props.title}</strong>
+          <strong>{props.title}</strong>
         </p>
-        <p className="card-text">
+        <div className="d-flex justify-content-between align-items-left">
+         <div className="btn-group" style={{width: "100%"}}>
+
+          <p className="card-text" style={{fontSize : 12, width: "50%", float: "left"}}>
+            <a href={`https://arxiv.org/abs/${props.paperId}`} target="_blank">Read Me</a> 
+          </p>
+          <p className="card-text" style={{fontSize : 12, width: "50%", float: "right"}}>
+            <a href={`https://arxiv.org/pdf/${props.paperId}`} target="_blank">Download</a> 
+          </p>
+          </div>
+        </div>
+        <p className="card-text" style={{fontSize : 12}}>
             <em>{props.authors}</em>
         </p>
         <div className="d-flex justify-content-between align-items-center">
@@ -64,8 +75,8 @@ export const Card = (props: Props) => {
           <Chip
             style={{ margin: "auto 20px" }}
             label={`${props.categories}`}
-            variant='outlined'
             color='primary'
+            size="small"
           />
          </div>
         </div>

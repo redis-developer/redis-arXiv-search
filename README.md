@@ -11,17 +11,11 @@
     <br />
 </div>
 
-# Redis arXiv Search Demo 
-
-https://www.kaggle.com/code/foolofatook/zero-shot-classification-with-huggingface-pipeline
-https://huggingface.co/allenai/scibert_scivocab_uncased
-
+# Redis arXiv Search Demo
 
 This arXiv demo showcases the vector search similarity (VSS) capability within Redis Stack and Redis Enterprise.
 Through the RediSearch module, vector types and indexes can be added to Redis. This turns Redis into
 a highly performant vector database which can be used for all types of applications.
-
-
 
 ## Application
 
@@ -29,69 +23,40 @@ This app was built as a Single Page Application (SPA) with the following compone
 
 - **[Redis Stack](https://redis.io/docs/stack/)**: Vector database + JSON storage
 - **[FastAPI](https://fastapi.tiangolo.com/)** (Python 3.8)
-  - JWT authentication using [OAuth2 "password
-    flow"](https://fastapi.tiangolo.com/tutorial/security/simple-oauth2/) and
-    PyJWT
 - **[Pydantic](https://pydantic-docs.helpmanual.io/)** for schema and validation
 - **[React](https://reactjs.org/)** (with Typescript)
 - **[Redis OM](https://redis.io/docs/stack/get-started/tutorials/stack-python/)** for ORM
 - **[Docker Compose](https://docs.docker.com/compose/)** for development
-- **[MaterialUI](https://material-ui.com/)** for some UI elements
+- **[MaterialUI](https://material-ui.com/)** for some UI elements/components
 - **[React-Bootstrap](https://react-bootstrap.github.io/)** for some UI elements
-- **[Huggingface Sentence Transformers](https://huggingface.co/sentence-transformers)** for vector embedding creation
+- **[Huggingface Tokenizers + Models](https://huggingface.co/sentence-transformers)** for vector embedding creation
 
 Some inspiration was taken from this [Cookiecutter project](https://github.com/Buuntu/fastapi-react)
 and turned into a SPA application instead of a separate front-end server approach.
 
-
-### Datasets
+## Datasets
 
 The dataset was taken from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
 
-Download and extract the zip file and place the json file in the `data/` directory.
+Download and extract the zip file and place the json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
 
 ## Running Locally
 
-### Using pre-built containers
+>Before running locally - you should download the data and run through the `arXivPrepSubset.ipynb` notebook to generate some sample embeddings.
 
-The easiest option to run locally is to use the following docker-compose file to launch the
-prebuilt container hosted on GitHub.
+Setup python environment
+- If you use conda, take advantage of the Makefile included here: `make env`
+- Otherwise, setup your virtual env however and install python deps in `requirements.txt`
 
-```yaml
-version: '3.7'
-services:
-
-  redis-vector-db:
-    image: redis/redis-stack:latest
-    ports:
-      - 6379:6379
-      - 8001:8001
-
-  backend:
-    image: ghcr.io/spartee/redis-vss-fashion:v0.2.0
-    environment:
-      DEPLOYMENT: "dev"
-      REDIS_DATA_URL: 'redis://redis-vector-db:6379'
-      REDIS_OM_URL: 'redis://redis-vector-db:6379'
-      REDIS_HOST: 'redis-vector-db'
-      REDIS_PORT: 6379
-    expose:
-      - "8888"
-    ports:
-      - "8888:8888"
-    depends_on:
-      - "redis-vector-db"
-
-```
-
-To launch, run the following
+To launch app, run the following
 - ``docker compose up`` in same directory as ``docker-compose.yml``
-- Navigate to ``0.0.0.0:8888`` in a browser
+- Navigate to ``http://localhost:8888`` in a browser
 
 ### Building the containers
 
-More to come here
+The first time you run `docker compose up` it will automatically build your Docker images based on the `Dockerfile`. However, in future passes when you need to rebuild, simply run: `docker compose up --build` to force a new build.
 
 ### Running outside docker
 
-More to come here
+#### Front End
+You can run the 

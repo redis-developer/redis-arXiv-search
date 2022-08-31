@@ -32,7 +32,7 @@ app.add_middleware(
 # Routers
 app.include_router(
     routes.paper_router,
-    prefix=config.API_V1_STR + "/product",
+    prefix=config.API_V1_STR + "/paper",
     tags=["papers"]
 )
 

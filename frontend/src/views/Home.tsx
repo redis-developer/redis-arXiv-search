@@ -37,6 +37,7 @@ export const Home = (props: Props) => {
         const paperJson = await getSemanticallySimilarPapersbyText(state.value)
         props.setPapers(paperJson)
       } else {
+        setSkip(skip + limit);
         const paperJson = await getPapers(limit, skip);
         props.setPapers(paperJson)
       }
@@ -46,18 +47,9 @@ export const Home = (props: Props) => {
     }
   };
 
-  const queryPapersWithLimit = async () => {
-    try {
-      setSkip(skip + limit);
-      queryPapers();
-    } catch (err) {
-      console.log(err);
-    };
-  };
-
   // Execute this one when the component loads up
   useEffect(() => {
-    queryPapersWithLimit();
+    queryPapers();
   }, []);
 
   return (
@@ -79,7 +71,7 @@ export const Home = (props: Props) => {
           placeholder='Search'
           value={state.value}
           onChange={(newValue) => handleChange(newValue)}
-          onRequestSearch={() => queryPapersWithLimit()}
+          onRequestSearch={() => queryPapers()}
           style={{
             margin: '20px 0',
           }}

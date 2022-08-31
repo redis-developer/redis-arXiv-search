@@ -2,4 +2,4 @@
 .git
 
 # ignore specific.json files
-arxiv-metadata-oai-snapshot.json
+data/arxiv-metadata-oai-snapshot.json
