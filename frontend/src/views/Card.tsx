@@ -3,7 +3,7 @@ import React from 'react';
 import { getSemanticallySimilarPapers } from "../api"
 import  useCheckMobileScreen  from "../mobile"
 import { Chip } from '@material-ui/core';
-
+import Tooltip from '@mui/material/Tooltip';
 
 
 interface Props {
@@ -65,19 +65,22 @@ export const Card = (props: Props) => {
         </p>
         <div className="d-flex justify-content-between align-items-center">
          <div className="btn-group">
+         <Tooltip title="Search for more papers like this one">
           <button
-           type="button"
-           className="btn btn-sm btn-outline-secondary"
-           onClick={() => querySemanticallySimilarPapers()}
-          >
-           More Like This
-          </button>
-          <Chip
+            type="button"
+            className="btn btn-sm btn-outline-secondary"
+            onClick={() => querySemanticallySimilarPapers()}
+            >
+            More Like This
+            </button>
+         </Tooltip>
+
+          {/* <Chip
             style={{ margin: "auto 20px" }}
             label={`${props.categories}`}
             color='primary'
             size="small"
-          />
+          /> */}
          </div>
         </div>
        </div>
