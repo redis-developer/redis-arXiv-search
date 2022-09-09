@@ -44,4 +44,4 @@ def make(sentences: list):
         sentences = [clean_description(description) for description in sentences]
     else:
         sentences = clean_description(sentences)
-    return model.encode(sentences)
+    return model.encode(sentences, normalize_embeddings=True)

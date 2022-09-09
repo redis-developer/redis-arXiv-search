@@ -14,7 +14,7 @@ from vecsim_app.query import (
 )
 
 def read_paper_df() -> t.List:
-    with open(config.DATA_LOCATION + "/paper_embeddings_2.pkl", "rb") as f:
+    with open(config.DATA_LOCATION + "/paper_embeddings.pkl", "rb") as f:
         df = pickle.load(f)
     return df
 
@@ -54,9 +54,9 @@ async def load_all_data():
         print("Creating vector search index")
         # create a search index
         if config.INDEX_TYPE == "HNSW":
-            await create_hnsw_index(redis_conn, len(papers), distance_metric="COSINE")
+            await create_hnsw_index(redis_conn, len(papers), prefix="paper_vector:", distance_metric="IP")
         else:
-            await create_flat_index(redis_conn, len(papers), distance_metric="L2")
+            await create_flat_index(redis_conn, len(papers), prefix="paper_vector:", distance_metric="L2")
         print("Search index created")
 
 
