@@ -65,22 +65,15 @@ export const Card = (props: Props) => {
         </p>
         <div className="d-flex justify-content-between align-items-center">
          <div className="btn-group">
-         <Tooltip title="Search for more papers like this one">
-          <button
-            type="button"
-            className="btn btn-sm btn-outline-secondary"
-            onClick={() => querySemanticallySimilarPapers()}
-            >
-            More Like This
-            </button>
-         </Tooltip>
-
-          {/* <Chip
-            style={{ margin: "auto 20px" }}
-            label={`${props.categories}`}
-            color='primary'
-            size="small"
-          /> */}
+          <Tooltip title="Search for more papers like this one">
+            <button
+              type="button"
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => querySemanticallySimilarPapers()}
+              >
+              More Like This
+              </button>
+          </Tooltip>
          </div>
         </div>
        </div>

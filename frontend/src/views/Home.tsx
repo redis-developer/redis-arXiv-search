@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { getPapers, getSemanticallySimilarPapersbyText } from '../api';
-import { useNavigate } from 'react-router-dom';
 import { Card } from "./Card"
 import SearchBar from "material-ui-search-bar";
 
@@ -19,7 +18,6 @@ export const Home = (props: Props) => {
   const [error, setError] = useState<string>('');
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(15);
-  const Navigate = useNavigate();
 
   var state = {value: ''};
 
@@ -49,6 +47,8 @@ export const Home = (props: Props) => {
 
   // Execute this one when the component loads up
   useEffect(() => {
+    props.setPapers([]);
+    props.setCategory("");
     queryPapers();
   }, []);
 
@@ -64,7 +64,7 @@ export const Home = (props: Props) => {
            search engine.
        </p>
        <p className="lead text-muted">
-           <strong>Enter a search query below to discover scholarly papers hosted by <a href="https://arxiv.org/" target="_blank">arXiv</a> (Cornel University).</strong>
+           <strong>Enter a search query below to discover scholarly papers hosted by <a href="https://arxiv.org/" target="_blank">arXiv</a> (Cornell University).</strong>
        </p>
        <div className="container">
         <SearchBar
