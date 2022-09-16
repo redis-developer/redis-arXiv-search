@@ -9,10 +9,7 @@ from vecsim_app.schema import (
     SimilarityRequest,
     UserTextSimilarityRequest
 )
-from vecsim_app.query import (
-    INDEX_NAME,
-    create_query
-)
+from vecsim_app.query import create_query
 
 
 paper_router = r = APIRouter()
@@ -47,7 +44,7 @@ async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.List[t
     vector = await redis_client.hget(paper_vector_key, "vector")
 
     # Execute query
-    results = await redis_client.ft(INDEX_NAME).search(
+    results = await redis_client.ft(config.INDEX_NAME).search(
         query,
         query_params={"vec_param": vector}
     )
@@ -65,7 +62,7 @@ async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest
     )
 
     # Execute query
-    results = await redis_client.ft(INDEX_NAME).search(
+    results = await redis_client.ft(config.INDEX_NAME).search(
         query,
         query_params={
             "vec_param": embeddings.make(similarity_request.user_text).tobytes()

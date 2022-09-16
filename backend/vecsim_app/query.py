@@ -1,3 +1,4 @@
+from config import INDEX_NAME
 from redis.asyncio import Redis
 from redis.commands.search.query import Query
 from redis.commands.search.indexDefinition import (
@@ -9,7 +10,6 @@ from redis.commands.search.field import (
     TagField
 )
 
-INDEX_NAME = "papers"
 
 
 async def create_index(redis_conn, prefix: str, v_field: VectorField):
@@ -19,7 +19,6 @@ async def create_index(redis_conn, prefix: str, v_field: VectorField):
         fields = [v_field, categories_field],
         definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
     )
-
 
 async def create_flat_index(
     redis_conn: Redis,
