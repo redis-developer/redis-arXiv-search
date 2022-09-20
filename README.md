@@ -20,6 +20,9 @@ This arXiv demo showcases the vector search similarity (VSS) capability within R
 Through the RediSearch module, vector types and indexes can be added to Redis. This turns Redis into
 a highly performant vector database which can be used for all types of applications.
 
+
+![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
+
 ## Datasets
 
 The dataset was taken from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
