@@ -1,11 +1,29 @@
+from config import INDEX_NAME
 from redis.asyncio import Redis
-from redis.commands.search.field import VectorField, TagField
 from redis.commands.search.query import Query
+from redis.commands.search.indexDefinition import (
+    IndexDefinition,
+    IndexType
+)
+from redis.commands.search.field import (
+    VectorField,
+    TagField
+)
 
+
+
+async def create_index(redis_conn, prefix: str, v_field: VectorField):
+    categories_field = TagField("categories")
+    # Create Index
+    await redis_conn.ft(INDEX_NAME).create_index(
+        fields = [v_field, categories_field],
+        definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
+    )
 
 async def create_flat_index(
     redis_conn: Redis,
     number_of_vectors: int,
+    prefix: str,
     distance_metric: str='L2'
 ):
     text_field = VectorField(
@@ -18,13 +36,13 @@ async def create_flat_index(
             "BLOCK_SIZE": number_of_vectors
         }
     )
-    categories_field = TagField("categories")
-    await redis_conn.ft().create_index([text_field, categories_field])
+    await create_index(redis_conn, prefix, text_field)
 
 
 async def create_hnsw_index(
     redis_conn: Redis,
     number_of_vectors: int,
+    prefix: str,
     distance_metric: str='COSINE'
 ):
     text_field = VectorField(
@@ -36,8 +54,7 @@ async def create_hnsw_index(
             "INITIAL_CAP": number_of_vectors,
         }
     )
-    categories_field = TagField("categories")
-    await redis_conn.ft().create_index([text_field, categories_field])
+    await create_index(redis_conn, prefix, text_field)
 
 
 def create_query(

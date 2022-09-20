@@ -4,17 +4,16 @@ import vecsim_app.embeddings as embeddings
 
 from fastapi import APIRouter
 from vecsim_app import config
+from vecsim_app.models import Paper
 from vecsim_app.schema import (
     SimilarityRequest,
     UserTextSimilarityRequest
 )
-from vecsim_app.models import Paper
 from vecsim_app.query import create_query
 
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
-
 
 async def process_paper(p):
     paper = await Paper.get(p.paper_pk)
@@ -28,7 +27,7 @@ async def papers_from_results(results) -> list:
 
 @r.get("/", response_model=t.List[Paper])
 async def get_papers(limit: int = 20, skip: int = 0):
-    papers = await Paper.find().copy(offset=skip, limit=limit).execute()
+    papers = await Paper.find().copy(offset=skip, limit=limit).execute(exhaust_results=False)
     return papers
 
 
@@ -45,7 +44,7 @@ async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.List[t
     vector = await redis_client.hget(paper_vector_key, "vector")
 
     # Execute query
-    results = await redis_client.ft().search(
+    results = await redis_client.ft(config.INDEX_NAME).search(
         query,
         query_params={"vec_param": vector}
     )
@@ -63,12 +62,10 @@ async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest
     )
 
     # Execute query
-    results = await redis_client.ft().search(
+    results = await redis_client.ft(config.INDEX_NAME).search(
         query,
         query_params={
             "vec_param": embeddings.make(similarity_request.user_text).tobytes()
         }
     )
-
-    # Get Paper records of those results
     return await papers_from_results(results)
