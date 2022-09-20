@@ -4,6 +4,7 @@
     <br />
     <br />
 <div display="inline-block">
+    <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://redis.io/docs/stack/search/reference/vectors/"><b>Redis VSS Documentation</b></a>&nbsp;&nbsp;&nbsp;
   </div>
@@ -13,9 +14,20 @@
 
 # Redis arXiv Search Demo
 
+This repository is the codebase for the arxiv paper search demo hosted at: https://docsearch.redisventures.com
+
 This arXiv demo showcases the vector search similarity (VSS) capability within Redis Stack and Redis Enterprise.
 Through the RediSearch module, vector types and indexes can be added to Redis. This turns Redis into
 a highly performant vector database which can be used for all types of applications.
+
+
+![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
+
+## Datasets
+
+The dataset was taken from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
+
+Download and extract the zip file and place the json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
 
 ## Application
 
@@ -33,12 +45,6 @@ This app was built as a Single Page Application (SPA) with the following compone
 
 Some inspiration was taken from this [Cookiecutter project](https://github.com/Buuntu/fastapi-react)
 and turned into a SPA application instead of a separate front-end server approach.
-
-## Datasets
-
-The dataset was taken from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
-
-Download and extract the zip file and place the json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
 
 ## Running Locally
 
