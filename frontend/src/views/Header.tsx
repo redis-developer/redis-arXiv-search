@@ -4,10 +4,6 @@ import { BASE_URL } from "../config";
 import { useNavigate } from 'react-router-dom';
 
 interface Props {
-  papers: any[];
-  setPapers: (state: any) => void;
-  category: string;
-  setCategory: (state: any) => void;
 }
 
 

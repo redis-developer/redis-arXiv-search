@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
-import React from 'react';
 import { getSemanticallySimilarPapers } from "../api"
 import  useCheckMobileScreen  from "../mobile"
 import Tooltip from '@mui/material/Tooltip';
+import Chip from '@mui/material/Chip';
 import { makeStyles } from '@material-ui/core/styles';
 import { useNavigate } from 'react-router';
 
@@ -11,7 +11,11 @@ interface Props {
     numPapers: number;
     title: string;
     authors: string;
-    categories: string;
+    paperCat: string;
+    paperYear: number;
+    categories: string[];
+    years: string[];
+    similarity_score: number;
     setState: (state: any) => void;
 }
 
@@ -42,6 +46,8 @@ export const Card = (props: Props) => {
           console.log(props.paperId);
           const productJson = await getSemanticallySimilarPapers(
               props.paperId,
+              props.years,
+              props.categories,
               "KNN",
               props.numPapers);
           props.setState(productJson)
@@ -86,9 +92,20 @@ export const Card = (props: Props) => {
           </p>
           <div className={classes.cardText}>
               <strong>Authors:</strong> <em>{props.authors}</em>
-              <strong>Categories:</strong> <em>{props.categories}</em>
+              <strong>Categories:</strong> <em>{props.paperCat}</em>
+              <strong>Year:</strong> <em>{props.paperYear}</em>
+              { props.similarity_score ? (
+                <Tooltip title="Similarity Score" arrow>
+                  <Chip
+                    style={{ margin: "auto", fontSize: 12 }}
+                    label={props.similarity_score.toFixed(2)}
+                    color='primary'
+                  />
+                </Tooltip>
+              ):(
+                <></>
+              )}
           </div>
-
          <div className={getCardClass()}>
               <Tooltip title="Search for more papers like this one">
                 <button

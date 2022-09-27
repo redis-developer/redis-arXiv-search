@@ -11,12 +11,12 @@ from redis.commands.search.field import (
 )
 
 
-
 async def create_index(redis_conn, prefix: str, v_field: VectorField):
     categories_field = TagField("categories")
+    year_field = TagField("year")
     # Create Index
     await redis_conn.ft(INDEX_NAME).create_index(
-        fields = [v_field, categories_field],
+        fields = [v_field, categories_field, year_field],
         definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
     )
 
@@ -58,13 +58,27 @@ async def create_hnsw_index(
 
 
 def create_query(
+    categories: list,
+    years: list,
     search_type: str="KNN",
     number_of_results: int=20
 ) -> Query:
-    base_query = f'*=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]'
-    q = Query(base_query)
-    q.sort_by("vector_score")
-    q.paging(0, number_of_results)
-    q.return_fields("paper_id", "paper_pk", "vector_score")
-    q.dialect(2)
-    return q
+
+    tag = "("
+    if years:
+        years = " | ".join(years)
+        tag += f"@year:{{{years}}}"
+    if categories:
+        categories = " | ".join(categories)
+        tag += f"@categories:{{{categories}}}"
+    tag += ")"
+    # if no tags are selected
+    if len(tag) < 3:
+        tag = "*"
+    print(tag, flush=True)
+    base_query = f'{tag}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]'
+    return Query(base_query)\
+        .sort_by("vector_score")\
+        .paging(0, number_of_results)\
+        .return_fields("paper_id", "paper_pk", "vector_score")\
+        .dialect(2)

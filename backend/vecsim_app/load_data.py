@@ -14,7 +14,7 @@ from vecsim_app.query import (
 )
 
 def read_paper_df() -> t.List:
-    with open(config.DATA_LOCATION + "/paper_embeddings.pkl", "rb") as f:
+    with open(config.DATA_LOCATION + "/arxiv_embeddings_10000.pkl", "rb") as f:
         df = pickle.load(f)
     return df
 
@@ -34,6 +34,7 @@ async def gather_with_concurrency(n, redis_conn, *papers):
                     "paper_pk": p.pk,
                     "paper_id": p.paper_id,
                     "categories": p.categories,
+                    "year": p.year,
                     "vector": np.array(vector, dtype=np.float32).tobytes(),
             })
     # gather with concurrency
