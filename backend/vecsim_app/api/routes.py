@@ -26,8 +26,27 @@ async def papers_from_results(results) -> list:
 
 
 @r.get("/", response_model=t.List[Paper])
-async def get_papers(limit: int = 20, skip: int = 0):
-    papers = await Paper.find().copy(offset=skip, limit=limit).execute(exhaust_results=False)
+async def get_papers(limit: int = 20, skip: int = 0, years: str = "", categories: str = ""):
+    papers = []
+    expressions = []
+    years = [year for year in years.split(",") if year]
+    categories = [cat for cat in categories.split(",") if cat]
+    if years and categories:
+        expressions.append(
+            (Paper.year << years) & \
+            (Paper.categories << categories)
+        )
+    elif years and not categories:
+        expressions.append(Paper.year << years)
+    elif categories and not years:
+        expressions.append(Paper.categories << categories)
+    # Run query
+    print(years, categories)
+    print(Paper.find(*expressions).copy(offset=skip, limit=limit).query, flush=True)
+
+    papers = await Paper.find(*expressions)\
+        .copy(offset=skip, limit=limit)\
+        .execute(exhaust_results=False)
     return papers
 
 
@@ -35,6 +54,8 @@ async def get_papers(limit: int = 20, skip: int = 0):
 async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.List[t.Dict]:
     # Create query
     query = create_query(
+        similarity_request.categories,
+        similarity_request.years,
         similarity_request.search_type,
         similarity_request.number_of_results
     )
@@ -57,6 +78,8 @@ async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.List[t
 async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest) -> t.List[t.Dict]:
     # Create query
     query = create_query(
+        similarity_request.categories,
+        similarity_request.years,
         similarity_request.search_type,
         similarity_request.number_of_results
     )

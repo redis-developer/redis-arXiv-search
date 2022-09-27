@@ -7,12 +7,14 @@ import { Footer } from './views/Footer';
 
 export const Layout: FC = () => {
     const [papers, setPapers] = useState<any[]>([]);
-    const [category, setCategory] = useState<string>('');
+    const [categories, setCategories] = useState<string[]>([]);
+    const [years, setYears] = useState<string[]>([]);
+    const [state, setState] = useState<string>('');
 
     return (
         <>
-        <Header setPapers={setPapers} papers={papers} category={category} setCategory={setCategory} />
-        <Home setPapers={setPapers} papers={papers} category={category} setCategory={setCategory}/>
+        <Header/>
+        <Home setPapers={setPapers} papers={papers} categories={categories} setCategories={setCategories} years={years} setYears={setYears} searchState={state} setSearchState={setState}/>
         <Footer/>
         </>
     );
