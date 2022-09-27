@@ -55,7 +55,7 @@ export const Home = (props: Props) => {
   return (
     <>
       <main role="main">
-      <section className="jumbotron text-center mb-0 bg-white" style={{ paddingTop: '40px'}}>
+      <section className="jumbotron text-center mb-0 bg-white" style={{ paddingTop: '40px', width: "95%"}}>
       <div className="container">
        <h1 className="jumbotron-heading">arXiv Paper Search</h1>
        <p className="lead text-muted">

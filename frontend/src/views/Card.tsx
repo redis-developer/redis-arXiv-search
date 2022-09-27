@@ -2,9 +2,9 @@
 import React from 'react';
 import { getSemanticallySimilarPapers } from "../api"
 import  useCheckMobileScreen  from "../mobile"
-import { Chip } from '@material-ui/core';
 import Tooltip from '@mui/material/Tooltip';
-
+import { makeStyles } from '@material-ui/core/styles';
+import { useNavigate } from 'react-router';
 
 interface Props {
     paperId: string;
@@ -16,9 +16,26 @@ interface Props {
 }
 
 
-export const Card = (props: Props) => {
+const useStyles = makeStyles((theme) => ({
+  btnGroup: {
+    display: "float",
+    position: "relative",
+    left: "75%"
+  },
+  btnGroupMobile: {
+    paddingTop: "5%",
+    display: "float",
+  },
+  cardText: {
+    display: "grid",
+    fontSize: "14px"
+  }
+}));
 
+export const Card = (props: Props) => {
+    const classes = useStyles();
     const isMobile = useCheckMobileScreen();
+    const navigate = useNavigate();
 
     const querySemanticallySimilarPapers = async () => {
         try {
@@ -38,44 +55,59 @@ export const Card = (props: Props) => {
         return '50%';
       }
       else {
-        return '20%';
+        return '85%';
+      }
+    }
+    const getCardClass = () => {
+      if (isMobile) {
+        return classes.btnGroupMobile;
+      }
+      else {
+        return classes.btnGroup;
+      }
+    }
+    const getButtonSpacing = () => {
+      if (isMobile) {
+        return {margin: "0px"}
+      }
+      else {
+        return {margin: "5px"}
       }
     }
 
     return (
      <div className="col-md-2" style={{width: getCardSize()}}>
-      <div className="card mb-2 box-shadow" style={{alignContent : 'center'}}>
+      <div className="card mb-2 border-dark box-shadow">
        <div className="card-body">
-        <p className="card-text">
-          <strong>{props.title}</strong>
-        </p>
-        <div className="d-flex justify-content-between align-items-left">
-         <div className="btn-group" style={{width: "100%"}}>
-
-          <p className="card-text" style={{fontSize : 12, width: "50%", float: "left"}}>
-            <a href={`https://arxiv.org/abs/${props.paperId}`} target="_blank">Read Me</a> 
+          <p className="card-text">
+            <a href={`https://arxiv.org/abs/${props.paperId}`}>
+              <strong>{props.title}</strong>
+            </a>
           </p>
-          <p className="card-text" style={{fontSize : 12, width: "50%", float: "right"}}>
-            <a href={`https://arxiv.org/pdf/${props.paperId}`} target="_blank">Download</a> 
-          </p>
+          <div className={classes.cardText}>
+              <strong>Authors:</strong> <em>{props.authors}</em>
+              <strong>Categories:</strong> <em>{props.categories}</em>
           </div>
-        </div>
-        <p className="card-text" style={{fontSize : 12}}>
-            <em>{props.authors}</em>
-        </p>
-        <div className="d-flex justify-content-between align-items-center">
-         <div className="btn-group">
-          <Tooltip title="Search for more papers like this one">
-            <button
-              type="button"
-              className="btn btn-sm btn-outline-secondary"
-              onClick={() => querySemanticallySimilarPapers()}
-              >
-              More Like This
-              </button>
-          </Tooltip>
+
+         <div className={getCardClass()}>
+              <Tooltip title="Search for more papers like this one">
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline-secondary"
+                  onClick={() => querySemanticallySimilarPapers()}
+                  >
+                  More Like This
+                  </button>
+              </Tooltip>
+              <a href={`https://arxiv.org/pdf/${props.paperId}`} rel="noreferrer">
+                <button
+                  type="button"
+                  style={getButtonSpacing()}
+                  className="btn btn-sm btn-outline-secondary"
+                  >Download
+                </button>
+              </a>
          </div>
-        </div>
        </div>
       </div>
      </div>
