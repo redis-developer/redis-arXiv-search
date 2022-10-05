@@ -66,9 +66,9 @@ class SearchIndex:
         )
         await self._create(
             *fields,
+            vector_field,
             redis_conn=redis_conn,
-            prefix=prefix,
-            vector_field=vector_field
+            prefix=prefix
         )
 
     async def create_hnsw(
