@@ -17,6 +17,7 @@ interface Props {
     years: string[];
     similarity_score: number;
     setState: (state: any) => void;
+    setTotal: (state: any) => void;
 }
 
 
@@ -43,14 +44,14 @@ export const Card = (props: Props) => {
 
     const querySemanticallySimilarPapers = async () => {
         try {
-          console.log(props.paperId);
-          const productJson = await getSemanticallySimilarPapers(
+          const results = await getSemanticallySimilarPapers(
               props.paperId,
               props.years,
               props.categories,
               "KNN",
               props.numPapers);
-          props.setState(productJson)
+          props.setState(results.papers)
+          props.setTotal(results.total)
         } catch (err) {
           console.log(String(err));
         }
@@ -92,7 +93,7 @@ export const Card = (props: Props) => {
           </p>
           <div className={classes.cardText}>
               <strong>Authors:</strong> <em>{props.authors}</em>
-              <strong>Categories:</strong> <em>{props.paperCat}</em>
+              <strong>Categories:</strong> <em>{props.paperCat.replaceAll("|", ", ")}</em>
               <strong>Year:</strong> <em>{props.paperYear}</em>
               { props.similarity_score ? (
                 <Tooltip title="Similarity Score" arrow>
