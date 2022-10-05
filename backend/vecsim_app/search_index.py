@@ -1,11 +1,33 @@
+import re
+
 from config import INDEX_NAME
 from redis.asyncio import Redis
 from redis.commands.search.query import Query
-from redis.commands.search.indexDefinition import (
-    IndexDefinition,
-    IndexType
-)
+from redis.commands.search.indexDefinition import IndexDefinition, IndexType
 from redis.commands.search.field import VectorField
+from typing import Optional, Pattern
+
+
+class TokenEscaper:
+    """
+    Escape punctuation within an input string. Taken from RedisOM Python.
+    """
+    # Characters that RediSearch requires us to escape during queries.
+    # Source: https://redis.io/docs/stack/search/reference/escaping/#the-rules-of-text-field-tokenization
+    DEFAULT_ESCAPED_CHARS = r"[,.<>{}\[\]\\\"\':;!@#$%^&*()\-+=~\/ ]"
+
+    def __init__(self, escape_chars_re: Optional[Pattern] = None):
+        if escape_chars_re:
+            self.escaped_chars_re = escape_chars_re
+        else:
+            self.escaped_chars_re = re.compile(self.DEFAULT_ESCAPED_CHARS)
+
+    def escape(self, value: str) -> str:
+        def escape_symbol(match):
+            value = match.group(0)
+            return f"\\{value}"
+
+        return self.escaped_chars_re.sub(escape_symbol, value)
 
 class SearchIndex:
     """
@@ -13,6 +35,7 @@ class SearchIndex:
     and actions applied to a RediSearch index including creation,
     manegement, and query construction.
     """
+    escaper = TokenEscaper()
 
     async def create_flat(
         self,
@@ -93,25 +116,6 @@ class SearchIndex:
             definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
         )
 
-    @staticmethod
-    def clean_string(s: str) -> str:
-        """
-        Helper function to clean strings used in RediSearch queries.
-
-        Args:
-            s (str): input string
-
-        Returns:
-            str: cleaned string
-        """
-        return s.replace('-', '\\-')\
-            .replace('/', '\\/')\
-            .replace(':', '\\:')\
-            .replace("'", "\\'")\
-            .replace("|", "\\|")\
-            .replace("&", "\\&")\
-            .replace(".", "\\.")
-
     def process_tags(self, categories: list, years: list) -> str:
         """
         Helper function to process tags data. TODO - factor this
@@ -126,10 +130,10 @@ class SearchIndex:
         """
         tag = "("
         if years:
-            years = "|".join([self.clean_string(year) for year in years])
+            years = "|".join([self.escaper.escape(year) for year in years])
             tag += f"(@year:{{{years}}})"
         if categories:
-            categories = "|".join([self.clean_string(cat) for cat in categories])
+            categories = "|".join([self.escaper.escape(cat) for cat in categories])
             if tag:
                 tag += f" (@categories:{{{categories}}})"
             else:
