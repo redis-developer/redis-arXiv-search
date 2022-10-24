@@ -5,7 +5,10 @@ from sentence_transformers import SentenceTransformer
 
 
 class Embeddings:
-    model = SentenceTransformer('sentence-transformers/all-mpnet-base-v2')
+
+    def __init__(self, model_name: str = "sentence-transformers/all-mpnet-base-v2"):
+        self.model_name = model_name
+        self.model = SentenceTransformer(self.model_name)
 
     # String cleaner
     @staticmethod
@@ -37,6 +40,12 @@ class Embeddings:
 
 
     def make(self, sentences: list):
+        """
+        Create embeddings from input text.
+
+        Args:
+            sentences (list): List of (or individual) sentence(s) to encode.
+        """
         if isinstance(sentences, list):
             sentences = [self.clean_description(description) for description in sentences]
         else:

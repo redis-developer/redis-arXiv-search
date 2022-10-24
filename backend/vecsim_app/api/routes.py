@@ -19,14 +19,14 @@ redis_client = redis.from_url(config.REDIS_URL)
 embeddings = Embeddings()
 search_index = SearchIndex()
 
-async def process_paper(p, i: int) -> dict:
+async def process_paper(p, i: int) -> t.Dict[str, t.Any]:
     paper = await Paper.get(p.paper_pk)
     paper = paper.dict()
     score = 1 - float(p.vector_score)
     paper['similarity_score'] = score
     return paper
 
-async def papers_from_results(total, results) -> list:
+async def papers_from_results(total, results) -> t.Dict[str, t.Any]:
     # extract papers from VSS results
     return {
         'total': total,
@@ -38,7 +38,12 @@ async def papers_from_results(total, results) -> list:
 
 
 @r.get("/", response_model=t.Dict)
-async def get_papers(limit: int = 20, skip: int = 0, years: str = "", categories: str = ""):
+async def get_papers(
+    limit: int = 20,
+    skip: int = 0,
+    years: str = "",
+    categories: str = ""
+):
     papers = []
     expressions = []
     years = [year for year in years.split(",") if year]
@@ -71,7 +76,7 @@ async def get_papers(limit: int = 20, skip: int = 0, years: str = "", categories
 
 
 @r.post("/vectorsearch/text", response_model=t.Dict)
-async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.Dict:
+async def find_papers_by_text(similarity_request: SimilarityRequest):
     # Create query
     query = search_index.vector_query(
         similarity_request.categories,
@@ -99,7 +104,7 @@ async def find_papers_by_text(similarity_request: SimilarityRequest) -> t.Dict:
 
 
 @r.post("/vectorsearch/text/user", response_model=t.Dict)
-async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest) -> t.Dict:
+async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest):
     # Create query
     query = search_index.vector_query(
         similarity_request.categories,
