@@ -11,6 +11,7 @@ import FormControl from '@mui/material/FormControl';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
+import Tooltip from '@mui/material/Tooltip';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -24,6 +25,8 @@ interface Props {
   setYears: (state: any) => void;
   searchState: string;
   setSearchState: (state: any) => void;
+  total: number;
+  setTotal: (state: any) => void;
 }
 
 export const Home = (props: Props) => {
@@ -41,6 +44,7 @@ export const Home = (props: Props) => {
       },
     },
   };
+
   const yearOptions = [
     '2022',
     '2021',
@@ -56,150 +60,26 @@ export const Home = (props: Props) => {
     '2011'
   ];
 
-  // const categoryOptions: any = {
-  //   'cs.AI': 'Artificial Intelligence',
-  //   'cs.AR': 'Hardware Architecture',
-  //   'cs.CC': 'Computational Complexity',
-  //   'cs.CE': 'Computational Engineering, Finance, and Science',
-  //   'cs.CG': 'Computational Geometry',
-  //   'cs.CL': 'Computation and Language',
-  //   'cs.CR': 'Cryptography and Security',
-  //   'cs.CV': 'Computer Vision and Pattern Recognition',
-  //   'cs.CY': 'Computers and Society',
-  //   'cs.DB': 'Databases',
-  //   'cs.DC': 'Distributed, Parallel, and Cluster Computing',
-  //   'cs.DL': 'Digital Libraries',
-  //   'cs.DM': 'Discrete Mathematics',
-  //   'cs.DS': 'Data Structures and Algorithms',
-  //   'cs.ET': 'Emerging Technologies',
-  //   'cs.FL': 'Formal Languages and Automata Theory',
-  //   'cs.GL': 'General Literature',
-  //   'cs.GR': 'Graphics',
-  //   'cs.GT': 'Computer Science and Game Theory',
-  //   'cs.HC': 'Human-Computer Interaction',
-  //   'cs.IR': 'Information Retrieval',
-  //   'cs.IT': 'Information Theory',
-  //   'cs.LG': 'Machine Learning',
-  //   'cs.LO': 'Logic in Computer Science',
-  //   'cs.MA': 'Multiagent Systems',
-  //   'cs.MM': 'Multimedia',
-  //   'cs.MS': 'Mathematical Software',
-  //   'cs.NA': 'Numerical Analysis',
-  //   'cs.NE': 'Neural and Evolutionary Computing',
-  //   'cs.NI': 'Networking and Internet Architecture',
-  //   'cs.OH': 'Other Computer Science',
-  //   'cs.OS': 'Operating Systems',
-  //   'cs.PF': 'Performance',
-  //   'cs.PL': 'Programming Languages',
-  //   'cs.RO': 'Robotics',
-  //   'cs.SC': 'Symbolic Computation',
-  //   'cs.SD': 'Sound',
-  //   'cs.SE': 'Software Engineering',
-  //   'cs.SI': 'Social and Information Networks',
-  //   'cs.SY': 'Systems and Control',
-  //   'econ.EM': 'Econometrics',
-  //   'eess.AS': 'Audio and Speech Processing',
-  //   'eess.IV': 'Image and Video Processing',
-  //   'eess.SP': 'Signal Processing',
-  //   'gr-qc': 'General Relativity and Quantum Cosmology',
-  //   'hep-ex': 'High Energy Physics - Experiment',
-  //   'hep-lat': 'High Energy Physics - Lattice',
-  //   'hep-ph': 'High Energy Physics - Phenomenology',
-  //   'hep-th': 'High Energy Physics - Theory',
-  //   'math.AC': 'Commutative Algebra',
-  //   'math.AG': 'Algebraic Geometry',
-  //   'math.AP': 'Analysis of PDEs',
-  //   'math.AT': 'Algebraic Topology',
-  //   'math.CA': 'Classical Analysis and ODEs',
-  //   'math.CO': 'Combinatorics',
-  //   'math.CT': 'Category Theory',
-  //   'math.CV': 'Complex Variables',
-  //   'math.DG': 'Differential Geometry',
-  //   'math.DS': 'Dynamical Systems',
-  //   'math.FA': 'Functional Analysis',
-  //   'math.GM': 'General Mathematics',
-  //   'math.GN': 'General Topology',
-  //   'math.GR': 'Group Theory',
-  //   'math.GT': 'Geometric Topology',
-  //   'math.HO': 'History and Overview',
-  //   'math.IT': 'Information Theory',
-  //   'math.KT': 'K-Theory and Homology',
-  //   'math.LO': 'Logic',
-  //   'math.MG': 'Metric Geometry',
-  //   'math.MP': 'Mathematical Physics',
-  //   'math.NA': 'Numerical Analysis',
-  //   'math.NT': 'Number Theory',
-  //   'math.OA': 'Operator Algebras',
-  //   'math.OC': 'Optimization and Control',
-  //   'math.PR': 'Probability',
-  //   'math.QA': 'Quantum Algebra',
-  //   'math.RA': 'Rings and Algebras',
-  //   'math.RT': 'Representation Theory',
-  //   'math.SG': 'Symplectic Geometry',
-  //   'math.SP': 'Spectral Theory',
-  //   'math.ST': 'Statistics Theory',
-  //   'math-ph': 'Mathematical Physics',
-  //   'nlin.AO': 'Adaptation and Self-Organizing Systems',
-  //   'nlin.CD': 'Chaotic Dynamics',
-  //   'nlin.CG': 'Cellular Automata and Lattice Gases',
-  //   'nlin.PS': 'Pattern Formation and Solitons',
-  //   'nlin.SI': 'Exactly Solvable and Integrable Systems',
-  //   'nucl-ex': 'Nuclear Experiment',
-  //   'nucl-th': 'Nuclear Theory',
-  //   'physics.acc-ph': 'Accelerator Physics',
-  //   'physics.ao-ph': 'Atmospheric and Oceanic Physics',
-  //   'physics.app-ph': 'Applied Physics',
-  //   'physics.atm-clus': 'Atomic and Molecular Clusters',
-  //   'physics.atom-ph': 'Atomic Physics',
-  //   'physics.bio-ph': 'Biological Physics',
-  //   'physics.chem-ph': 'Chemical Physics',
-  //   'physics.class-ph': 'Classical Physics',
-  //   'physics.comp-ph': 'Computational Physics',
-  //   'physics.data-an': 'Data Analysis, Statistics and Probability',
-  //   'physics.ed-ph': 'Physics Education',
-  //   'physics.flu-dyn': 'Fluid Dynamics',
-  //   'physics.gen-ph': 'General Physics',
-  //   'physics.geo-ph': 'Geophysics',
-  //   'physics.hist-ph': 'History and Philosophy of Physics',
-  //   'physics.ins-det': 'Instrumentation and Detectors',
-  //   'physics.med-ph': 'Medical Physics',
-  //   'physics.optics': 'Optics',
-  //   'physics.plasm-ph': 'Plasma Physics',
-  //   'physics.pop-ph': 'Popular Physics',
-  //   'physics.soc-ph': 'Physics and Society',
-  //   'physics.space-ph': 'Space Physics',
-  //   'q-bio.BM': 'Biomolecules',
-  //   'q-bio.CB': 'Cell Behavior',
-  //   'q-bio.GN': 'Genomics',
-  //   'q-bio.MN': 'Molecular Networks',
-  //   'q-bio.NC': 'Neurons and Cognition',
-  //   'q-bio.OT': 'Other Quantitative Biology',
-  //   'q-bio.PE': 'Populations and Evolution',
-  //   'q-bio.QM': 'Quantitative Methods',
-  //   'q-bio.SC': 'Subcellular Processes',
-  //   'q-bio.TO': 'Tissues and Organs',
-  //   'q-fin.CP': 'Computational Finance',
-  //   'q-fin.EC': 'Economics',
-  //   'q-fin.GN': 'General Finance',
-  //   'q-fin.MF': 'Mathematical Finance',
-  //   'q-fin.PM': 'Portfolio Management',
-  //   'q-fin.PR': 'Pricing of Securities',
-  //   'q-fin.RM': 'Risk Management',
-  //   'q-fin.ST': 'Statistical Finance',
-  //   'q-fin.TR': 'Trading and Market Microstructure',
-  //   'quant-ph': 'Quantum Physics',
-  //   'stat.AP': 'Applications',
-  //   'stat.CO': 'Computation',
-  //   'stat.ME': 'Methodology',
-  //   'stat.ML': 'Machine Learning',
-  //   'stat.OT': 'Other Statistics',
-  //   'stat.TH': 'Statistics Theory'
-  // };
-
+  const categoryOptions = [
+    'cs.LG',
+    'math-ph',
+    'quant-ph',
+    'cond-mat.mes-hall',
+    'hep-ph',
+    'hep-th',
+    'gr-qc',
+    'cond-mat.mtrl-sci',
+    'cond-mat.str-el',
+    'cond-mat.stat-mech',
+    'astro-ph.CO',
+    'math.MP',
+    'astro-ph.HE',
+    'physics.optics',
+    'astro-ph.GA'
+  ]
 
   const handleSearchChange = async (newValue: string) => {
     props.setSearchState(newValue);
-    console.log(props.searchState);
   }
 
   const handleYearSelection = (event: SelectChangeEvent<typeof props.years>) => {
@@ -210,36 +90,33 @@ export const Home = (props: Props) => {
       // On autofill we get a stringified value.
       typeof value === 'string' ? value.split(',') : value,
     );
+    setSkip(0);
     console.log(props.years)
   };
 
-  // const handleCatSelection = (event: SelectChangeEvent<typeof props.categories>) => {
-  //   const {
-  //     target: { value },
-  //   } = event;
-  //   props.setCategories(
-  //     // On autofill we get a stringified value.
-  //     typeof value === 'string' ? value.split(',') : value,
-  //   );
-  // };
+  const handleCatSelection = (event: SelectChangeEvent<typeof props.categories>) => {
+    const {
+      target: { value },
+    } = event;
+    props.setCategories(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+    setSkip(0);
+  };
 
   const queryPapers = async () => {
     try {
-      // const categories = props.categories.map((cat: string) => categoryOptions[cat])
-      // console.log(categories)
-      console.log(props.searchState)
-
       if ( props.searchState ) {
-        const paperJson = await getSemanticallySimilarPapersbyText(props.searchState, props.years, props.categories)
-        props.setPapers(paperJson)
-        console.log(props.searchState)
+        const result = await getSemanticallySimilarPapersbyText(props.searchState, props.years, props.categories)
+        props.setPapers(result.papers)
+        props.setTotal(result.total)
       } else {
         setSkip(skip + limit);
-        const paperJson = await getPapers(limit, skip, props.years, props.categories);
-        props.setPapers(paperJson)
-        console.log(props.searchState)
+        const result = await getPapers(limit, skip, props.years, props.categories);
+        props.setPapers(result.papers)
+        props.setTotal(result.total)
       }
-
     } catch (err) {
       setError(String(err));
     }
@@ -299,7 +176,7 @@ export const Home = (props: Props) => {
             ))}
           </Select>
         </FormControl>
-        {/* <FormControl sx={{ m: 1, width: 300 }}>
+        <FormControl sx={{ m: 1, width: 300 }}>
           <InputLabel id="demo-multiple-checkbox-label">Category</InputLabel>
           <Select
             labelId="demo-multiple-checkbox-label"
@@ -311,18 +188,25 @@ export const Home = (props: Props) => {
             renderValue={(selected) => selected.join(', ')}
             MenuProps={MenuProps}
           >
-            {Object.values(categoryOptions).map((cat) => (
+            {categoryOptions.map((cat) => (
               <MenuItem key={cat} value={cat}>
                 <Checkbox checked={props.categories.indexOf(cat) > -1} />
                 <ListItemText primary={cat} />
               </MenuItem>
             ))}
           </Select>
-        </FormControl> */}
+        </FormControl>
     </div>
       </div>
      </section>
       <div className="album py-5 bg-light">
+        <div className="container">
+          <p style={{fontSize: 15}}>
+            <Tooltip title="Filtered paper count" arrow>
+              <em>{props.total} searchable arXiv papers</em>
+            </Tooltip>
+          </p>
+        </div>
         <div className="container">
           {props.papers && (
             <div className="row">
@@ -339,13 +223,14 @@ export const Home = (props: Props) => {
                   years={props.years}
                   similarity_score={paper.similarity_score}
                   setState={props.setPapers}
+                  setTotal={props.setTotal}
                   />
                 ))}
             </div>
             )}
           </div>
-      </div>
+        </div>
       </main>
-        </>
+    </>
   );
 };
