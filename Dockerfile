@@ -31,6 +31,8 @@ RUN pip install -e .
 # add static react files to fastapi image
 COPY --from=ReactImage /app/frontend/build /app/backend/vecsim_app/templates/build
 
+LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
+
 WORKDIR /app/backend/vecsim_app
 
 CMD ["sh", "./entrypoint.sh"]

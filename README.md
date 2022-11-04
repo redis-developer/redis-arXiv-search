@@ -16,8 +16,7 @@
 # Redis arXiv Search
 *This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
 
-Through the RediSearch module, vector data types and search indexes can be added to Redis. This turns Redis into
-a highly performant, in-memory, vector database, which can be used for many types of applications.
+Through the [RediSearch](https://redis.io/docs/stack/search/reference/vectors/) module, vector data types and search indexes can be added to Redis. This turns Redis into a highly performant, in-memory, vector database, which can be used for many types of applications.
 
 ___
 
@@ -25,29 +24,6 @@ Here we showcase Redis vector similarity search (VSS) applied to a document sear
 
 
 ![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
-
-
-## Getting Started
-The steps below outline how to get this app up and running on your machine.
-
-## Docker
-Install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
-
-## Download arXiv Dataset
-
-Pull the arXiv dataset from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
-
-Download and extract the zip file and place the resulting json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
-
-## Embedding Creation
-
-**1. Setup python environment:**
-- If you use conda, take advantage of the Makefile included here: `make env`
-- Otherwise, setup your virtual env however you wish and install python deps in `requirements.txt`
-
-**2. Use the notebook:**
-- Run through the [`arxiv-embeddings.ipynb`](data/arxiv-embeddings.ipynb) notebook to generate some sample embeddings.
-
 
 ## Application
 
@@ -66,15 +42,61 @@ This app was built as a Single Page Application (SPA) with the following compone
 Some inspiration was taken from this [Cookiecutter project](https://github.com/Buuntu/fastapi-react)
 and turned into a SPA application instead of a separate front-end server approach.
 
-### Launch
+### Dataset
 
-**To launch app, run the following:**
-- `docker compose up` from the same directory as `docker-compose.yml`
-- Navigate to `http://localhost:8888` in a browser
+The arXiv dataset was sourced from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
 
-**Building the containers manually:**
+If you wish to modify or work with your own data...download and extract the zip and place the resulting json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
 
-The first time you run `docker compose up` it will automatically build your Docker images based on the `Dockerfile`. However, in future passes when you need to rebuild, simply run: `docker compose up --build` to force a new build.
+## Running the App
+Before running the app, install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+### Use pre-built containers
+Both **Redis Stack** and the paper search app run with **Docker Compose** using pre-built containers. Choose one of the methods below based on your Redis setup.
+
+#### Redis Cloud (recommended)
+
+1. [Get your Redis Cloud Database](https://app.redislabs.com/) (if needed).
+
+2. Export Redis Endpoint Environment Variables:
+    ```bash
+    $ export REDIS_HOST=your-redis-host
+    $ export REDIS_PORT=your-redis-port
+    $ export REDIS_PASSOWRD=your-redis-password
+    ```
+
+3. Run the App:
+    ```bash
+    $ docker compose -f docker-cloud-redis.yml up
+    ```
+> The benefit of this approach is that the db will persist beyond application runs. So you can make updates and re run the app without having to provision the dataset or create another search index.
+
+#### Redis Docker
+```bash
+$ docker compose -f docker-local-redis.yml up
+```
+
+### Customizing (optional)
+You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframe will end up stored in the `data/` directory and used when creating your own container.
+
+Use the `build.sh` script to create your own, and then make sure to update the `.yml` file with the right image name.
+
+### Using a React development env
+It's typically easier to write front end code in an interactive environment, testing changes in realtime.
+
+1. Deploy the app using steps above.
+2. Install NPM packages (you may need to use `npm` to install `yarn`)
+    ```bash
+    $ cd gui/
+    $ yarn install --no-optional
+    ````
+4. Use `yarn` to serve the application from your machine
+    ```bash
+    $ yarn start
+    ```
+5. Navigate to `http://localhost:3000` in a browser.
+
+All changes to your local code will be reflected in your display in semi realtime.
 
 ### Using a React dev env
 It's typically easier to manipulate front end code in an interactive environment (**outside of Docker**) where one can test out code changes in real time. In order to use this approach:
@@ -86,10 +108,6 @@ It's typically easier to manipulate front end code in an interactive environment
 5. Make front end changes in realtime.
 
 ### Troubleshooting
+Sometimes you need to clear out some Docker cached artifacts. Run `docker system prune`, restart Docker Desktop, and try again.
 
-- Issues with Docker? Run `docker system prune`, restart Docker Desktop, and try again.
-- Open an issue here on GitHub and we will be as responsive as we can!
-
-
-### Interested in contributing?
-This is a new project. Comment on an open issue or create a new one. We can triage it from there.
+Open an issue here on GitHub and we will try to be responsive to these. Additionally, please consider [contributing](CONTRIBUTING.md).
