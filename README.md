@@ -81,6 +81,9 @@ You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to 
 
 Use the `build.sh` script to create your own, and then make sure to update the `.yml` file with the right image name.
 
+### Running with Kubernetes
+If you want to use K8s instead of Docker Compose, we have some [resources to help you get started](k8s/README.md).
+
 ### Using a React development env
 It's typically easier to write front end code in an interactive environment, testing changes in realtime.
 
