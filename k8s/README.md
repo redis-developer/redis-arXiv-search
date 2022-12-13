@@ -21,6 +21,10 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main
 Apply the resources:
 ```bash
 kubectl apply -f redis-vector-db.yaml
+```
+>Pause for like 30 seconds here to make sure Redis is up
+
+```bash
 kubectl apply -f backend.yaml
 ```
 
@@ -31,7 +35,7 @@ kubectl get nodes
 ```bash
 kubectl get pods
 ```
-
+Inspect logs etc...
 ## Expose Ports and Test App
 Port forward the backend service to connect to the app on `localhost:8888`:
 ```
