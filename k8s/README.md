@@ -43,3 +43,10 @@ kubectl port-forward service/backend 8888:8888
 ```
 
 Then navigate to `http://localhost:8888/`
+
+## Cleaning Up
+
+```bash
+kind delete cluster --name arxiv-search
+```
+
