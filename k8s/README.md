@@ -10,7 +10,7 @@ Install [kubectl](https://kubernetes.io/docs/reference/kubectl/), [kind](https:/
 ## Create Cluster with Kind
 ```bash
 kind create cluster --config=cluster.yaml
-kubectl cluster-info --context kind-test
+kubectl cluster-info --context kind-arxiv-search
 ```
 
 Then apply the ingress:
