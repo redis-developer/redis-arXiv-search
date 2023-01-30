@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    io.kompose.service: redis-vector-db
+  name: redis-vector-db
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: redis-vector-db
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        io.kompose.service: redis-vector-db
+    spec:
+      containers:
+        - name: redis-vector-db
+          image: redis/redis-stack:latest
+          command:
+            - redis-stack-server
+            - "/redis-config/redis.conf"
+          ports:
+            - containerPort: 6379
+            - containerPort: 8001
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/
+              name: redis-vector-db-pvc
+            - mountPath: /redis-config
+              name: config
+      restartPolicy: Always
+      volumes:
+        - name: redis-vector-db-pvc
+          persistentVolumeClaim:
+            claimName: redis-vector-db-pvc
+        - name: config
+          configMap:
+            name: redis-config
+            items:
+            - key: redis-config
+              path: redis.conf
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: redis-config
+data:
+  redis-config: |
+    requirepass testing123
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: redis-vector-db
+  name: redis-vector-db
+spec:
+  type: ClusterIP
+  ports:
+    - name: "6379"
+      port: 6379
+      targetPort: 6379
+    - name: "8001"
+      port: 8001
+      targetPort: 8001
+  selector:
+    io.kompose.service: redis-vector-db
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    io.kompose.service: redis-vector-db-pvc
+  name: redis-vector-db-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
