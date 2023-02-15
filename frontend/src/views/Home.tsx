@@ -212,7 +212,6 @@ export const Home = (props: Props) => {
             <div className="row">
               {props.papers.map((paper) => (
                  <Card
-                  key={paper.pk}
                   title={paper.title}
                   authors={paper.authors}
                   paperId={paper.paper_id}

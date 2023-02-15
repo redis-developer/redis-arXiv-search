@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.9'
 
 services:
   redis-vector-db:
@@ -6,7 +6,7 @@ services:
       context: ./redis-vector-db
       dockerfile: Dockerfile
     volumes:
-      - ./redis-data:/data/
+      - redis-vector-db:/var/lib/redis
     ports:
       - 6379:6379
       - 8001:8001

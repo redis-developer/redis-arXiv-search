@@ -88,9 +88,9 @@ If you want to use K8s instead of Docker Compose, we have some [resources to hel
 It's typically easier to write front end code in an interactive environment, testing changes in realtime.
 
 1. Deploy the app using steps above.
-2. Install NPM packages (you may need to use `npm` to install `yarn`)
+2. Install packages (you may need to use `npm` to install `yarn`)
     ```bash
-    $ cd gui/
+    $ cd frontend/
     $ yarn install --no-optional
     ````
 4. Use `yarn` to serve the application from your machine
