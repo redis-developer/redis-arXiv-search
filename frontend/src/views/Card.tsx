@@ -14,6 +14,7 @@ interface Props {
     paperCat: string;
     paperYear: number;
     categories: string[];
+    matchExactCategories: boolean;
     years: string[];
     similarity_score: number;
     setState: (state: any) => void;
@@ -44,12 +45,14 @@ export const Card = (props: Props) => {
 
     const querySemanticallySimilarPapers = async () => {
         try {
-          const results = await getSemanticallySimilarPapers(
-              props.paperId,
-              props.years,
-              props.categories,
-              "KNN",
-              props.numPapers);
+          const results = await getSemanticallySimilarPapers({
+            paper_id: props.paperId,
+            years: props.years,
+            categories: props.categories,
+            limit: props.numPapers,
+            matchExactCategories: props.matchExactCategories
+          })
+
           props.setState(results.papers)
           props.setTotal(results.total)
         } catch (err) {
