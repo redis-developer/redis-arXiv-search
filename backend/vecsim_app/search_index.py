@@ -1,12 +1,16 @@
 import re
 
-from config import INDEX_NAME
 from schema import SimilarityRequest
 from redis.asyncio import Redis
 from redis.commands.search.query import Query
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.commands.search.field import VectorField
-from typing import Optional, Pattern
+from redis.commands.search.indexDefinition import (
+    IndexDefinition,
+    IndexType
+)
+from typing import (
+    Optional,
+    Pattern
+)
 
 
 class TokenEscaper:
@@ -38,14 +42,19 @@ class SearchIndex:
     """
     escaper = TokenEscaper()
 
+    @staticmethod
+    def key(provider: str, paper_id: str) -> str:
+        return f"{provider}:arXiv:{paper_id}"
+
     async def create(
         self,
         fields: list,
+        index_name: str,
         redis_conn: Redis,
         prefix: str
     ):
         # Create Index
-        await redis_conn.ft(INDEX_NAME).create_index(
+        await redis_conn.ft(index_name).create_index(
             fields = fields,
             definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
         )
@@ -109,7 +118,7 @@ class SearchIndex:
         """
         # Parse tags to create query
         tag_query = self.process_tags(request.categories, request.years)
-        base_query = f'{tag_query}=>[{request.search_type} {request.number_of_results} @vector $vec_param AS similarity_score]'
+        base_query = f'{tag_query}=>[{request.search_type} {request.number_of_results} @vector $vector AS similarity_score]'
         return (
             Query(base_query)
             .sort_by("similarity_score")

@@ -58,17 +58,21 @@ async def get_papers(
 @r.post("/vectorsearch/text", response_model=t.Dict)
 async def find_papers_by_text(similarity_request: SimilarityRequest):
     # Create query
+    index_name = similarity_request.provider
     query = search_index.vector_query(similarity_request)
     count_query = search_index.count_query(similarity_request)
 
-    # find the vector of the Paper listed in the request
-    paper_vector_key = f"{config.INDEX_PREFIX}:{similarity_request.paper_id}"
+    # Fetch the vector of the Paper of interest in the request
+    paper_vector_key = search_index.key(index_name, similarity_request.paper_id)
     vector = await redis_client.hget(paper_vector_key, "vector")
 
-    # obtain results of the queries
+    # Check available paper count and perform vector search
     total, results = await asyncio.gather(
-        redis_client.ft(config.INDEX_NAME).search(count_query),
-        redis_client.ft(config.INDEX_NAME).search(query, query_params={"vec_param": vector})
+        redis_client.ft(index_name).search(count_query),
+        redis_client.ft(index_name).search(
+            query,
+            query_params={"vector": vector}
+        )
     )
 
     # Get Paper records of those results
@@ -78,18 +82,23 @@ async def find_papers_by_text(similarity_request: SimilarityRequest):
 @r.post("/vectorsearch/text/user", response_model=t.Dict)
 async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest):
     # Create query
+    index_name = similarity_request.provider
     query = search_index.vector_query(similarity_request)
     count_query = search_index.count_query(similarity_request)
 
-    # obtain results of the queries
-    total, results = await asyncio.gather(
-        redis_client.ft(config.INDEX_NAME).search(count_query),
-        redis_client.ft(config.INDEX_NAME).search(
-            query,
-            query_params = {
-                "vec_param": embeddings.make(similarity_request.user_text).tobytes()
-            }
-        )
+    # Check available paper count and create vector
+    total, vector = await asyncio.gather(
+        embeddings.get(
+            provider=similarity_request.provider,
+            text=similarity_request.user_text
+        ),
+        redis_client.ft(index_name).search(count_query)
+    )
+
+    # Perform Vector Search
+    results = await redis_client.ft(index_name).search(
+        query,
+        query_params={"vector": vector.tobytes()}
     )
 
     # Get Paper records of those results
