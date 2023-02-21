@@ -1,19 +1,15 @@
-# Data!
+# Vector indexation
 
-Generate data before trying to run this application.
+For vector indexation, we used `sentence-transformers/all-distilroberta-v1` and included the authors to the embedding vector. We then upserted all the embeddings onto the Redis database.
 
-### Three Notebooks
+The data was pre-processed by removing unicode characters,  punctuation, newlines, lowercasing and some spacing cleanup.
 
-1. `arxiv-embeddings.ipynb` (app default)
-    - Uses local CPU and creates embeddings for ~10k machine learning papers.
-    - Output: `arxiv_embeddings_10000.pkl`
+You can check the [reference notebook](https://github.com/liram11/untitled1-vector-search/tree/master/data/embeddings).
 
-2. `single-gpu-arxiv-embddings.ipynb`
-    - Uses RAPIDS (CuDF) and GPU on Saturn Cloud to speed up embedding. Much larger subset (100k).
-    - Output: `arxiv_embeddings_100000.pkl`
+# Training a multilabel model
 
-3. `multi-gpu-arxiv-embeddings.ipynb`
-    - Uses RAPIDS and Dask (Dask CuDF) on Saturn Cloud to parallelize embedding creation. Much much larger subset (700k). Only output 300k to file.
-    - Output: `arxiv_embeddings_300000pkl`.
+We decided to train a multilabel classification model as each paper can have more than one category. We fine-tuned a transformers model  (`bert-base-uncased`) on a sample of 400 000 papers and tried it with and without the evaluation. From the outcomes, we can see that the preprocessing function - same as the prior step - managed to improve the model results. 
 
+For running it, you can check [the training notebook.](https://github.com/liram11/untitled1-vector-search/blob/master/data/multilabel_classifier/multilabel-model.ipynb).
 
+There are a few inference examples in a [notebook as well.](https://github.com/liram11/untitled1-vector-search/blob/master/data/multilabel_classifier/multilabel-inference.ipynb)
