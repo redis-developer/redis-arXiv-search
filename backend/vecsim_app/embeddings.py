@@ -32,7 +32,7 @@ def preprocess_text(text: str) -> str:
     # make all words lowercase
     text = text.lower()
 
-    return text
+    return text.strip()
 
 
 class Embeddings:
