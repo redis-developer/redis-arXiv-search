@@ -52,11 +52,13 @@ export const getPapers = async (limit=15, skip=0, years: string[] = [], categori
 export const getSemanticallySimilarPapers = async (paper_id: string,
                                                    years: string[],
                                                    categories: string[],
+                                                   provider: string,
                                                    search='KNN',
                                                    limit=15) => {
   console.log(paper_id);
   let body = {
     paper_id: paper_id,
+    provider: provider,
     search_type: search,
     number_of_results: limit,
     years: years,
@@ -71,10 +73,12 @@ export const getSemanticallySimilarPapers = async (paper_id: string,
 export const getSemanticallySimilarPapersbyText = async (text: string,
                                                          years: string[],
                                                          categories: string[],
+                                                         provider: string,
                                                          search='KNN',
                                                          limit=15) => {
   let body = {
     user_text: text,
+    provider: provider,
     search_type: search,
     number_of_results: limit,
     years: years,

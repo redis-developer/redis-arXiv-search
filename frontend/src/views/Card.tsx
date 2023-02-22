@@ -5,6 +5,7 @@ import Tooltip from '@mui/material/Tooltip';
 import Chip from '@mui/material/Chip';
 import { makeStyles } from '@material-ui/core/styles';
 import { useNavigate } from 'react-router';
+import { StringLiteral } from "typescript";
 
 interface Props {
     paperId: string;
@@ -15,6 +16,7 @@ interface Props {
     paperYear: number;
     categories: string[];
     years: string[];
+    provider: string;
     similarity_score: number;
     setState: (state: any) => void;
     setTotal: (state: any) => void;
@@ -48,6 +50,7 @@ export const Card = (props: Props) => {
               props.paperId,
               props.years,
               props.categories,
+              props.provider,
               "KNN",
               props.numPapers);
           props.setState(results.papers)

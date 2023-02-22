@@ -8,6 +8,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
@@ -33,6 +37,7 @@ export const Home = (props: Props) => {
   const [error, setError] = useState<string>('');
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(15);
+  const [provider, setProvider] = useState('huggingface');
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -78,6 +83,26 @@ export const Home = (props: Props) => {
     'astro-ph.GA'
   ]
 
+  function EmbeddingModelOptions() {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setProvider((event.target as HTMLInputElement).value);
+    };
+    return (
+      <FormControl>
+        <FormLabel component="legend" >Embedding Model</FormLabel>
+        <RadioGroup
+          aria-labelledby="demo-controlled-radio-buttons-group"
+          name="controlled-radio-buttons-group"
+          value={provider}
+          onChange={handleChange}
+        >
+          <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
+          <FormControlLabel value="openai" control={<Radio />} label="OpenAI Ada " />
+        </RadioGroup>
+      </FormControl>
+    );
+  }
+
   const handleSearchChange = async (newValue: string) => {
     props.setSearchState(newValue);
   }
@@ -108,7 +133,7 @@ export const Home = (props: Props) => {
   const queryPapers = async () => {
     try {
       if ( props.searchState ) {
-        const result = await getSemanticallySimilarPapersbyText(props.searchState, props.years, props.categories)
+        const result = await getSemanticallySimilarPapersbyText(props.searchState, props.years, props.categories, provider)
         props.setPapers(result.papers)
         props.setTotal(result.total)
       } else {
@@ -156,6 +181,7 @@ export const Home = (props: Props) => {
         />
        </div>
        <div>
+        <EmbeddingModelOptions></EmbeddingModelOptions>
         <FormControl sx={{ m: 1, width: 150 }}>
           <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
           <Select
@@ -220,6 +246,7 @@ export const Home = (props: Props) => {
                   paperYear={paper.year}
                   categories={props.categories}
                   years={props.years}
+                  provider={provider}
                   similarity_score={paper.similarity_score}
                   setState={props.setPapers}
                   setTotal={props.setTotal}
