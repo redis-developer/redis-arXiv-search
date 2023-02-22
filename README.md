@@ -76,6 +76,16 @@ Both **Redis Stack** and the paper search app run with **Docker Compose** using 
 $ docker compose -f docker-local-redis.yml up
 ```
 
+### Running the code locally, Redis in Docker
+For development: local code changes will be reloaded automatically.
+```bash
+$ chmod +x ./install-local.sh
+$ ./install-local.sh  # compiles frontend, installs backend dependencies
+
+$ chmod +x ./run-local.sh
+$ ./run-local.sh   # runs Redis in local docker, runs code in local environment without docker
+```
+
 ### Customizing (optional)
 You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframe will end up stored in the `data/` directory and used when creating your own container.
 
