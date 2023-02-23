@@ -16,7 +16,7 @@ from vecsim_app.providers import Provider
 
 
 def read_paper_df(provider: str) -> t.List:
-    with open(config.DATA_LOCATION + f"/arxiv_{provider}embeddings_10000.pkl", "rb") as f:
+    with open(config.DATA_LOCATION + f"/arxiv_{provider}_embeddings_10000.pkl", "rb") as f:
         df = pickle.load(f)
     return df
 
@@ -84,6 +84,8 @@ async def load_data():
             print(f"Loading arXiv {provider} vectors.")
             papers = read_paper_df(provider)
             papers = papers.to_dict('records')
+            num_docs = len(papers)
+            vector_dimensions = len(papers[0]['vector'])
             # Write to Redis
             await gather_with_concurrency(
                 n=config.WRITE_CONCURRENCY,
@@ -94,10 +96,7 @@ async def load_data():
             print(f"{provider} vectors loaded")
 
             print("Creating vector search index")
-            fields = create_schema(
-                num_docs=len(papers),
-                vector_dimensions=len(papers[0]['vector'])
-            )
+            fields = create_schema(num_docs, vector_dimensions)
             # Create a search index
             await search_index.create(
                 fields=fields,

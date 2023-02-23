@@ -3,8 +3,7 @@ import os
 PROJECT_NAME = "vecsim_app"
 API_DOCS = "/api/docs"
 OPENAPI_DOCS = "/api/openapi.json"
-# INDEX_NAME = os.environ.get("INDEX_NAME", "papers-index")
-# INDEX_PREFIX = os.environ.get("INDEX_PREFIX", "paper")
+DEFAULT_PROVIDER = "huggingface"
 DISTANCE_METRIC = os.environ.get("DISTANCE_METRIC", "COSINE")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
 INDEX_TYPE = os.environ.get("VECSIM_INDEX_TYPE", "HNSW")

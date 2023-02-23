@@ -50,7 +50,7 @@ async def get_papers(
         limit=limit
     )
     # obtain results of the queries
-    results = await redis_client.ft(config.INDEX_NAME).search(query)
+    results = await redis_client.ft(config.DEFAULT_PROVIDER).search(query)
 
     return papers_from_results(results.total, results)
 
@@ -67,7 +67,7 @@ async def find_papers_by_text(similarity_request: SimilarityRequest):
     vector = await redis_client.hget(paper_vector_key, "vector")
 
     # Check available paper count and perform vector search
-    total, results = await asyncio.gather(
+    count, results = await asyncio.gather(
         redis_client.ft(index_name).search(count_query),
         redis_client.ft(index_name).search(
             query,
@@ -76,7 +76,7 @@ async def find_papers_by_text(similarity_request: SimilarityRequest):
     )
 
     # Get Paper records of those results
-    return papers_from_results(total.total, results)
+    return papers_from_results(count.total, results)
 
 
 @r.post("/vectorsearch/text/user", response_model=t.Dict)
@@ -87,7 +87,7 @@ async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest
     count_query = search_index.count_query(similarity_request)
 
     # Check available paper count and create vector
-    total, vector = await asyncio.gather(
+    vector, count = await asyncio.gather(
         embeddings.get(
             provider=similarity_request.provider,
             text=similarity_request.user_text
@@ -102,4 +102,4 @@ async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest
     )
 
     # Get Paper records of those results
-    return papers_from_results(total.total, results)
+    return papers_from_results(count.total, results)

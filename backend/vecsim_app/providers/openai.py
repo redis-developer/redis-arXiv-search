@@ -56,8 +56,8 @@ class OpenAIProvider:
             Embeddings for the text.
         """
         text = preprocess(text)
-        embedding = await self.client.acreate(
+        embedding = (await self.client.acreate(
             input=[text],
             engine=self.model
-        )["data"][0]["embedding"]
+        ))["data"][0]["embedding"]
         return np.array(embedding, dtype=np.float32)
