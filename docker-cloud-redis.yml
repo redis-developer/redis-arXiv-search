@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   backend:
-    image: ghcr.io/redisventures/redis-arxiv-search:dev
+    image: ghcr.io/redisventures/redis-arxiv-search:latest
     environment:
       DEPLOYMENT: "dev"
       REDIS_HOST: ${REDIS_HOST}
