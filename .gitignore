@@ -3,3 +3,4 @@ arxiv-metadata-oai-snapshot.json
 *.DS_STORE
 *.log
 .ipynb_checkpoints
+embed.py

@@ -62,7 +62,8 @@ Both **Redis Stack** and the paper search app run with **Docker Compose** using 
     ```bash
     $ export REDIS_HOST=your-redis-host
     $ export REDIS_PORT=your-redis-port
-    $ export REDIS_PASSOWRD=your-redis-password
+    $ export REDIS_PASSWORD=your-redis-password
+    $ export OPENAI_API_KEY=your-openai-api-key
     ```
 
 3. Run the App:
@@ -73,13 +74,14 @@ Both **Redis Stack** and the paper search app run with **Docker Compose** using 
 
 #### Redis Docker
 ```bash
+$ export OPENAI_API_KEY=your-openai-api-key
 $ docker compose -f docker-local-redis.yml up
 ```
 
 ### Customizing (optional)
-You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframe will end up stored in the `data/` directory and used when creating your own container.
+You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframes will end up stored in the `data/` directory and used when creating your own container.
 
-Use the `build.sh` script to create your own, and then make sure to update the `.yml` file with the right image name.
+Use the `build.sh` script to create your own docker image, and then make sure to update the `.yml` file with the right image name.
 
 ### Running with Kubernetes
 If you want to use K8s instead of Docker Compose, we have some [resources to help you get started](k8s/README.md).

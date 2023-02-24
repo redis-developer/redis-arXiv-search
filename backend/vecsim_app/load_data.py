@@ -88,7 +88,7 @@ async def load_data():
             vector_dimensions = len(papers[0]['vector'])
             # Write to Redis
             await gather_with_concurrency(
-                n=config.WRITE_CONCURRENCY,
+                n=int(config.WRITE_CONCURRENCY),
                 prefix=provider,
                 redis_conn=redis_conn,
                 papers=papers
