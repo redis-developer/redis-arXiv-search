@@ -13,17 +13,17 @@
     <br />
 </div>
 
-# Redis arXiv Search
+# 🔎 Redis arXiv Search
 *This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
 
 Through the [RediSearch](https://redis.io/docs/stack/search/reference/vectors/) module, vector data types and search indexes can be added to Redis. This turns Redis into a highly performant, in-memory, vector database, which can be used for many types of applications.
 
 ___
 
-Here we showcase Redis vector similarity search (VSS) applied to a document search/retrieval use case. Read more about AI-powered search in [our blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) (shout out to our friends at Data Science Dojo).
+Here we showcase Redis vector similarity search (VSS) applied to a document search/retrieval use case. Read more about AI-powered search in [our blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) hosted at Data Science Dojo.
 
 
-![Screen Shot 2022-09-20 at 12 20 16 PM](https://user-images.githubusercontent.com/13009163/191346916-4b8f648f-7552-4910-ad4e-9cc117230f00.png)
+![Demo](data/assets/arXivSearch.png)
 
 ## Application
 
@@ -48,33 +48,32 @@ The arXiv dataset was sourced from the the following [Kaggle link](https://www.k
 
 If you wish to modify or work with your own data...download and extract the zip and place the resulting json file (`arxiv-metadata-oai-snapshot.json`) in the `data/` directory.
 
-## Running the App
+## 🚀 Running the App
 Before running the app, install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 
-### Use pre-built containers
-Both **Redis Stack** and the paper search app run with **Docker Compose** using pre-built containers. Choose one of the methods below based on your Redis setup.
+1. To get started, make a copy of the `.env.template` file:
+```bash
+$ cp .env.template .env
+```
 
-#### Redis Cloud (recommended)
+2. Add your `OPENAI_API_KEY` to the `.env` file. **Need one?** Get an API key at https://platform.openai.com.
 
-1. [Get your Redis Cloud Database](https://app.redislabs.com/) (if needed).
+Both **Redis Stack** and the application backend run with **Docker Compose** using pre-built containers. **Choose one of the methods below based on your Redis setup.**
 
-2. Export Redis Endpoint Environment Variables:
-    ```bash
-    $ export REDIS_HOST=your-redis-host
-    $ export REDIS_PORT=your-redis-port
-    $ export REDIS_PASSWORD=your-redis-password
-    $ export OPENAI_API_KEY=your-openai-api-key
-    ```
+### Redis Cloud
+
+1. [Get a Redis Cloud Database](https://app.redislabs.com/) (with the RediSearch module included).
+
+2. Update the `REDIS_HOST`, `REDIS_PASSWORD`, and `REDIS_PORT` environment variables in the `.env` file created above.:
 
 3. Run the App:
     ```bash
     $ docker compose -f docker-cloud-redis.yml up
     ```
-> The benefit of this approach is that the db will persist beyond application runs. So you can make updates and re run the app without having to provision the dataset or create another search index.
 
-#### Redis Docker
+### Redis Stack Docker
+Use the provided Dockerfiles and open source containers to run the application locally:
 ```bash
-$ export OPENAI_API_KEY=your-openai-api-key
 $ docker compose -f docker-local-redis.yml up
 ```
 

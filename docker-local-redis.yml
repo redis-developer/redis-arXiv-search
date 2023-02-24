@@ -1,6 +1,16 @@
 version: '3.9'
 
 services:
+  backend:
+    image: ghcr.io/redisventures/redis-arxiv-search:latest
+    env_file:
+      - .env
+    expose:
+      - "8888"
+    ports:
+      - "8888:8888"
+    depends_on:
+      - "redis-vector-db"
   redis-vector-db:
     build:
       context: ./redis-vector-db
@@ -10,21 +20,7 @@ services:
     ports:
       - 6379:6379
       - 8001:8001
-  backend:
-    image: ghcr.io/redisventures/redis-arxiv-search:latest
-    environment:
-      DEPLOYMENT: "dev"
-      REDIS_HOST: "redis-vector-db"
-      REDIS_PORT: 6379
-      REDIS_PASSWORD: "testing123"
-      REDIS_DB: 0
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
-    expose:
-      - "8888"
-    ports:
-      - "8888:8888"
-    depends_on:
-      - "redis-vector-db"
+
 
 volumes:
   redis-vector-db:

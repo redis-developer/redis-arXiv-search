@@ -16,7 +16,7 @@ from vecsim_app.providers import Provider
 
 
 def read_paper_df(provider: str) -> t.List:
-    with open(config.DATA_LOCATION + f"/arxiv_{provider}_embeddings_10000.pkl", "rb") as f:
+    with open(config.DATA_LOCATION + f"/arxiv_{provider}_embeddings_1000.pkl", "rb") as f:
         df = pickle.load(f)
     return df
 

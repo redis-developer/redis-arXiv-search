@@ -9,8 +9,8 @@ Out of the box, the docker containers shipped with this app/repo can run without
 ## Useful Notebooks
 
 1. `create-arxiv-embeddings.ipynb`
-    - Uses local CPU and creates embeddings for ~10k machine learning papers with HuggingFace Sentence Transformers and OpenAI APIs.
-    - Outputs: `arxiv_huggingface_embeddings_10000.pkl` AND `arxiv_openai_embeddings_10000.pkl`
+    - Uses local CPU and creates embeddings for ~1k machine learning papers with HuggingFace Sentence Transformers and OpenAI APIs.
+    - Outputs: `arxiv_huggingface_embeddings_1000.pkl` AND `arxiv_openai_embeddings_1000.pkl`
 
 2. `saturncloud/single-gpu-arxiv-embddings.ipynb`
     - Uses RAPIDS (CuDF) and GPU on Saturn Cloud to speed up embedding creation with HuggingFace Sentence Transformer models. Much larger subset (100k).
@@ -19,8 +19,3 @@ Out of the box, the docker containers shipped with this app/repo can run without
 3. `saturncloud/multi-gpu-arxiv-embeddings.ipynb`
     - Uses RAPIDS and Dask (Dask CuDF) on Saturn Cloud to parallelize embedding creation with HuggingFace Sentence Transformer models. Much much larger subset (700k). Only output 300k to file.
     - Output: `arxiv_embeddings_300000pkl`.
-
-## Utilities
-
-1. `arxiv.py` - fetch the full arXiv paper dataset hosted by Kaggle. You will need a Kaggle API key.
-2. `categories.py` - A map of arXiv paper categories to human-readable topics.

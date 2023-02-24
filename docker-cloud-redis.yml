@@ -3,12 +3,8 @@ version: '3.9'
 services:
   backend:
     image: ghcr.io/redisventures/redis-arxiv-search:latest
-    environment:
-      DEPLOYMENT: "dev"
-      REDIS_HOST: ${REDIS_HOST}
-      REDIS_PORT: ${REDIS_PORT}
-      REDIS_PASSWORD: ${REDIS_PASSWORD}
-      OPENAI_API_KEY: ${OPENAI_API_KEY}
+    env_file:
+      - .env
     expose:
       - "8888"
     ports:
