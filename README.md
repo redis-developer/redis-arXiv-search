@@ -89,6 +89,8 @@ Run local Redis in docker, but execute code locally so that code changes are rel
 $ sh run-local.sh   # runs Redis in local docker, runs code in local environment without docker
 ```
 
+If you don't have command `docker compose` but have `docker-compose`, do `export DOCKER_COMPOSE="docker-compose"` prior to `run-local.sh`.
+
 ### Customizing (optional)
 You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframe will end up stored in the `data/` directory and used when creating your own container.
 
