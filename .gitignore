@@ -1,5 +1,5 @@
-arxiv-metadata-oai-snapshot.json
-/data/multilabel_classifier/checkpoint/
+/data/arxiv-metadata-oai-snapshot.json
+/data/**/checkpoint*/
 *.pkl
 *.DS_STORE
 *.log
