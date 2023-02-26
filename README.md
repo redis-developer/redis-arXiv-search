@@ -79,7 +79,7 @@ $ docker compose -f docker-local-redis.yml up
 ### Running the code locally, Redis in Docker
 For local development.
 
-Install Python dependencies locally:
+Build frontend and install Python dependencies locally:
 ```bash
 $ sh /install-local.sh  # compiles frontend, installs backend dependencies
 ```

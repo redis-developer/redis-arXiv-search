@@ -7,11 +7,11 @@ export const SuggestedCategories = ({ options, onClick }: { options: string[], o
 
   return (
     <Root>
-      <b>We found suggested categories for your query:</b> <br />
-      {['asd', 'asdasd'].map(slug =>
-        <div>{slug} ({CATEGORY_HUMAN_NAMES[slug as keyof typeof CATEGORY_HUMAN_NAMES]})</div>
+      <b>Suggested categories:</b> <br />
+      {options.map(slug =>
+        <div>{slug}</div>
       )} <br />
-      <Link component="button" underline="hover" onClick={onClick}>Click here to pply them</Link>
+      <Link component="button" underline="hover" onClick={onClick}>Click here to apply them</Link>
     </Root>
   )
 }
