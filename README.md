@@ -77,13 +77,16 @@ $ docker compose -f docker-local-redis.yml up
 ```
 
 ### Running the code locally, Redis in Docker
-For development: local code changes will be reloaded automatically.
-```bash
-$ chmod +x ./install-local.sh
-$ ./install-local.sh  # compiles frontend, installs backend dependencies
+For local development.
 
-$ chmod +x ./run-local.sh
-$ ./run-local.sh   # runs Redis in local docker, runs code in local environment without docker
+Install Python dependencies locally:
+```bash
+$ sh /install-local.sh  # compiles frontend, installs backend dependencies
+```
+
+Run local Redis in docker, but execute code locally so that code changes are reloaded automatically:
+```bash
+$ sh run-local.sh   # runs Redis in local docker, runs code in local environment without docker
 ```
 
 ### Customizing (optional)
