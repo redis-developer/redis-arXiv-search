@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import typing as t
 import asyncio
-import numpy as np
 import pickle
-import redis.asyncio as redis
+import typing as t
 
+import numpy as np
+import redis.asyncio as redis
 from redis.commands.search.field import TagField
 from vecsim_app import config
 from vecsim_app.models import Paper
@@ -12,12 +12,17 @@ from vecsim_app.search_index import SearchIndex
 
 
 def read_paper_df() -> t.List:
-    with open(config.DATA_LOCATION + "/arxiv_embeddings_10000.pkl", "rb") as f:
+    path = config.DATA_LOCATION + "/embeddings/arxiv_embeddings_400000.pkl"
+    print(f"Loading data from   : {path}")
+    with open(path, "rb") as f:
         df = pickle.load(f)
+    print(f"Loaded {len(df)} items")
     return df
+
 
 async def gather_with_concurrency(n, redis_conn, *papers):
     semaphore = asyncio.Semaphore(n)
+
     async def load_paper(paper):
         async with semaphore:
             vector = paper.pop('vector')
@@ -26,7 +31,7 @@ async def gather_with_concurrency(n, redis_conn, *papers):
             paper['categories'] = paper['categories'].replace(",", "|")
             p = Paper(**paper)
             # save model TODO -- combine these two objects eventually
-            await p.save()
+            await p.save(redis_conn)
             # save vector data
             key = "paper_vector:" + str(p.paper_id)
             await redis_conn.hset(
@@ -37,9 +42,11 @@ async def gather_with_concurrency(n, redis_conn, *papers):
                     "categories": p.categories,
                     "year": p.year,
                     "vector": np.array(vector, dtype=np.float32).tobytes(),
-            })
+                })
+
     # gather with concurrency
     await asyncio.gather(*[load_paper(p) for p in papers])
+
 
 async def load_all_data():
     # TODO use redis-om connection
