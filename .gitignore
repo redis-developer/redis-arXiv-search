@@ -1,4 +1,5 @@
 arxiv-metadata-oai-snapshot.json
+/data/multilabel_classifier/checkpoint/
 *.pkl
 *.DS_STORE
 *.log
