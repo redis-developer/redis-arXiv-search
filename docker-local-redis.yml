@@ -10,6 +10,11 @@ services:
     ports:
       - 6379:6379
       - 8001:8001
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 5s
+      retries: 5
   backend:
     image: ghcr.io/redisventures/redis-arxiv-search:latest
     environment:

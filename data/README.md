@@ -1,8 +1,9 @@
+
 # Data!
 
 Generate data before trying to run this application.
 
-### Three Notebooks
+### Notebooks
 
 1. `arxiv-embeddings.ipynb` (app default)
     - Uses local CPU and creates embeddings for ~10k machine learning papers.
@@ -17,3 +18,10 @@ Generate data before trying to run this application.
     - Output: `arxiv_embeddings_300000pkl`.
 
 
+4. `multilabel-model.ipynb`
+    - A multilabel classification model as each paper can have more than one category. We fine-tuned a transformers model  (`bert-base-uncased`).
+    - Output: `mlb.pickle`, `checkpoint` folder with the NLP model weights.
+
+5. `multilabel-inference`
+    - Script showcasing the inference for the multilabel model.
+    - Output: N/A
