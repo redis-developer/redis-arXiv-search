@@ -8,6 +8,10 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
@@ -16,23 +20,18 @@ import Tooltip from '@mui/material/Tooltip';
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-interface Props {
-  papers: any[];
-  setPapers: (state: any) => void;
-  categories: string[];
-  setCategories: (state: any) => void;
-  years: string[];
-  setYears: (state: any) => void;
-  searchState: string;
-  setSearchState: (state: any) => void;
-  total: number;
-  setTotal: (state: any) => void;
-}
+interface Props {}
 
 export const Home = (props: Props) => {
   const [error, setError] = useState<string>('');
   const [skip, setSkip] = useState(0);
   const [limit, setLimit] = useState(15);
+  const [papers, setPapers] = useState<any[]>([]);
+  const [years, setYears] = useState<string[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [provider, setProvider] = useState<string>('huggingface');
+  const [searchState, setSearchState] = useState<string>('');
+  const [total, setTotal] = useState<number>(0);
 
   const ITEM_HEIGHT = 48;
   const ITEM_PADDING_TOP = 8;
@@ -78,44 +77,120 @@ export const Home = (props: Props) => {
     'astro-ph.GA'
   ]
 
-  const handleSearchChange = async (newValue: string) => {
-    props.setSearchState(newValue);
+  function EmbeddingModelOptions() {
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+      setProvider((event.target as HTMLInputElement).value);
+    };
+    return (
+      <FormControl>
+        <FormLabel id="demo-row-radio-buttons-group-label">Embedding Model</FormLabel>
+        <RadioGroup
+          row
+          aria-labelledby="demo-controlled-radio-buttons-group"
+          name="controlled-radio-buttons-group"
+          value={provider}
+          onChange={handleChange}
+        >
+          <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
+          <FormControlLabel value="openai" control={<Radio />} label="OpenAI" />
+          <FormControlLabel
+            value="cohere"
+            disabled
+            control={<Radio />}
+            label="Cohere"
+          />
+        </RadioGroup>
+      </FormControl>
+    );
   }
 
-  const handleYearSelection = (event: SelectChangeEvent<typeof props.years>) => {
-    const {
-      target: { value },
-    } = event;
-    props.setYears(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+  function YearOptions() {
+    const handleChange = (event: SelectChangeEvent<typeof years>) => {
+      const {
+        target: { value },
+      } = event;
+      setYears(
+        // On autofill we get a stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+      );
+      setSkip(0);
+      console.log(years)
+    };
+    return (
+        <FormControl sx={{ m: 1, width: 150 }}>
+          <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
+          <Select
+            labelId="demo-multiple-checkbox-label"
+            id="demo-multiple-checkbox"
+            multiple
+            value={years}
+            onChange={handleChange}
+            input={<OutlinedInput label="Tag" />}
+            renderValue={(selected) => selected.join(', ')}
+            MenuProps={MenuProps}
+          >
+            {yearOptions.map((year) => (
+              <MenuItem key={year} value={year}>
+                <Checkbox checked={years.indexOf(year) > -1} />
+                <ListItemText primary={year} />
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
     );
-    setSkip(0);
-    console.log(props.years)
-  };
+  }
 
-  const handleCatSelection = (event: SelectChangeEvent<typeof props.categories>) => {
-    const {
-      target: { value },
-    } = event;
-    props.setCategories(
-      // On autofill we get a stringified value.
-      typeof value === 'string' ? value.split(',') : value,
+  function CategoryOptions() {
+    const handleChange = (event: SelectChangeEvent<typeof years>) => {
+      const {
+        target: { value },
+      } = event;
+      setCategories(
+        // On autofill we get a stringified value.
+        typeof value === 'string' ? value.split(',') : value,
+      );
+      setSkip(0);
+      console.log(years)
+    };
+    return (
+      <FormControl sx={{ m: 1, width: 300 }}>
+        <InputLabel id="demo-multiple-checkbox-label">Category</InputLabel>
+        <Select
+          labelId="demo-multiple-checkbox-label"
+          id="demo-multiple-checkbox"
+          multiple
+          value={categories}
+          onChange={handleChange}
+          input={<OutlinedInput label="Category" />}
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={MenuProps}
+        >
+          {categoryOptions.map((cat) => (
+            <MenuItem key={cat} value={cat}>
+              <Checkbox checked={categories.indexOf(cat) > -1} />
+              <ListItemText primary={cat} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
-    setSkip(0);
-  };
+  }
+
+  const handleSearchChange = async (newValue: string) => {
+    setSearchState(newValue);
+  }
 
   const queryPapers = async () => {
     try {
-      if ( props.searchState ) {
-        const result = await getSemanticallySimilarPapersbyText(props.searchState, props.years, props.categories)
-        props.setPapers(result.papers)
-        props.setTotal(result.total)
+      if ( searchState ) {
+        const result = await getSemanticallySimilarPapersbyText(searchState, years, categories, provider)
+        setPapers(result.papers)
+        setTotal(result.total)
       } else {
         setSkip(skip + limit);
-        const result = await getPapers(limit, skip, props.years, props.categories);
-        props.setPapers(result.papers)
-        props.setTotal(result.total)
+        const result = await getPapers(limit, skip, years, categories);
+        setPapers(result.papers)
+        setTotal(result.total)
       }
     } catch (err) {
       setError(String(err));
@@ -124,9 +199,9 @@ export const Home = (props: Props) => {
 
   // Execute this one when the component loads up
   useEffect(() => {
-    props.setPapers([]);
-    props.setCategories([]);
-    props.setYears([]);
+    setPapers([]);
+    setCategories([]);
+    setYears([]);
     queryPapers();
   }, []);
 
@@ -137,17 +212,15 @@ export const Home = (props: Props) => {
       <div className="container">
        <h1 className="jumbotron-heading">arXiv Paper Search</h1>
        <p className="lead text-muted">
-           This demo uses the built in Vector Search capabilities of Redis Enterprise
-           to show how unstructured data, such as paper abstracts (text), can be used to create a powerful
-           search engine.
+           Redis is a real-time data platform that functions as a vector database, ML feature store, and low-latency data serving layer.
        </p>
        <p className="lead text-muted">
-           <strong>Enter a search query below to discover scholarly papers hosted by <a href="https://arxiv.org/" target="_blank">arXiv</a> (Cornell University).</strong>
+           <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers:</strong>
        </p>
        <div className="container">
         <SearchBar
           placeholder='Search'
-          value={props.searchState}
+          value={searchState}
           onChange={(newValue) => handleSearchChange(newValue)}
           onRequestSearch={() => queryPapers()}
           style={{
@@ -156,46 +229,9 @@ export const Home = (props: Props) => {
         />
        </div>
        <div>
-        <FormControl sx={{ m: 1, width: 150 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={props.years}
-            onChange={handleYearSelection}
-            input={<OutlinedInput label="Tag" />}
-            renderValue={(selected) => selected.join(', ')}
-            MenuProps={MenuProps}
-          >
-            {yearOptions.map((year) => (
-              <MenuItem key={year} value={year}>
-                <Checkbox checked={props.years.indexOf(year) > -1} />
-                <ListItemText primary={year} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-        <FormControl sx={{ m: 1, width: 300 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Category</InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={props.categories}
-            onChange={handleCatSelection}
-            input={<OutlinedInput label="Category" />}
-            renderValue={(selected) => selected.join(', ')}
-            MenuProps={MenuProps}
-          >
-            {categoryOptions.map((cat) => (
-              <MenuItem key={cat} value={cat}>
-                <Checkbox checked={props.categories.indexOf(cat) > -1} />
-                <ListItemText primary={cat} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+        <EmbeddingModelOptions></EmbeddingModelOptions>
+        <YearOptions></YearOptions>
+        <CategoryOptions></CategoryOptions>
     </div>
       </div>
      </section>
@@ -203,27 +239,27 @@ export const Home = (props: Props) => {
         <div className="container">
           <p style={{fontSize: 15}}>
             <Tooltip title="Filtered paper count" arrow>
-              <em>{props.total} searchable arXiv papers</em>
+              <em>{total} searchable arXiv papers</em>
             </Tooltip>
           </p>
         </div>
         <div className="container">
-          {props.papers && (
+          {papers && (
             <div className="row">
-              {props.papers.map((paper) => (
+              {papers.map((paper) => (
                  <Card
-                  key={paper.pk}
                   title={paper.title}
                   authors={paper.authors}
                   paperId={paper.paper_id}
                   numPapers={15}
                   paperCat={paper.categories}
                   paperYear={paper.year}
-                  categories={props.categories}
-                  years={props.years}
+                  categories={categories}
+                  years={years}
+                  provider={provider}
                   similarity_score={paper.similarity_score}
-                  setState={props.setPapers}
-                  setTotal={props.setTotal}
+                  setState={setPapers}
+                  setTotal={setTotal}
                   />
                 ))}
             </div>

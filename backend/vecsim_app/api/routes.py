@@ -5,8 +5,6 @@ import redis.asyncio as redis
 from fastapi import APIRouter
 from vecsim_app import config
 from vecsim_app.embeddings import Embeddings
-from vecsim_app.models import Paper
-
 from vecsim_app.schema import (
     SimilarityRequest,
     UserTextSimilarityRequest
@@ -19,21 +17,19 @@ redis_client = redis.from_url(config.REDIS_URL)
 embeddings = Embeddings()
 search_index = SearchIndex()
 
-async def process_paper(p, i: int) -> t.Dict[str, t.Any]:
-    paper = await Paper.get(p.paper_pk)
-    paper = paper.dict()
-    score = 1 - float(p.vector_score)
-    paper['similarity_score'] = score
+
+def process_paper(paper) -> t.Dict[str, t.Any]:
+    paper = paper.__dict__
+    if 'similarity_score' in paper:
+        paper['similarity_score'] = 1 - float(paper['similarity_score'])
     return paper
 
-async def papers_from_results(total, results) -> t.Dict[str, t.Any]:
+
+def papers_from_results(total: int, results) -> t.Dict[str, t.Any]:
     # extract papers from VSS results
     return {
         'total': total,
-        'papers': [
-            await process_paper(p, i)
-            for i, p in enumerate(results.docs)
-        ]
+        'papers': [process_paper(paper) for paper in results.docs]
     }
 
 
@@ -44,89 +40,66 @@ async def get_papers(
     years: str = "",
     categories: str = ""
 ):
-    papers = []
-    expressions = []
+    # Create query
     years = [year for year in years.split(",") if year]
     categories = [cat for cat in categories.split(",") if cat]
-    if years and categories:
-        expressions.append(
-            (Paper.year << years) & \
-            (Paper.categories << categories)
-        )
-    elif years and not categories:
-        expressions.append(Paper.year << years)
-    elif categories and not years:
-        expressions.append(Paper.categories << categories)
-    # Run query
+    query = search_index.query(
+        categories=categories,
+        years=years,
+        offset=skip,
+        limit=limit
+    )
+    # obtain results of the queries
+    results = await redis_client.ft(config.DEFAULT_PROVIDER).search(query)
 
-    papers = await Paper.find(*expressions)\
-        .copy(offset=skip, limit=limit)\
-        .execute(exhaust_results=False)
-
-    # Get total count
-    total = (
-        await redis_client.ft(config.INDEX_NAME).search(
-            search_index.count_query(years=years, categories=categories)
-        )
-    ).total
-    return {
-        'total': total,
-        'papers': papers
-    }
+    return papers_from_results(results.total, results)
 
 
 @r.post("/vectorsearch/text", response_model=t.Dict)
 async def find_papers_by_text(similarity_request: SimilarityRequest):
     # Create query
-    query = search_index.vector_query(
-        similarity_request.categories,
-        similarity_request.years,
-        similarity_request.search_type,
-        similarity_request.number_of_results
-    )
-    count_query = search_index.count_query(
-        years=similarity_request.years,
-        categories=similarity_request.categories
-    )
+    index_name = similarity_request.provider
+    query = search_index.vector_query(similarity_request)
+    count_query = search_index.count_query(similarity_request)
 
-    # find the vector of the Paper listed in the request
-    paper_vector_key = "paper_vector:" + str(similarity_request.paper_id)
+    # Fetch the vector of the Paper of interest in the request
+    paper_vector_key = search_index.key(index_name, similarity_request.paper_id)
     vector = await redis_client.hget(paper_vector_key, "vector")
 
-    # obtain results of the queries
-    total, results = await asyncio.gather(
-        redis_client.ft(config.INDEX_NAME).search(count_query),
-        redis_client.ft(config.INDEX_NAME).search(query, query_params={"vec_param": vector})
+    # Check available paper count and perform vector search
+    count, results = await asyncio.gather(
+        redis_client.ft(index_name).search(count_query),
+        redis_client.ft(index_name).search(
+            query,
+            query_params={"vector": vector}
+        )
     )
 
     # Get Paper records of those results
-    return await papers_from_results(total.total, results)
+    return papers_from_results(count.total, results)
 
 
 @r.post("/vectorsearch/text/user", response_model=t.Dict)
 async def find_papers_by_user_text(similarity_request: UserTextSimilarityRequest):
     # Create query
-    query = search_index.vector_query(
-        similarity_request.categories,
-        similarity_request.years,
-        similarity_request.search_type,
-        similarity_request.number_of_results
-    )
-    count_query = search_index.count_query(
-        years=similarity_request.years,
-        categories=similarity_request.categories
+    index_name = similarity_request.provider
+    query = search_index.vector_query(similarity_request)
+    count_query = search_index.count_query(similarity_request)
+
+    # Check available paper count and create vector
+    vector, count = await asyncio.gather(
+        embeddings.get(
+            provider=similarity_request.provider,
+            text=similarity_request.user_text
+        ),
+        redis_client.ft(index_name).search(count_query)
     )
 
-    # obtain results of the queries
-    total, results = await asyncio.gather(
-        redis_client.ft(config.INDEX_NAME).search(count_query),
-        redis_client.ft(config.INDEX_NAME).search(
-            query,
-            query_params={
-                "vec_param": embeddings.make(similarity_request.user_text).tobytes()
-            }
-        )
+    # Perform Vector Search
+    results = await redis_client.ft(index_name).search(
+        query,
+        query_params={"vector": vector.tobytes()}
     )
 
     # Get Paper records of those results
-    return await papers_from_results(total.total, results)
+    return papers_from_results(count.total, results)

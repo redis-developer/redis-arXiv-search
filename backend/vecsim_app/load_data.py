@@ -1,83 +1,111 @@
 #!/usr/bin/env python3
-import typing as t
 import asyncio
 import numpy as np
 import pickle
+import typing as t
 import redis.asyncio as redis
 
-from redis.commands.search.field import TagField
+from redis.commands.search.field import (
+    TagField,
+    TextField,
+    VectorField
+)
 from vecsim_app import config
-from vecsim_app.models import Paper
 from vecsim_app.search_index import SearchIndex
+from vecsim_app.providers import Provider
 
 
-def read_paper_df() -> t.List:
-    with open(config.DATA_LOCATION + "/arxiv_embeddings_10000.pkl", "rb") as f:
+def read_paper_df(provider: str) -> t.List:
+    with open(config.DATA_LOCATION + f"/arxiv_{provider}_embeddings_1000.pkl", "rb") as f:
         df = pickle.load(f)
     return df
 
-async def gather_with_concurrency(n, redis_conn, *papers):
+async def gather_with_concurrency(n: int, prefix: str, redis_conn: redis.Redis, papers: list):
+    """
+    Write documents to Redis.
+
+    Args:
+        n (int): Level of write concurrency enabled by asyncio semaphores.
+        prefix (str): RediSearch document prefix to use.
+        redis_conn (redis.Redis): Redis client.
+        papers (list): List of documents to store.
+    """
     semaphore = asyncio.Semaphore(n)
     async def load_paper(paper):
         async with semaphore:
-            vector = paper.pop('vector')
+            paper['vector'] = np.array(paper['vector'], dtype=np.float32).tobytes()
             paper['paper_id'] = paper.pop('id')
-            # TODO - we need to be able to use other separators
             paper['categories'] = paper['categories'].replace(",", "|")
-            p = Paper(**paper)
-            # save model TODO -- combine these two objects eventually
-            await p.save()
-            # save vector data
-            key = "paper_vector:" + str(p.paper_id)
-            await redis_conn.hset(
-                key,
-                mapping={
-                    "paper_pk": p.pk,
-                    "paper_id": p.paper_id,
-                    "categories": p.categories,
-                    "year": p.year,
-                    "vector": np.array(vector, dtype=np.float32).tobytes(),
-            })
+            key = SearchIndex.key(prefix, str(paper['paper_id']))
+            await redis_conn.hset(key, mapping=paper)
     # gather with concurrency
     await asyncio.gather(*[load_paper(p) for p in papers])
 
-async def load_all_data():
-    # TODO use redis-om connection
+def create_schema(num_docs: int, vector_dimensions: int):
+    fields = [
+        TagField("categories", separator = "|"),
+        TagField("year", separator = "|"),
+        TextField("title"),
+        TextField("abstract")
+    ]
+    if config.INDEX_TYPE == "FLAT":
+        fields.append(VectorField(
+            "vector",
+            "FLAT", {
+                "TYPE": "FLOAT32",
+                "DIM": vector_dimensions,
+                "DISTANCE_METRIC": config.DISTANCE_METRIC,
+                "INITIAL_CAP": num_docs,
+                "BLOCK_SIZE": num_docs
+            }
+        ))
+    elif config.INDEX_TYPE == "HNSW":
+        fields.append(VectorField(
+            "vector",
+            "HNSW", {
+                "TYPE": "FLOAT32",
+                "DIM": vector_dimensions,
+                "DISTANCE_METRIC": config.DISTANCE_METRIC,
+                "INITIAL_CAP": num_docs,
+            }
+        ))
+    return fields
+
+async def load_data():
     redis_conn = redis.from_url(config.REDIS_URL)
     search_index = SearchIndex()
-    if await redis_conn.dbsize() > 300:
-        print("Papers already loaded")
-    else:
-        print("Loading papers into Vecsim App")
-        papers = read_paper_df()
-        papers = papers.to_dict('records')
-        await gather_with_concurrency(100, redis_conn, *papers)
-        print("Papers loaded!")
+    # Iterate through embedding providers
+    for provider in Provider:
+        provider = provider.value
+        try:
+            await redis_conn.ft(provider).info()
+            print(f"{provider} vector index already created!")
+        except:
+            print(f"Loading arXiv {provider} vectors.")
+            papers = read_paper_df(provider)
+            papers = papers.to_dict('records')
+            num_docs = len(papers)
+            vector_dimensions = len(papers[0]['vector'])
+            # Write to Redis
+            await gather_with_concurrency(
+                n=int(config.WRITE_CONCURRENCY),
+                prefix=provider,
+                redis_conn=redis_conn,
+                papers=papers
+            )
+            print(f"{provider} vectors loaded")
 
-        print("Creating vector search index")
-        categories_field = TagField("categories", separator = "|")
-        year_field = TagField("year", separator = "|")
-        # create a search index
-        if config.INDEX_TYPE == "HNSW":
-            await search_index.create_hnsw(
-                categories_field,
-                year_field,
+            print("Creating vector search index")
+            fields = create_schema(num_docs, vector_dimensions)
+            # Create a search index
+            await search_index.create(
+                fields=fields,
+                index_name=provider,
                 redis_conn=redis_conn,
-                number_of_vectors=len(papers),
-                prefix="paper_vector:",
-                distance_metric="IP",
+                prefix=provider
             )
-        else:
-            await search_index.create_flat(
-                categories_field,
-                year_field,
-                redis_conn=redis_conn,
-                number_of_vectors=len(papers),
-                prefix="paper_vector:",
-                distance_metric="IP",
-            )
-        print("Search index created")
+            print("Search index created")
 
 
 if __name__ == "__main__":
-    asyncio.run(load_all_data())
+    asyncio.run(load_data())

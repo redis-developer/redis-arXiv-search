@@ -42,12 +42,13 @@ export const Header = (props: Props) => {
             navbarScroll
           >
             <NavDropdown title="About" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="https://github.com/Spartee/redis-vector-search">Code</NavDropdown.Item>
-              <NavDropdown.Item href="https://mlops.community/vector-similarity-search-from-basics-to-production/">Blog</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/RedisVentures/redis-arXiv-search">Code</NavDropdown.Item>
+              <NavDropdown.Item href="https://datasciencedojo.com/blog/ai-powered-document-search/">Blog</NavDropdown.Item>
+              <NavDropdown.Item href="https://github.com/RedisVentures/redis-ai-resources">Redis AI Resources List</NavDropdown.Item>
               <NavDropdown.Item href="https://forms.gle/ANpHTe2Da5CVGHty7" target="_blank">Talk With Us</NavDropdown.Item>
               <NavDropdown.Divider />
               <NavDropdown.Item href="https://redis.io/docs/stack/search/reference/vectors/">
-                Docs: Redis Vector Search
+                Vector Search Docs
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>

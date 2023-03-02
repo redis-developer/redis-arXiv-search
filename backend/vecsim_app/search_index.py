@@ -1,11 +1,16 @@
 import re
 
-from config import INDEX_NAME
+from schema import SimilarityRequest
 from redis.asyncio import Redis
 from redis.commands.search.query import Query
-from redis.commands.search.indexDefinition import IndexDefinition, IndexType
-from redis.commands.search.field import VectorField
-from typing import Optional, Pattern
+from redis.commands.search.indexDefinition import (
+    IndexDefinition,
+    IndexType
+)
+from typing import (
+    Optional,
+    Pattern
+)
 
 
 class TokenEscaper:
@@ -37,81 +42,19 @@ class SearchIndex:
     """
     escaper = TokenEscaper()
 
-    async def create_flat(
+    @staticmethod
+    def key(provider: str, paper_id: str) -> str:
+        return f"{provider}:arXiv:{paper_id}"
+
+    async def create(
         self,
-        *fields,
-        redis_conn: Redis,
-        number_of_vectors: int,
-        prefix: str,
-        distance_metric: str='L2'
-    ):
-        """
-        Create a FLAT aka brute force style index.
-
-        Args:
-            redis_conn (Redis): Redis connection object.
-            number_of_vectors (int): Count of the number of initial vectors.
-            prefix (str): key prefix to use for RediSearch index creation.
-            distance_metric (str, optional): Distance metric to use for Vector Search. Defaults to 'L2'.
-        """
-        vector_field = VectorField(
-            "vector",
-            "FLAT", {
-                "TYPE": "FLOAT32",
-                "DIM": 768,
-                "DISTANCE_METRIC": distance_metric,
-                "INITIAL_CAP": number_of_vectors,
-                "BLOCK_SIZE": number_of_vectors
-            }
-        )
-        await self._create(
-            *fields,
-            vector_field,
-            redis_conn=redis_conn,
-            prefix=prefix
-        )
-
-    async def create_hnsw(
-        self,
-        *fields,
-        redis_conn: Redis,
-        number_of_vectors: int,
-        prefix: str,
-        distance_metric: str='COSINE'
-    ):
-        """
-        Create an approximate NN index via HNSW.
-
-        Args:
-            redis_conn (Redis): Redis connection object.
-            number_of_vectors (int): Count of the number of initial vectors.
-            prefix (str): key prefix to use for RediSearch index creation.
-            distance_metric (str, optional): Distance metric to use for Vector Search. Defaults to 'COSINE'.
-        """
-        vector_field = VectorField(
-            "vector",
-            "HNSW", {
-                "TYPE": "FLOAT32",
-                "DIM": 768,
-                "DISTANCE_METRIC": distance_metric,
-                "INITIAL_CAP": number_of_vectors,
-            }
-        )
-        await self._create(
-            *fields,
-            vector_field,
-            redis_conn=redis_conn,
-            prefix=prefix
-        )
-
-    async def _create(
-        self,
-        *fields,
+        fields: list,
+        index_name: str,
         redis_conn: Redis,
         prefix: str
     ):
         # Create Index
-        await redis_conn.ft(INDEX_NAME).create_index(
+        await redis_conn.ft(index_name).create_index(
             fields = fields,
             definition= IndexDefinition(prefix=[prefix], index_type=IndexType.HASH)
         )
@@ -144,22 +87,11 @@ class SearchIndex:
             tag = "*"
         return tag
 
-    def vector_query(
-        self,
-        categories: list,
-        years: list,
-        search_type: str="KNN",
-        number_of_results: int=20
-    ) -> Query:
+    def query(self, categories, years, offset: int, limit: int) -> Query:
         """
-        Create a RediSearch query to perform hybrid vector and tag based searches.
-
+        Create a RediSearch query to perform standard searches.
 
         Args:
-            categories (list): List of categories.
-            years (list): List of years.
-            search_type (str, optional): Style of search. Defaults to "KNN".
-            number_of_results (int, optional): How many results to fetch. Defaults to 20.
 
         Returns:
             Query: RediSearch Query
@@ -167,31 +99,48 @@ class SearchIndex:
         """
         # Parse tags to create query
         tag_query = self.process_tags(categories, years)
-        base_query = f'{tag_query}=>[{search_type} {number_of_results} @vector $vec_param AS vector_score]'
-        return Query(base_query)\
-            .sort_by("vector_score")\
-            .paging(0, number_of_results)\
-            .return_fields("paper_id", "paper_pk", "vector_score")\
+        return (
+            Query(tag_query)
+            .paging(offset, limit)
             .dialect(2)
+        )
 
-    def count_query(
-        self,
-        years: list,
-        categories: list
-    ) -> Query:
+    def vector_query(self, request: SimilarityRequest) -> Query:
+        """
+        Create a RediSearch query to perform hybrid vector and tag based searches.
+
+        Args:
+            request (SimilarityRequest): Request object.
+
+        Returns:
+            Query: RediSearch Query
+
+        """
+        # Parse tags to create query
+        tag_query = self.process_tags(request.categories, request.years)
+        base_query = f'{tag_query}=>[{request.search_type} {request.number_of_results} @vector $vector AS similarity_score]'
+        return (
+            Query(base_query)
+            .sort_by("similarity_score")
+            .paging(0, request.number_of_results)
+            .dialect(2)
+        )
+
+    def count_query(self, request: SimilarityRequest) -> Query:
         """
         Create a RediSearch query to count available documents.
 
         Args:
-            categories (list): List of categories.
-            years (list): List of years.
+            request (SimilarityRequest): Request object.
 
         Returns:
             Query: RediSearch Query
         """
         # Parse tags to create query
-        tag_query = self.process_tags(categories, years)
-        return Query(f'{tag_query}')\
-            .no_content()\
+        tag_query = self.process_tags(request.categories, request.years)
+        return (
+            Query(f'{tag_query}')
+            .no_content()
             .dialect(2)
+        )
 

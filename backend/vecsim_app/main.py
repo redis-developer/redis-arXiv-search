@@ -1,16 +1,10 @@
 import uvicorn
-from pathlib import Path
-from aredis_om import (
-    get_redis_connection,
-    Migrator
-)
 
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-
 from vecsim_app import config
-from vecsim_app.models import Paper
 from vecsim_app.api import routes
 from vecsim_app.spa import SinglePageApplication
 
@@ -35,15 +29,6 @@ app.include_router(
     prefix=config.API_V1_STR + "/paper",
     tags=["papers"]
 )
-
-
-@app.on_event("startup")
-async def startup():
-    # You can set the Redis OM URL using the REDIS_OM_URL environment
-    # variable, or by manually creating the connection using your model's
-    # Meta object.
-    Paper.Meta.database = get_redis_connection(url=config.REDIS_URL, decode_responses=True)
-    await Migrator().run()
 
 # static image files
 app.mount("/data", StaticFiles(directory="data"), name="data")

@@ -1,5 +1,6 @@
 # ignore .git folders
 .git
+.env
 
 # ignore specific.json files
 data/arxiv-metadata-oai-snapshot.json

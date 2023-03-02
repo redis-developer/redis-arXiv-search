@@ -3,6 +3,14 @@ httpx
 requests
 uvicorn
 aiofiles
-redis-om
 pandas
+ipython
+numpy
+jinja2
+passlib
+bcrypt
+python-multipart
+pyjwt
 sentence-transformers
+redis
+openai
