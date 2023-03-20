@@ -4,7 +4,8 @@ import string
 from vecsim_app.providers import (
     Provider,
     HuggingFaceProvider,
-    OpenAIProvider
+    OpenAIProvider,
+    CohereProvider
 )
 
 
@@ -41,6 +42,7 @@ class Embeddings:
         # Initialize embedding providers if relevant
         self.huggingface_provider = HuggingFaceProvider()
         self.openai_provider = OpenAIProvider()
+        self.cohere_provider = CohereProvider()
 
     async def get(self, provider: str, text: str):
         """
@@ -60,6 +62,11 @@ class Embeddings:
         elif provider == Provider.openai.value:
             # Use OpenAI Embeddings API
             return await self.openai_provider.embed_query(
+                text,
+                preprocess=preprocess_text
+            )
+        elif provider == Provider.cohere.value:
+            return await self.cohere_provider.embed_query(
                 text,
                 preprocess=preprocess_text
             )

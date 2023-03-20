@@ -14,3 +14,4 @@ pyjwt
 sentence-transformers
 redis
 openai
+cohere
