@@ -93,12 +93,7 @@ export const Home = (props: Props) => {
         >
           <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
           <FormControlLabel value="openai" control={<Radio />} label="OpenAI" />
-          <FormControlLabel
-            value="cohere"
-            disabled
-            control={<Radio />}
-            label="Cohere"
-          />
+          <FormControlLabel value="cohere" control={<Radio />} label="Cohere"/>
         </RadioGroup>
       </FormControl>
     );
