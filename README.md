@@ -42,6 +42,16 @@ This app was built as a Single Page Application (SPA) with the following compone
 Some inspiration was taken from this [Cookiecutter project](https://github.com/Buuntu/fastapi-react)
 and turned into a SPA application instead of a separate front-end server approach.
 
+### Embedding Providers
+As a way to expose the different capabilities of embedding providers, this applications supports `HuggingFace`, `OpenAI`, and `Cohere` embeddings out of the box. Interested in a different embedding provider? Feel free to open a PR and make a suggested addition.
+
+| Provider        | Embedding Model           | Required?  |
+| ------------- |-------------| ----- |
+| HuggingFace      | `sentence-transformers/all-mpnet-base-v2` | Yes |
+| OpenAI      | `text-embedding-ada-002`      |   Yes |
+| Cohere | `small`      |    Yes |
+
+
 ### Dataset
 
 The arXiv dataset was sourced from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv).
@@ -57,6 +67,7 @@ $ cp .env.template .env
 ```
 
 2. Add your `OPENAI_API_KEY` to the `.env` file. **Need one?** Get an API key at https://platform.openai.com.
+3. Add you `COHERE_API_KEY` to the `.env` file. **Need one?** Get an API key at https://cohere.ai.
 
 Both **Redis Stack** and the application backend run with **Docker Compose** using pre-built containers. **Choose one of the methods below based on your Redis setup.**
 
