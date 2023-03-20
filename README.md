@@ -80,7 +80,7 @@ $ docker compose -f docker-local-redis.yml up
 ### Customizing (optional)
 You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframes will end up stored in the `data/` directory and used when creating your own container.
 
-Use the `build.sh` script to create your own docker image, and then make sure to update the `.yml` file with the right image name.
+You can the `build.sh` script to create your own docker image, and then make sure to update the `.yml` file with the right image name if necessary.
 
 ### Running with Kubernetes
 If you want to use K8s instead of Docker Compose, we have some [resources to help you get started](k8s/README.md).
