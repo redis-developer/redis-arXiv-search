@@ -45,6 +45,7 @@ def process_paper(paper) -> t.Dict[str, t.Any]:
     return paper
 
 
+# TODO this is only necessary now while I have to manually build the iterable filters from these two inputs
 def build_filter_expression(years: list, categories: list) -> FilterExpression:
     """
     Construct a filter expression based on the provided years and categories.
