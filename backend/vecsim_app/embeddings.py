@@ -5,6 +5,7 @@ from vecsim_app.providers import (
     Provider,
     CohereProvider
 )
+from vecsim_app import config
 from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
 
 
@@ -39,8 +40,13 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        self.hf_vectorizer = HFTextVectorizer()
-        self.oai_vectorizer = OpenAITextVectorizer()
+        self.hf_vectorizer = HFTextVectorizer(
+            model=config.SENTENCE_TRANSFORMER_MODEL
+        )
+        self.oai_vectorizer = OpenAITextVectorizer(
+            model=config.OPENAI_EMBEDDING_MODEL,
+            api_config={"api_key": config.OPENAI_API_KEY}
+        )
         # TODO add cohere to redisvl
         self.co_vectorizer = CohereProvider()
 
