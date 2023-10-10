@@ -147,7 +147,7 @@ async def get_papers(
     years: str = "",
     categories: str = ""
 ):
-   """Fetch and return papers with optional filtering by years and categories.
+    """Fetch and return papers with optional filtering by years and categories.
 
     Args:
         limit (int, optional): Maximum number of papers to return. Defaults to 20.
