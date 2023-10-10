@@ -65,7 +65,7 @@ export const getSemanticallySimilarPapers = async (paper_id: string,
     categories: categories
   }
 
-  const url = MASTER_URL + "vectorsearch/text";
+  const url = MASTER_URL + "vectorsearch/paper";
   return fetchFromBackend(url, 'POST', body);
 };
 
@@ -85,6 +85,6 @@ export const getSemanticallySimilarPapersbyText = async (text: string,
     categories: categories
   }
 
-  const url = MASTER_URL + "vectorsearch/text/user";
+  const url = MASTER_URL + "vectorsearch/text";
   return fetchFromBackend(url, 'POST', body);
 };
