@@ -20,7 +20,7 @@ class HuggingFaceProvider:
                 "Please install it with `pip install sentence_transformers`."
             )
 
-    async def embed_documents(self, texts: List[str], preprocess: callable) -> np.array:
+    def embed_documents(self, texts: List[str], preprocess: callable) -> np.array:
         """
         Compute doc embeddings using a HuggingFace transformer model.
 
@@ -32,7 +32,7 @@ class HuggingFaceProvider:
         texts = list(map(lambda x: preprocess(x), texts))
         return self.client.encode(texts, normalize_embeddings=True)
 
-    async def embed_query(self, text: str, preprocess: callable) -> np.array:
+    def embed_query(self, text: str, preprocess: callable) -> np.array:
         """
         Compute query embeddings using a HuggingFace transformer model.
 
@@ -41,5 +41,7 @@ class HuggingFaceProvider:
         Returns:
             Embeddings for the text.
         """
+        print(f"-- preprocessing text {text}", flush=True)
         text = preprocess(text)
+        print(f"-- preprocessed text -- {text}", flush=True)
         return self.client.encode(text, normalize_embeddings=True)

@@ -62,7 +62,8 @@ class Embeddings:
 
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
-            return await self.hf_vectorizer.embed_query(
+            print("--- vectorizing query", flush=True)
+            return self.hf_vectorizer.embed_query(
                 text,
                 preprocess=preprocess_text
             )
