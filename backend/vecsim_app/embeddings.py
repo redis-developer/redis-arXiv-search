@@ -40,17 +40,17 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        logging.info("Loading HF")
+        print("Loading HF", flush=True)
         self.hf_vectorizer = HFTextVectorizer(
             model=config.SENTENCE_TRANSFORMER_MODEL
         )
-        logging.info("Loading OAI")
+        print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,
             api_config={"api_key": config.OPENAI_API_KEY}
         )
         # TODO add cohere to redisvl
-        logging.info("Loading Co")
+        print("Loading Co", flush=True)
         self.co_vectorizer = CohereProvider()
 
     async def get(self, provider: str, text: str):

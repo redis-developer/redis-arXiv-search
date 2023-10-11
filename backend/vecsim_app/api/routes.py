@@ -23,10 +23,9 @@ import logging
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
-logging.info("Loading embeddings providers")
+print("Loading embeddings providers", flush=True)
 embeddings = Embeddings()
-logging.info("Loading embeddings providers")
-
+print("Done loading embeddings providers", flush=True)
 paper_vector_field_name = "vector"
 
 
