@@ -7,7 +7,7 @@ from vecsim_app.providers import (
 )
 from vecsim_app import config
 from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
-
+import logging
 
 def preprocess_text(text: str) -> str:
     if not text:
@@ -40,14 +40,17 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
+        logging.info("Loading HF")
         self.hf_vectorizer = HFTextVectorizer(
             model=config.SENTENCE_TRANSFORMER_MODEL
         )
+        logging.info("Loading OAI")
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,
             api_config={"api_key": config.OPENAI_API_KEY}
         )
         # TODO add cohere to redisvl
+        logging.info("Loading Co")
         self.co_vectorizer = CohereProvider()
 
     async def get(self, provider: str, text: str):

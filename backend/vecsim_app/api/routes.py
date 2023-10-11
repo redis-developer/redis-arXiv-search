@@ -18,13 +18,15 @@ from vecsim_app.schema import (
     SimilarityRequest,
     UserTextSimilarityRequest
 )
-from vecsim_app.search_index import SearchIndex
-
+#from vecsim_app.search_index import SearchIndex
+import logging
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
+logging.info("Loading embeddings providers")
 embeddings = Embeddings()
-search_index = SearchIndex()
+logging.info("Loading embeddings providers")
+
 paper_vector_field_name = "vector"
 
 
@@ -71,19 +73,15 @@ def build_filter_expression(years: list, categories: list) -> FilterExpression:
     if not years and not categories:
         return None
 
-    def or_expression(accumulator, value):
-        return accumulator | (Tag(value[0]) == value[1])
-
     def or_expression(accumulator, value, field):
         return accumulator | (Tag(field) == value)
 
+    # Build filters
     year_filter = None
     category_filter = None
-
     if years:
         year_filter = Tag("year") == years[0]
         year_filter = reduce(lambda acc, year: or_expression(acc, year, "year"), years[1:], year_filter)
-
     if categories:
         category_filter = Tag("categories") == categories[0]
         category_filter = reduce(lambda acc, cat: or_expression(acc, cat, "categories"), categories[1:], category_filter)
@@ -158,17 +156,17 @@ async def get_papers(
     Returns:
         dict: Dictionary containing total count and list of papers.
     """
-    query = Query("*")
     # Build query
+    query = Query("*")
     year_values = [year for year in years.split(",") if year]
     category_values = [cat for cat in categories.split(",") if cat]
     filter_expression = build_filter_expression(year_values, category_values)
+    # TODO support the * operator on filter queries
     if filter_expression:
         filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
         query = filter_query.query
     # Execute search
     # TODO port the `total` attribute to redisvl as part of (optional) response object?
-    # TODO support the * operator on filter queries
     results = await redis_client.ft(config.DEFAULT_PROVIDER).search(
         query.paging(skip, limit)
     )
@@ -193,6 +191,7 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
         url=config.REDIS_URL
     )
     # TODO - need to figure out how to do this better with RedisVL
+    # Fetch paper key and the vector from the HASH, cast to numpy array
     paper_key = index._get_key({"paper_id": "arXiv:" + similarity_request.paper_id}, "paper_id")
     paper_vector = np.frombuffer(
         await index._redis_conn.hget(paper_key, paper_vector_field_name),
