@@ -153,18 +153,25 @@ async def get_papers(
     Returns:
         dict: Dictionary containing total count and list of papers.
     """
+    # Connect to index
+    index_name = config.DEFAULT_PROVIDER
+    index = await AsyncSearchIndex.from_existing(
+        name=index_name,
+        url=config.REDIS_URL
+    )
     # Build query
     query = Query("*") # base case
-    year_values = [year for year in years.split(",") if year]
-    category_values = [cat for cat in categories.split(",") if cat]
-    filter_expression = build_filter_expression(year_values, category_values)
+    filter_expression = build_filter_expression(
+        [year for year in years.split(",") if year],
+        [cat for cat in categories.split(",") if cat]
+    )
     # TODO support the * operator on filter queries (i.e. empty filter expressions)
     if filter_expression:
         filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
         query = filter_query.query
     # Execute search
     # TODO support the paging operator
-    result_papers = await redis_client.ft(config.DEFAULT_PROVIDER).search(
+    result_papers = await index.search(
         query.paging(skip, limit)
     )
     # TODO port the `total` attribute to redisvl as part of (optional) response object?
@@ -190,7 +197,7 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
     )
     # TODO - need to figure out how to do this better with RedisVL
     # Fetch paper key and the vector from the HASH, cast to numpy array
-    paper_key = index._get_key({"paper_id": "arXiv:" + similarity_request.paper_id}, "paper_id")
+    paper_key = index._get_key({"paper_id": similarity_request.paper_id}, "paper_id")
     paper_vector = np.frombuffer(
         await index._redis_conn.hget(paper_key, paper_vector_field_name),
         dtype=np.float32
@@ -211,10 +218,13 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
 
     # Async execute count search and vector search
     # TODO add a CountQuery class to redisvl
+    count_query = (
+        Query(str(filter_expression) or "*")
+        .no_content()
+        .dialect(2)
+    )
     count, result_papers = await asyncio.gather(
-        redis_client.ft(index_name).search(
-            Query(filter_expression or "*").no_content().dialect(2)
-        ),
+        index.search(count_query),
         index.query(paper_similarity_query)
     )
 
@@ -248,14 +258,17 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
 
     # Check available paper count and create vector from user text
     # TODO add a CountQuery to redisvl
+    count_query = (
+        Query(str(filter_expression) or "*")
+        .no_content()
+        .dialect(2)
+    )
     query_vector, count = await asyncio.gather(
         embeddings.get(
             provider=index_name,
             text=similarity_request.user_text
         ),
-        redis_client.ft(index_name).search(
-            Query(filter_expression or "*").no_content().dialect(2)
-        )
+        index.search(count_query)
     )
 
     # Assemble vector query

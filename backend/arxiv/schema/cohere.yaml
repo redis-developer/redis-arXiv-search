@@ -6,9 +6,9 @@ fields:
     # define tag fields
     tag:
         - name: categories
-          separator: |
+          separator: '|'
         - name: year
-          separator: |
+          separator: '|'
     # define vector fields
     vector:
         - name: vector
