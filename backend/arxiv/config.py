@@ -1,9 +1,10 @@
 import os
 
-PROJECT_NAME = "vecsim_app"
+PROJECT_NAME = "arxiv"
 API_DOCS = "/api/docs"
 OPENAPI_DOCS = "/api/openapi.json"
 DEFAULT_PROVIDER = "huggingface"
+DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 DISTANCE_METRIC = os.environ.get("DISTANCE_METRIC", "COSINE")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
 INDEX_TYPE = os.environ.get("VECSIM_INDEX_TYPE", "HNSW")

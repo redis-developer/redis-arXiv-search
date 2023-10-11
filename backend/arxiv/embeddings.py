@@ -1,13 +1,14 @@
 import re
 import string
 
-from vecsim_app.providers import (
+from arxiv.providers import (
     Provider,
+    HuggingFaceProvider,
     CohereProvider
 )
-from vecsim_app import config
-from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
-import logging
+from arxiv import config
+from redisvl.vectorize.text import OpenAITextVectorizer
+
 
 def preprocess_text(text: str) -> str:
     if not text:
@@ -41,15 +42,12 @@ class Embeddings:
     def __init__(self):
         # Initialize embedding providers if relevant
         print("Loading HF", flush=True)
-        self.hf_vectorizer = HFTextVectorizer(
-            model=config.SENTENCE_TRANSFORMER_MODEL
-        )
+        self.hf_vectorizer = HuggingFaceProvider()
         print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,
             api_config={"api_key": config.OPENAI_API_KEY}
         )
-        # TODO add cohere to redisvl
         print("Loading Co", flush=True)
         self.co_vectorizer = CohereProvider()
 
@@ -64,7 +62,7 @@ class Embeddings:
 
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
-            return await self.hf_vectorizer.aembed(
+            return await self.hf_vectorizer.embed_query(
                 text,
                 preprocess=preprocess_text
             )

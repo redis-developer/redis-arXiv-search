@@ -12,14 +12,12 @@ from redisvl.query.filter import Tag
 
 from fastapi import APIRouter
 from functools import reduce
-from vecsim_app import config
-from vecsim_app.embeddings import Embeddings
-from vecsim_app.schema import (
+from arxiv import config
+from arxiv.embeddings import Embeddings
+from arxiv.schema import (
     SimilarityRequest,
     UserTextSimilarityRequest
 )
-#from vecsim_app.search_index import SearchIndex
-import logging
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
@@ -46,7 +44,6 @@ def process_paper(paper) -> t.Dict[str, t.Any]:
     return paper
 
 
-# TODO this is only necessary now while I have to manually build the iterable filters from these two inputs
 def build_filter_expression(years: list, categories: list) -> FilterExpression:
     """
     Construct a filter expression based on the provided years and categories.
@@ -69,6 +66,7 @@ def build_filter_expression(years: list, categories: list) -> FilterExpression:
         FilterExpression: A FilterExpression object representing the combined filter for both years and
             categories. If both input lists are empty, the function returns None.
     """
+    # TODO add support for easy multiple Tag filter values
     if not years and not categories:
         return None
 
@@ -156,20 +154,21 @@ async def get_papers(
         dict: Dictionary containing total count and list of papers.
     """
     # Build query
-    query = Query("*")
+    query = Query("*") # base case
     year_values = [year for year in years.split(",") if year]
     category_values = [cat for cat in categories.split(",") if cat]
     filter_expression = build_filter_expression(year_values, category_values)
-    # TODO support the * operator on filter queries
+    # TODO support the * operator on filter queries (i.e. empty filter expressions)
     if filter_expression:
         filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
         query = filter_query.query
     # Execute search
-    # TODO port the `total` attribute to redisvl as part of (optional) response object?
-    results = await redis_client.ft(config.DEFAULT_PROVIDER).search(
+    # TODO support the paging operator
+    result_papers = await redis_client.ft(config.DEFAULT_PROVIDER).search(
         query.paging(skip, limit)
     )
-    return prepare_response(results.total, results)
+    # TODO port the `total` attribute to redisvl as part of (optional) response object?
+    return prepare_response(result_papers.total, result_papers)
 
 
 @r.post("/vectorsearch/paper", response_model=t.Dict)
@@ -204,7 +203,7 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
     )
 
     # Assemble vector query
-    vector_query = create_vector_query(
+    paper_similarity_query = create_vector_query(
         vector=paper_vector,
         num_results=similarity_request.number_of_results,
         filter_expression=filter_expression
@@ -216,9 +215,7 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
         redis_client.ft(index_name).search(
             Query(filter_expression or "*").no_content().dialect(2)
         ),
-        redis_client.ft(index_name).search(
-            vector_query.query, query_params=vector_query.params
-        )
+        index.query(paper_similarity_query)
     )
 
     # Get Paper records of those results
@@ -250,7 +247,7 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     )
 
     # Check available paper count and create vector from user text
-    # TODO add the count query class to redisvl
+    # TODO add a CountQuery to redisvl
     query_vector, count = await asyncio.gather(
         embeddings.get(
             provider=index_name,
@@ -261,17 +258,15 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         )
     )
 
-    # construct vector query
-    vector_query = create_vector_query(
+    # Assemble vector query
+    paper_similarity_query = create_vector_query(
         vector=query_vector,
         num_results=similarity_request.number_of_results,
         filter_expression=filter_expression
     )
 
     # Perform Vector Search
-    result_papers = await redis_client.ft(index_name).search(
-        vector_query.query, query_params=vector_query.params
-    )
+    result_papers = await index.query(paper_similarity_query)
 
     # Get Paper records of those results
     return prepare_response(count.total, result_papers)

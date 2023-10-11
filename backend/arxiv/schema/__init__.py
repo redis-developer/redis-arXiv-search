@@ -1,4 +1,4 @@
-from vecsim_app.schema.request import (
+from arxiv.schema.request import (
     SimilarityRequest,
     UserTextSimilarityRequest
 )

@@ -1,6 +1,7 @@
 from enum import Enum
 
-from vecsim_app.providers.cohere import CohereProvider
+from arxiv.providers.cohere import CohereProvider
+from arxiv.providers.huggingface import HuggingFaceProvider
 
 
 class Provider(Enum):

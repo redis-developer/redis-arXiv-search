@@ -10,9 +10,9 @@ from redis.commands.search.field import (
     TextField,
     VectorField
 )
-from vecsim_app import config
-from vecsim_app.search_index import SearchIndex
-from vecsim_app.providers import Provider
+from arxiv import config
+from arxiv.search_index import SearchIndex
+from arxiv.providers import Provider
 
 
 def read_paper_df(provider: str) -> t.List:
