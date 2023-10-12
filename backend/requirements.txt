@@ -3,6 +3,8 @@ uvicorn
 pandas
 ipython
 numpy
-redis
+redis>=5.0.0
 cohere
-redisvl[all]==0.0.4
+redisvl==0.0.4
+sentence-transformers==2.2.2
+openai
