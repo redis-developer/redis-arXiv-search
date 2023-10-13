@@ -1,7 +1,7 @@
 import re
 import string
 
-from arxiv.providers import (
+from arxiv.embeddings.providers import (
     Provider,
     HuggingFaceProvider,
     CohereProvider

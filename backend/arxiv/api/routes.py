@@ -23,7 +23,6 @@ paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
 print("Loading embeddings providers", flush=True)
 embeddings = Embeddings()
-print("Done loading embeddings providers", flush=True)
 paper_vector_field_name = "vector"
 
 
@@ -218,7 +217,6 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
 
     # Async execute count search and vector search
     # TODO add a CountQuery class to redisvl
-    print("FILTER EXPRESSION USED", str(filter_expression), flush=True)
     count_query = (
         Query(str(filter_expression) or "*")
         .no_content()
@@ -251,14 +249,12 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         name=index_name,
         url=config.REDIS_URL
     )
-    print("Connected to index", flush=True)
 
     # Build filter expression
     filter_expression = build_filter_expression(
         similarity_request.years,
         similarity_request.categories
     )
-    print("Build filter expression", flush=True)
 
     # Check available paper count and create vector from user text
     # TODO add a CountQuery to redisvl
@@ -267,7 +263,6 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         .no_content()
         .dialect(2)
     )
-    print("Executing embedding creation", flush=True)
     query_vector, count = await asyncio.gather(
         embeddings.get(
             provider=index_name,
@@ -275,7 +270,6 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         ),
         index.search(count_query)
     )
-    print("Done with embedding creation", flush=True)
 
     # Assemble vector query
     paper_similarity_query = create_vector_query(
@@ -283,7 +277,6 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         num_results=similarity_request.number_of_results,
         filter_expression=filter_expression
     )
-    print("got query created", flush=True)
 
     # Perform Vector Search
     result_papers = await index.query(paper_similarity_query)

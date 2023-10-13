@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import asyncio
 import numpy as np
+import pandas as pd
 import pickle
 import os
 
@@ -10,8 +11,20 @@ from arxiv.providers import Provider
 from redisvl.index import AsyncSearchIndex
 
 
-def read_paper_df(provider: str) -> list:
-    path = os.path.join(config.DATA_LOCATION, f"arxiv_{provider}_embeddings_1000.pkl")
+def read_paper_df(provider: str) -> pd.DataFrame:
+    """
+    Load pickled dataframe of arXiv papers and embeddings.
+
+    Args:
+        provider (str): Embedding model provider.
+
+    Returns:
+        pd.DataFrame: Dataframe of papers and associated embeddings.
+    """
+    # TODO improve this data loading method
+    path = os.path.join(
+        config.DATA_LOCATION, f"arxiv_{provider}_embeddings_1000.pkl"
+    )
     with open(path, "rb") as f:
         df = pickle.load(f)
     return df
@@ -31,7 +44,7 @@ async def write_papers(index: AsyncSearchIndex, papers: list):
         paper['categories'] = paper['categories'].replace(",", "|")
         return paper
 
-    # TODO add an optional preprocessor callable here to minmize the amount of loops over the data
+    # TODO add an optional preprocessor callable to index.load()
     await index.load(
         data=[preprocess_paper(paper) for paper in papers],
         concurrency=config.WRITE_CONCURRENCY,
