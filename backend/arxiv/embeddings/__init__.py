@@ -3,11 +3,10 @@ import string
 
 from arxiv.embeddings.providers import (
     Provider,
-    HuggingFaceProvider,
     CohereProvider
 )
 from arxiv import config
-from redisvl.vectorize.text import OpenAITextVectorizer
+from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
 
 
 def preprocess_text(text: str) -> str:
@@ -42,7 +41,9 @@ class Embeddings:
     def __init__(self):
         # Initialize embedding providers if relevant
         print("Loading HF", flush=True)
-        self.hf_vectorizer = HuggingFaceProvider()
+        self.hf_vectorizer = HFTextVectorizer(
+            model=config.SENTENCE_TRANSFORMER_MODEL
+        )
         print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,
@@ -63,7 +64,7 @@ class Embeddings:
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
             print("--- vectorizing query", flush=True)
-            return self.hf_vectorizer.embed_query(
+            return self.hf_vectorizer.embed(
                 text,
                 preprocess=preprocess_text
             )

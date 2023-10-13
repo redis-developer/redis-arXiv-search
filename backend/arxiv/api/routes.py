@@ -7,8 +7,7 @@ from redis.commands.search.query import Query
 
 from redisvl.index import AsyncSearchIndex
 from redisvl.query import VectorQuery, FilterQuery
-from redisvl.query.filter import FilterExpression
-from redisvl.query.filter import Tag
+from redisvl.query.filter import Tag, FilterExpression
 
 from fastapi import APIRouter
 from functools import reduce
@@ -47,13 +46,6 @@ def build_filter_expression(years: list, categories: list) -> FilterExpression:
     """
     Construct a filter expression based on the provided years and categories.
 
-    This function builds a FilterExpression used for querying papers in Redis.
-    It takes lists of years and categories as input, constructs filter expressions for
-    each set of parameters, and then combines them using the AND operator. The filter
-    expressions for years and categories are constructed by OR'ing individual year and
-    category conditions. If either years or categories list is empty, the function will
-    return a filter expression based solely on the non-empty parameter list.
-
     Args:
         years (list): A list of years (integers or strings) to be included in the filter
                       expression. An empty list means there's no filter applied based on years.
@@ -62,26 +54,14 @@ def build_filter_expression(years: list, categories: list) -> FilterExpression:
                            on categories.
 
     Returns:
-        FilterExpression: A FilterExpression object representing the combined filter for both years and
-            categories. If both input lists are empty, the function returns None.
+        FilterExpression: A FilterExpression object representing the combined filter for both years and categories.
     """
-    # TODO add support for easy multiple Tag filter values
-    if not years and not categories:
-        return None
-
-    def or_expression(accumulator, value, field):
-        return accumulator | (Tag(field) == value)
-
     # Build filters
-    year_filter = None
-    category_filter = None
-    if years:
-        year_filter = Tag("year") == years[0]
-        year_filter = reduce(lambda acc, year: or_expression(acc, year, "year"), years[1:], year_filter)
-    if categories:
-        category_filter = Tag("categories") == categories[0]
-        category_filter = reduce(lambda acc, cat: or_expression(acc, cat, "categories"), categories[1:], category_filter)
-
+    year_filter = Tag("year") == [str(year) for year in years] if years else None
+    category_filter = Tag("categories") == [str(category) for category in categories] if categories else None
+    # Parse and create filter expression
+    if not year_filter and not category_filter:
+        return FilterExpression("*")
     if year_filter and category_filter:
         return year_filter & category_filter
     return year_filter or category_filter
@@ -134,6 +114,24 @@ def create_vector_query(
     )
 
 
+def create_count_query(filter_expression: FilterExpression) -> Query:
+    """
+    Create a "count" query where simply want to know how many records
+    match a particular filter expression
+
+    Args:
+        filter_expression (FilterExpression): The filter expression for the query.
+
+    Returns:
+        Query: The Redis query object.
+    """
+    return (
+        Query(str(filter_expression))
+        .no_content()
+        .dialect(2)
+    )
+
+
 @r.get("/", response_model=t.Dict)
 async def get_papers(
     limit: int = 20,
@@ -159,21 +157,15 @@ async def get_papers(
         url=config.REDIS_URL
     )
     # Build query
-    query = Query("*") # base case
     filter_expression = build_filter_expression(
         [year for year in years.split(",") if year],
         [cat for cat in categories.split(",") if cat]
     )
-    # TODO support the * operator on filter queries (i.e. empty filter expressions)
-    if filter_expression:
-        filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
-        query = filter_query.query
+    filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
     # Execute search
-    # TODO support the paging operator
     result_papers = await index.search(
-        query.paging(skip, limit)
+        filter_query.query.paging(skip, limit)
     )
-    # TODO port the `total` attribute to redisvl as part of (optional) response object?
     return prepare_response(result_papers.total, result_papers)
 
 
@@ -201,32 +193,23 @@ async def find_papers_by_paper(similarity_request: SimilarityRequest):
         await index._redis_conn.hget(paper_key, paper_vector_field_name),
         dtype=np.float32
     )
-
     # Build filter expression
     filter_expression = build_filter_expression(
         similarity_request.years,
         similarity_request.categories
     )
-
-    # Assemble vector query
+    # Create queries
     paper_similarity_query = create_vector_query(
         vector=paper_vector,
         num_results=similarity_request.number_of_results,
         filter_expression=filter_expression
     )
-
-    # Async execute count search and vector search
-    # TODO add a CountQuery class to redisvl
-    count_query = (
-        Query(str(filter_expression) or "*")
-        .no_content()
-        .dialect(2)
-    )
+    count_query = create_count_query(filter_expression)
+    # Execute search
     count, result_papers = await asyncio.gather(
         index.search(count_query),
         index.query(paper_similarity_query)
     )
-
     # Get Paper records of those results
     return prepare_response(count.total, result_papers)
 
@@ -249,20 +232,13 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         name=index_name,
         url=config.REDIS_URL
     )
-
     # Build filter expression
     filter_expression = build_filter_expression(
         similarity_request.years,
         similarity_request.categories
     )
-
     # Check available paper count and create vector from user text
-    # TODO add a CountQuery to redisvl
-    count_query = (
-        Query(str(filter_expression) or "*")
-        .no_content()
-        .dialect(2)
-    )
+    count_query = create_count_query(filter_expression)
     query_vector, count = await asyncio.gather(
         embeddings.get(
             provider=index_name,
@@ -270,16 +246,13 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         ),
         index.search(count_query)
     )
-
     # Assemble vector query
     paper_similarity_query = create_vector_query(
         vector=query_vector,
         num_results=similarity_request.number_of_results,
         filter_expression=filter_expression
     )
-
     # Perform Vector Search
     result_papers = await index.query(paper_similarity_query)
-
     # Get Paper records of those results
     return prepare_response(count.total, result_papers)
