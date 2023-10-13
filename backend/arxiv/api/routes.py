@@ -224,7 +224,6 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     Returns:
         dict: Dictionary containing total count and list of similar papers.
     """
-    print("TEXT VSS REQUEST", flush=True)
     # Attach to index
     index_name = similarity_request.provider
     index = await AsyncSearchIndex.from_existing(

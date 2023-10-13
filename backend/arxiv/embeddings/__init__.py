@@ -39,16 +39,13 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        print("Loading HF", flush=True)
         self.hf_vectorizer = HFTextVectorizer(
             model=config.SENTENCE_TRANSFORMER_MODEL
         )
-        print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,
             api_config={"api_key": config.OPENAI_API_KEY}
         )
-        print("Loading Co", flush=True)
         self.co_vectorizer = CohereProvider()
 
     async def get(self, provider: str, text: str):
@@ -62,7 +59,6 @@ class Embeddings:
 
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
-            print("--- vectorizing query", flush=True)
             return self.hf_vectorizer.embed(
                 text,
                 preprocess=preprocess_text
