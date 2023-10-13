@@ -74,8 +74,8 @@ Embeddings represent the semantic properies of the raw text and enable vector si
     - Add your `OPENAI_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://platform.openai.com)
     - Add you `COHERE_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://cohere.ai)
 4. Decide which Redis you plan to use, choose one of the methods below
-    - **[Redis Stack]()** runs Redis as a local docker container.
-    - **[Redis Cloud]()** will manage a Redis database on your behalf in the cloud.
+    - **[Redis Stack](#redis-stack-docker)** runs Redis as a local docker container.
+    - **[Redis Cloud](#redis-cloud)** will manage a Redis database on your behalf in the cloud.
 
 ### Redis Stack Docker
 Using Redis Stack locally doesn't require any additional steps. However, it will consume more resources on your machine and have performance limitations.
