@@ -1,12 +1,11 @@
 import re
 import string
 
-from arxiv.embeddings.providers import (
-    Provider,
-    CohereProvider
-)
-from arxiv import config
 from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
+
+from arxiv import config
+from arxiv.embeddings.providers import CohereProvider
+from arxiv.schema import Provider
 
 
 def preprocess_text(text: str) -> str:
@@ -40,10 +39,10 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        print("Loading HF", flush=True)
-        self.hf_vectorizer = HFTextVectorizer(
-            model=config.SENTENCE_TRANSFORMER_MODEL
-        )
+        # print("Loading HF", flush=True)
+        # self.hf_vectorizer = HFTextVectorizer(
+        #     model=config.SENTENCE_TRANSFORMER_MODEL
+        # )
         print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,

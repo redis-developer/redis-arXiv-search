@@ -10,11 +10,10 @@ from redisvl.query import VectorQuery, FilterQuery
 from redisvl.query.filter import Tag, FilterExpression
 
 from fastapi import APIRouter
-from functools import reduce
 from arxiv import config
 from arxiv.embeddings import Embeddings
 from arxiv.schema import (
-    SimilarityRequest,
+    PaperSimilarityRequest,
     UserTextSimilarityRequest
 )
 
@@ -170,7 +169,7 @@ async def get_papers(
 
 
 @r.post("/vectorsearch/paper", response_model=t.Dict)
-async def find_papers_by_paper(similarity_request: SimilarityRequest):
+async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     """Find and return papers similar to a given paper based on vector similarity.
 
     Args:
