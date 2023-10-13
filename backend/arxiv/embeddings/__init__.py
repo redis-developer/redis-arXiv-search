@@ -39,10 +39,10 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        # print("Loading HF", flush=True)
-        # self.hf_vectorizer = HFTextVectorizer(
-        #     model=config.SENTENCE_TRANSFORMER_MODEL
-        # )
+        print("Loading HF", flush=True)
+        self.hf_vectorizer = HFTextVectorizer(
+            model=config.SENTENCE_TRANSFORMER_MODEL
+        )
         print("Loading OAI", flush=True)
         self.oai_vectorizer = OpenAITextVectorizer(
             model=config.OPENAI_EMBEDDING_MODEL,

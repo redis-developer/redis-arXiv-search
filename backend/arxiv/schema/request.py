@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 
-from arxiv.schema import Provider
+from arxiv.schema.provider import Provider
 
 class BaseRequest(BaseModel):
     categories: list

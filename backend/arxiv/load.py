@@ -6,7 +6,7 @@ import pickle
 import os
 
 from arxiv import config
-from arxiv.embeddings.providers import Provider
+from arxiv.schema import Provider
 
 from redisvl.index import AsyncSearchIndex
 
