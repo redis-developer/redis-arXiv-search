@@ -18,7 +18,7 @@ from arxivsearch.schema import (
     UserTextSimilarityRequest
 )
 
-from typing import List, Dict, Any, Optional, Union
+from typing import List, Dict, Any, Union
 
 paper_router = r = APIRouter()
 print("Loading embeddings providers", flush=True)
@@ -192,7 +192,7 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     # TODO - improve key parsing in redisvl
     #paper_key = index.key(similarity_request.paper_id)
     paper_vector = np.frombuffer(
-        await index._redis_conn.hget(paper_key, paper_vector_field_name),
+        await index.client.hget(paper_key, paper_vector_field_name),
         dtype=np.float32
     )
     # Build filter expression
