@@ -1,21 +1,24 @@
 import asyncio
-import typing as t
 import numpy as np
 import redis.asyncio as redis
 
 from redis.commands.search.query import Query
+from redis.commands.search.document import Document
+from redis.commands.search.result import Result
 
 from redisvl.index import AsyncSearchIndex
 from redisvl.query import VectorQuery, FilterQuery
 from redisvl.query.filter import Tag, FilterExpression
-
 from fastapi import APIRouter
-from arxiv import config
-from arxiv.embeddings import Embeddings
-from arxiv.schema import (
+
+from arxivsearch import config
+from arxivsearch.embeddings import Embeddings
+from arxivsearch.schema import (
     PaperSimilarityRequest,
     UserTextSimilarityRequest
 )
+
+from typing import List, Dict, Any, Optional, Union
 
 paper_router = r = APIRouter()
 redis_client = redis.from_url(config.REDIS_URL)
@@ -24,7 +27,7 @@ embeddings = Embeddings()
 paper_vector_field_name = "vector"
 
 
-def process_paper(paper) -> t.Dict[str, t.Any]:
+def process_paper(paper: Union[Document, Dict[str, Any]]) -> Dict[str, Any]:
     """
     Process paper data and calculate similarity score.
 
@@ -34,14 +37,14 @@ def process_paper(paper) -> t.Dict[str, t.Any]:
     Returns:
         dict: Processed paper data with similarity score.
     """
-    if not isinstance(paper, dict):
+    if not isinstance(paper, Dict[str, Any]):
         paper = paper.__dict__
     if 'vector_distance' in paper:
         paper['similarity_score'] = 1 - float(paper['vector_distance'])
     return paper
 
 
-def build_filter_expression(years: list, categories: list) -> FilterExpression:
+def build_filter_expression(years: List[int], categories: List[str]) -> FilterExpression:
     """
     Construct a filter expression based on the provided years and categories.
 
@@ -66,7 +69,7 @@ def build_filter_expression(years: list, categories: list) -> FilterExpression:
     return year_filter or category_filter
 
 
-def prepare_response(total: int, results) -> t.Dict[str, t.Any]:
+def prepare_response(total: int, results: Union[List[Dict[str, Any]], Result]) -> Dict[str, Any]:
     """
     Extract and process papers from search results.
 
@@ -131,7 +134,7 @@ def create_count_query(filter_expression: FilterExpression) -> Query:
     )
 
 
-@r.get("/", response_model=t.Dict)
+@r.get("/", response_model=Dict)
 async def get_papers(
     limit: int = 20,
     skip: int = 0,
@@ -168,7 +171,7 @@ async def get_papers(
     return prepare_response(result_papers.total, result_papers)
 
 
-@r.post("/vectorsearch/paper", response_model=t.Dict)
+@r.post("/vectorsearch/paper", response_model=Dict)
 async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     """Find and return papers similar to a given paper based on vector similarity.
 
@@ -185,9 +188,10 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
         name=index_name,
         url=config.REDIS_URL
     )
-    # TODO - need to figure out how to do this better with RedisVL
     # Fetch paper key and the vector from the HASH, cast to numpy array
     paper_key = index._get_key({"paper_id": similarity_request.paper_id}, "paper_id")
+    # TODO - improve key parsing in redisvl
+    #paper_key = index.key(similarity_request.paper_id)
     paper_vector = np.frombuffer(
         await index._redis_conn.hget(paper_key, paper_vector_field_name),
         dtype=np.float32
@@ -213,7 +217,7 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     return prepare_response(count.total, result_papers)
 
 
-@r.post("/vectorsearch/text", response_model=t.Dict)
+@r.post("/vectorsearch/text", response_model=Dict)
 async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     """Find and return papers similar to user-provided text based on vector similarity.
 

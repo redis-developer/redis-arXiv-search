@@ -1,7 +1,7 @@
 import numpy as np
 
 from typing import List
-from arxiv import config
+from arxivsearch import config
 
 
 class CohereProvider:

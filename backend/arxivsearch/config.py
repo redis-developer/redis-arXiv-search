@@ -1,7 +1,7 @@
 import os
 
 # Project Details
-PROJECT_NAME = "arxiv"
+PROJECT_NAME = "arxivsearch"
 API_DOCS = "/api/docs"
 OPENAPI_DOCS = "/api/openapi.json"
 API_V1_STR = "/api/v1"

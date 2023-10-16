@@ -5,8 +5,8 @@ import pandas as pd
 import pickle
 import os
 
-from arxiv import config
-from arxiv.schema import Provider
+from arxivsearch import config
+from arxivsearch.schema import Provider
 
 from redisvl.index import AsyncSearchIndex
 

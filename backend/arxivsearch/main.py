@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
-from arxiv import config
-from arxiv.api import routes
-from arxiv.spa import SinglePageApplication
+from arxivsearch import config
+from arxivsearch.api import routes
+from arxivsearch.spa import SinglePageApplication
 
 
 app = FastAPI(

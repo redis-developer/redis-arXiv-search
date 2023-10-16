@@ -3,9 +3,9 @@ import string
 
 from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
 
-from arxiv import config
-from arxiv.embeddings.providers import CohereProvider
-from arxiv.schema import Provider
+from arxivsearch import config
+from arxivsearch.embeddings.providers import CohereProvider
+from arxivsearch.schema import Provider
 
 
 def preprocess_text(text: str) -> str:

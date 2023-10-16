@@ -29,10 +29,10 @@ COPY ./backend/ .
 RUN pip install -e . --no-cache-dir
 
 # add static react files to fastapi image
-COPY --from=ReactImage /app/frontend/build /app/backend/arxiv/templates/build
+COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/build
 
 LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
 
-WORKDIR /app/backend/arxiv
+WORKDIR /app/backend/arxivsearch
 
 CMD ["sh", "./entrypoint.sh"]
