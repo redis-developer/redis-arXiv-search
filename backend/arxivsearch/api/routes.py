@@ -21,7 +21,6 @@ from arxivsearch.schema import (
 from typing import List, Dict, Any, Optional, Union
 
 paper_router = r = APIRouter()
-redis_client = redis.from_url(config.REDIS_URL)
 print("Loading embeddings providers", flush=True)
 embeddings = Embeddings()
 paper_vector_field_name = "vector"
