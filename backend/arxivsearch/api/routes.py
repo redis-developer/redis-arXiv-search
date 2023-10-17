@@ -35,7 +35,7 @@ def process_paper(paper: Union[Document, Dict[str, Any]]) -> Dict[str, Any]:
     Returns:
         dict: Processed paper data with similarity score.
     """
-    if not isinstance(paper, Dict[str, Any]):
+    if not isinstance(paper, dict):
         paper = paper.__dict__
     if 'vector_distance' in paper:
         paper['similarity_score'] = 1 - float(paper['vector_distance'])
