@@ -1,6 +1,6 @@
 
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/arxiv/data/redis-logo.png?raw=true" width="30%"><img></a>
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/arxivsearch/data/redis-logo.png?raw=true" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">

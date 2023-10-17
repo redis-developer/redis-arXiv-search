@@ -91,30 +91,6 @@ def prepare_response(total: int, results: Union[List[Dict[str, Any]], Result]) -
     }
 
 
-def create_vector_query(
-    vector: np.ndarray,
-    num_results: int,
-    filter_expression: FilterExpression) -> VectorQuery:
-    """
-    Create and return a VectorQuery instance.
-
-    Args:
-        vector (np.ndarray): The input vector for the query.
-        num_results (int): The number of results to return.
-        filter_expression (FilterExpression): The filter expression for the query.
-
-    Returns:
-        VectorQuery: The constructed VectorQuery instance.
-    """
-    return VectorQuery(
-        vector=vector,
-        vector_field_name=paper_vector_field_name,
-        num_results=num_results,
-        return_fields=["paper_id", "authors", "categories", "year", "title", "vector_distance"],
-        filter_expression=filter_expression
-    )
-
-
 def create_count_query(filter_expression: FilterExpression) -> Query:
     """
     Create a "count" query where simply want to know how many records
@@ -201,9 +177,11 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
         similarity_request.categories
     )
     # Create queries
-    paper_similarity_query = create_vector_query(
+    paper_similarity_query = VectorQuery(
         vector=paper_vector,
+        vector_field_name=paper_vector_field_name,
         num_results=similarity_request.number_of_results,
+        return_fields=["paper_id", "authors", "categories", "year", "title", "vector_distance"],
         filter_expression=filter_expression
     )
     count_query = create_count_query(filter_expression)
@@ -248,9 +226,11 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         index.search(count_query)
     )
     # Assemble vector query
-    paper_similarity_query = create_vector_query(
+    paper_similarity_query = VectorQuery(
         vector=query_vector,
+        vector_field_name=paper_vector_field_name,
         num_results=similarity_request.number_of_results,
+        return_fields=["paper_id", "authors", "categories", "year", "title", "vector_distance"],
         filter_expression=filter_expression
     )
     # Perform Vector Search
