@@ -12,7 +12,7 @@ ADD ./frontend ./
 RUN yarn build
 
 
-FROM python:3.8-slim-buster AS ApiImage
+FROM python:3.9-slim-buster AS ApiImage
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -26,13 +26,13 @@ RUN mkdir -p /app/backend
 WORKDIR /app/backend
 
 COPY ./backend/ .
-RUN pip install -e .
+RUN pip install -e . --no-cache-dir
 
 # add static react files to fastapi image
-COPY --from=ReactImage /app/frontend/build /app/backend/vecsim_app/templates/build
+COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/build
 
 LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
 
-WORKDIR /app/backend/vecsim_app
+WORKDIR /app/backend/arxivsearch
 
 CMD ["sh", "./entrypoint.sh"]

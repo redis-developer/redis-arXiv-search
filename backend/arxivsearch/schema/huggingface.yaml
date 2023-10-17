@@ -1,0 +1,18 @@
+index:
+  name: huggingface
+  prefix: huggingface:arXiv
+
+fields:
+    # define tag fields
+    tag:
+        - name: categories
+          separator: '|'
+        - name: year
+          separator: '|'
+    # define vector fields
+    vector:
+        - name: vector
+          dims: 768
+          type: float32
+          algorithm: hnsw
+          distance_metric: cosine

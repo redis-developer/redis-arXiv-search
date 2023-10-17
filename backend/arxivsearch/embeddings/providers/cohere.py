@@ -1,7 +1,7 @@
 import numpy as np
 
 from typing import List
-from vecsim_app import config
+from arxivsearch import config
 
 
 class CohereProvider:

@@ -4,3 +4,4 @@ arxiv-metadata-oai-snapshot.json
 .env
 .ipynb_checkpoints
 *.pkl
+.venv

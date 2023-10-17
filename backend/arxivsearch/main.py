@@ -4,9 +4,10 @@ from pathlib import Path
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
-from vecsim_app import config
-from vecsim_app.api import routes
-from vecsim_app.spa import SinglePageApplication
+
+from arxivsearch import config
+from arxivsearch.api import routes
+from arxivsearch.spa import SinglePageApplication
 
 
 app = FastAPI(
@@ -16,11 +17,11 @@ app = FastAPI(
 )
 
 app.add_middleware(
-        CORSMiddleware,
-        allow_origins="*",
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"]
+    CORSMiddleware,
+    allow_origins="*",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
 # Routers
@@ -42,16 +43,13 @@ app.mount(
 )
 
 if __name__ == "__main__":
-    import os
-    env = os.environ.get("DEPLOYMENT", "prod")
-
     server_attr = {
         "host": "0.0.0.0",
         "reload": True,
         "port": 8888,
         "workers": 1
     }
-    if env == "prod":
+    if config.DEPLOYMENT_ENV == "prod":
         server_attr.update({"reload": False,
                             "workers": 2,
                             "ssl_keyfile": "key.pem",

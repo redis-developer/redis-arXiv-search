@@ -1,12 +1,11 @@
 import re
 import string
 
-from vecsim_app.providers import (
-    Provider,
-    HuggingFaceProvider,
-    OpenAIProvider,
-    CohereProvider
-)
+from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
+
+from arxivsearch import config
+from arxivsearch.embeddings.providers import CohereProvider
+from arxivsearch.schema import Provider
 
 
 def preprocess_text(text: str) -> str:
@@ -40,9 +39,14 @@ class Embeddings:
 
     def __init__(self):
         # Initialize embedding providers if relevant
-        self.huggingface_provider = HuggingFaceProvider()
-        self.openai_provider = OpenAIProvider()
-        self.cohere_provider = CohereProvider()
+        self.hf_vectorizer = HFTextVectorizer(
+            model=config.SENTENCE_TRANSFORMER_MODEL
+        )
+        self.oai_vectorizer = OpenAITextVectorizer(
+            model=config.OPENAI_EMBEDDING_MODEL,
+            api_config={"api_key": config.OPENAI_API_KEY}
+        )
+        self.co_vectorizer = CohereProvider()
 
     async def get(self, provider: str, text: str):
         """
@@ -55,18 +59,18 @@ class Embeddings:
 
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
-            return await self.huggingface_provider.embed_query(
+            return self.hf_vectorizer.embed(
                 text,
                 preprocess=preprocess_text
             )
         elif provider == Provider.openai.value:
             # Use OpenAI Embeddings API
-            return await self.openai_provider.embed_query(
+            return await self.oai_vectorizer.aembed(
                 text,
                 preprocess=preprocess_text
             )
         elif provider == Provider.cohere.value:
-            return await self.cohere_provider.embed_query(
+            return await self.co_vectorizer.embed_query(
                 text,
                 preprocess=preprocess_text
             )
