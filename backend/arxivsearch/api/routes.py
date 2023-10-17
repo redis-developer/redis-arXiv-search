@@ -1,6 +1,5 @@
 import asyncio
 import numpy as np
-import redis.asyncio as redis
 
 from redis.commands.search.query import Query
 from redis.commands.search.document import Document
