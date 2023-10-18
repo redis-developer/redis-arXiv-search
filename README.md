@@ -126,4 +126,4 @@ All changes to your frontend code will be reflected in your display in semi real
 ### Troubleshooting
 Every once and a while you need to clear out some Docker cached artifacts. Run `docker system prune`, restart Docker Desktop, and try again.
 
-This project is maintained by Redis on a good faith basis. Pleasure, open an issue here on GitHub and we will try to be responsive to these.
+This project is maintained by Redis on a good faith basis. Please, open an issue here on GitHub and we will try to be responsive to these.
