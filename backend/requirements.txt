@@ -6,6 +6,6 @@ numpy
 redis>=5.0.0
 redisvl==0.0.4
 cohere
-openai
+openai==0.28.1
 sentence-transformers==2.2.2
 sentencepiece==0.1.97
