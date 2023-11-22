@@ -4,7 +4,7 @@ pandas
 ipython
 numpy
 redis>=5.0.0
-redisvl==0.0.4
+redisvl==0.0.5
 cohere
 openai==0.28.1
 sentence-transformers==2.2.2

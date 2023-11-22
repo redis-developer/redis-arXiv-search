@@ -1,6 +1,8 @@
 index:
   name: cohere
   prefix: cohere:arXiv
+  storage_type: hash
+  key_separator: ':'
 
 fields:
     # define tag fields
