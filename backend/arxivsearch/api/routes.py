@@ -217,7 +217,7 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         vector=query_vector,
         vector_field_name=paper_vector_field_name,
         num_results=similarity_request.number_of_results,
-        return_fields=config.RETURN_FIELDS
+        return_fields=config.RETURN_FIELDS,
         filter_expression=filter_expression
     )
     # Perform Vector Search
