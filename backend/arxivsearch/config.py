@@ -12,6 +12,14 @@ DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 DISTANCE_METRIC = os.environ.get("DISTANCE_METRIC", "COSINE")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
 INDEX_TYPE = os.environ.get("VECSIM_INDEX_TYPE", "HNSW")
+RETURN_FIELDS = [
+    "paper_id",
+    "authors",
+    "categories",
+    "year",
+    "title",
+    "vector_distance"
+]
 
 # Redis
 REDIS_HOST = os.environ.get("REDIS_HOST", "redis")

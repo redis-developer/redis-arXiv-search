@@ -38,38 +38,38 @@ async def write_papers(index: AsyncSearchIndex, papers: list):
         papers (list): List of documents to store.
     """
 
-    def preprocess_paper(paper: dict) -> dict:
+    async def preprocess_paper(paper: dict) -> dict:
         paper['vector'] = np.array(paper['vector'], dtype=np.float32).tobytes()
         paper['paper_id'] = paper.pop('id')
         paper['categories'] = paper['categories'].replace(",", "|")
         return paper
 
-    # TODO add an optional preprocessor callable to index.load()
     await index.load(
-        data=[preprocess_paper(paper) for paper in papers],
+        data=papers,
+        preprocess=preprocess_paper,
         concurrency=config.WRITE_CONCURRENCY,
-        key_field="paper_id"
+        key_field="id"
     )
 
 async def load_data():
     # Iterate through embedding providers and create an index for each
     for provider in Provider:
         provider = provider.value
-        index = AsyncSearchIndex.from_yaml(
-            os.path.join("./schema", f"{provider}.yaml")
-        )
-        index.connect(config.REDIS_URL)
+        yaml_schema_path = os.path.join("./schema", f"{provider}.yaml")
+        index = AsyncSearchIndex.from_yaml(yaml_schema_path)
+        index.connect(redis_url=config.REDIS_URL)
+
         # Check if index exists
         if await index.exists():
             print(f"{provider} index already exists")
         else:
-            print(f"Loading arXiv papers -- {provider} index")
+            print(f"Creating {provider} index")
+            await index.create(overwrite=True)
+            print(f"Loading arXiv papers for {provider} index")
             papers = read_paper_df(provider)
             papers = papers.to_dict('records')
             await write_papers(index=index, papers=papers)
             print(f"{provider} vectors loaded")
-            await index.create()
-            print("Search index created")
 
 
 if __name__ == "__main__":
