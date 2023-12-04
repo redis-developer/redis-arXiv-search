@@ -45,15 +45,15 @@ export const Header = (props: Props) => {
               <NavDropdown.Item href="https://github.com/RedisVentures/redis-arXiv-search">Code</NavDropdown.Item>
               <NavDropdown.Item href="https://datasciencedojo.com/blog/ai-powered-document-search/">Blog</NavDropdown.Item>
               <NavDropdown.Item href="https://github.com/RedisVentures/redis-ai-resources">Redis AI Resources List</NavDropdown.Item>
-              <NavDropdown.Item href="https://forms.gle/ANpHTe2Da5CVGHty7" target="_blank">Talk With Us</NavDropdown.Item>
+              <NavDropdown.Item href="https://redis.com/vss-meeting/" target="_blank">Talk With Us</NavDropdown.Item>
               <NavDropdown.Divider />
-              <NavDropdown.Item href="https://redis.io/docs/stack/search/reference/vectors/">
+              <NavDropdown.Item href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/">
                 Vector Search Docs
               </NavDropdown.Item>
             </NavDropdown>
           </Nav>
           <Nav>
-            <Nav.Link className="btn btn-primary m-2" href="https://forms.gle/ANpHTe2Da5CVGHty7" target="_blank">
+            <Nav.Link className="btn btn-primary m-2" href="https://redis.com/vss-meeting/" target="_blank">
               Talk With Us!
             </Nav.Link>
           </Nav>

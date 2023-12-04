@@ -38,7 +38,7 @@ async def write_papers(index: AsyncSearchIndex, papers: list):
         papers (list): List of documents to store.
     """
 
-    def preprocess_paper(paper: dict) -> dict:
+    async def preprocess_paper(paper: dict) -> dict:
         paper['vector'] = np.array(paper['vector'], dtype=np.float32).tobytes()
         paper['paper_id'] = paper.pop('id')
         paper['categories'] = paper['categories'].replace(",", "|")
@@ -48,7 +48,7 @@ async def write_papers(index: AsyncSearchIndex, papers: list):
         data=papers,
         preprocess=preprocess_paper,
         concurrency=config.WRITE_CONCURRENCY,
-        key_field="paper_id"
+        key_field="id"
     )
 
 async def load_data():
@@ -56,11 +56,9 @@ async def load_data():
     for provider in Provider:
         provider = provider.value
         yaml_schema_path = os.path.join("./schema", f"{provider}.yaml")
-        index = (
-            AsyncSearchIndex
-            .from_yaml(yaml_schema_path)
-            .connect(config.REDIS_URL)
-        )
+        index = AsyncSearchIndex.from_yaml(yaml_schema_path)
+        index.connect(redis_url=config.REDIS_URL)
+
         # Check if index exists
         if await index.exists():
             print(f"{provider} index already exists")

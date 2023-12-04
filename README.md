@@ -7,7 +7,7 @@
     <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://redis.io/docs/stack/search/reference/vectors/"><b>Redis VSS Documentation</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/"><b>Redis Vector Search Documentation</b></a>&nbsp;&nbsp;&nbsp;
   </div>
     <br />
     <br />
@@ -16,7 +16,7 @@
 # 🔎 Redis arXiv Search
 *This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
 
-[Redis](https://redis.com) is a highly performant, production-ready vector database, which can be used for many types of applications. Here we showcase Redis vector similarity search (VSS) applied to a document retrieval use case. Read more about AI-powered search in [the technical blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) published by our partners, *[Data Science Dojo](https://datasciencedojo.com)*.
+[Redis](https://redis.com) is a highly performant, production-ready vector database, which can be used for many types of applications. Here we showcase Redis vector search applied to a document retrieval use case. Read more about AI-powered search in [the technical blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) published by our partners, *[Data Science Dojo](https://datasciencedojo.com)*.
 
 ### Dataset
 
