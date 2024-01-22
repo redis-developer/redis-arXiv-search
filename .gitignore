@@ -1,7 +1,9 @@
 arxiv-metadata-oai-snapshot.json
+arxiv_papers_1000.json
 *.DS_STORE
 *.log
 .env
 .ipynb_checkpoints
 *.pkl
 .venv
+venv

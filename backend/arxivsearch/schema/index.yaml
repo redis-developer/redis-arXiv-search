@@ -1,0 +1,30 @@
+index:
+  name: arxiv
+  prefix: arXiv
+  storage_type: hash
+  key_separator: ':'
+
+fields:
+    # define tag fields
+    tag:
+        - name: categories
+          separator: '|'
+        - name: year
+          separator: '|'
+    # define vector fields
+    vector:
+        - name: huggingface
+          dims: 768
+          type: float32
+          algorithm: hnsw
+          distance_metric: cosine
+        - name: openai
+          dims: 1533
+          type: float32
+          algorithm: hnsw
+          distance_metric: cosine
+        - name: cohere
+          dims: 1024
+          type: float32
+          algorithm: hnsw
+          distance_metric: cosine

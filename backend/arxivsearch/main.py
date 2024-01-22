@@ -1,4 +1,5 @@
 import uvicorn
+import logging
 
 from pathlib import Path
 from fastapi import FastAPI
@@ -8,6 +9,12 @@ from starlette.middleware.cors import CORSMiddleware
 from arxivsearch import config
 from arxivsearch.api import routes
 from arxivsearch.spa import SinglePageApplication
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
 
 
 app = FastAPI(
@@ -26,7 +33,7 @@ app.add_middleware(
 
 # Routers
 app.include_router(
-    routes.paper_router,
+    routes.router,
     prefix=config.API_V1_STR + "/paper",
     tags=["papers"]
 )
