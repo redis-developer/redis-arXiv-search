@@ -72,7 +72,7 @@ class Embeddings:
                 preprocess=preprocess_text
             )
         elif provider == Provider.cohere.value:
-            return await self.co_vectorizer.embed(
+            return self.co_vectorizer.embed(
                 text,
                 input_type="search_query",
                 preprocess=preprocess_text

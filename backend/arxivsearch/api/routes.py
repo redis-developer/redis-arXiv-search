@@ -1,6 +1,7 @@
 import asyncio
 import os
 import numpy as np
+import logging
 from typing import List, Dict, Any
 
 from fastapi import APIRouter
@@ -14,13 +15,15 @@ from redisvl.query.filter import Tag, FilterExpression
 from arxivsearch import config
 from arxivsearch.embeddings import Embeddings
 from arxivsearch.schema import (
-    Provider,
     PaperSimilarityRequest,
     UserTextSimilarityRequest
 )
 
 
-# Initialize the API router for papers
+logger = logging.getLogger(__name__)
+
+
+# Initialize the API router
 router = APIRouter()
 
 # Initialize embeddings and paper vector field name
@@ -30,7 +33,7 @@ embeddings = Embeddings()
 client = Redis.from_url(config.REDIS_URL)
 
 # Preload index schema
-schema = IndexSchema.from_yaml(os.path.join("./schema", "index.yaml")
+schema = IndexSchema.from_yaml(os.path.join("./schema", "index.yaml"))
 
 
 def process_paper(paper: Dict[str, Any]) -> Dict[str, Any]:
@@ -87,6 +90,7 @@ def prepare_response(total: int, results: List[Dict[str, Any]]) -> Dict[str, Any
         dict: A dictionary with 'total' count and a list of 'papers', where
             each paper is a processed dict.
     """
+    logger.info("Preparing paper response")
     return {
         'total': total,
         'papers': [process_paper(paper) for paper in results]
@@ -128,9 +132,14 @@ async def get_papers(
         filter_expression=filter_expression
     )
     filter_query.set_paging(skip, limit)
-    # Execute search
-    result_papers = await index.query(filter_query)
-    return prepare_response(result_papers.total, result_papers)
+    count_query = CountQuery(filter_expression)
+    # Execute searches
+    total_count, result_papers = await asyncio.gather(
+        index.aquery(count_query),
+        index.aquery(filter_query)
+    )
+    result_papers = await index.aquery(filter_query)
+    return prepare_response(total_count, result_papers)
 
 
 @router.post("/vectorsearch/paper", response_model=Dict)
@@ -150,11 +159,10 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     # Attach to index
     index = SearchIndex(schema=schema, redis_client=client)
 
-    # Fetch paper key and the vector from the HASH, cast to numpy array
-    paper_key = index.key(similarity_request.paper_id)
+    # Fetch paper vector from the HASH, cast to numpy array
+    paper = await index.afetch(similarity_request.paper_id)
     paper_vector = np.frombuffer(
-        await index.client.hget(paper_key, paper_vector_field_name),
-        dtype=np.float32
+        paper[similarity_request.provider], dtype=np.float32
     )
     # Build filter expression
     filter_expression = build_filter_expression(
@@ -170,10 +178,10 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
         filter_expression=filter_expression
     )
     count_query = CountQuery(filter_expression)
-    # Execute search
+    # Execute searches
     total_count, result_papers = await asyncio.gather(
-        index.query(count_query),
-        index.query(paper_similarity_query)
+        index.aquery(count_query),
+        index.aquery(paper_similarity_query)
     )
     # Get Paper records of those results
     return prepare_response(total_count, result_papers)
@@ -203,12 +211,9 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     )
     # Check available paper count and create vector from user text
     count_query = CountQuery(filter_expression)
-    query_vector, total_count = await asyncio.gather(
-        embeddings.get(
-            provider=similarity_request.provider,
-            text=similarity_request.user_text
-        ),
-        index.query(count_query)
+    query_vector = await embeddings.get(
+        provider=similarity_request.provider,
+        text=similarity_request.user_text
     )
     # Assemble vector query
     paper_similarity_query = VectorQuery(
@@ -218,7 +223,9 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         return_fields=config.RETURN_FIELDS,
         filter_expression=filter_expression
     )
-    # Perform Vector Search
-    result_papers = await index.query(paper_similarity_query)
-    # Get Paper records of those results
+    # Execute searches
+    total_count, result_papers = await asyncio.gather(
+        index.aquery(count_query),
+        index.aquery(paper_similarity_query)
+    )    # Get Paper records of those results
     return prepare_response(total_count, result_papers)

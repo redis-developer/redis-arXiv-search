@@ -19,7 +19,7 @@ fields:
           algorithm: hnsw
           distance_metric: cosine
         - name: openai
-          dims: 1533
+          dims: 1536
           type: float32
           algorithm: hnsw
           distance_metric: cosine

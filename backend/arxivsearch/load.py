@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 import asyncio
 import numpy as np
-import pandas as pd
 import json
 import os
 import logging
 
 from typing import Any, Dict, List
 
-from arxivsearch import config
-
 from redisvl.index import SearchIndex
+
+from arxivsearch import config
+from arxivsearch.schema import Provider
 
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,9 @@ async def write_async(index: SearchIndex, papers: list):
     Write arXiv paper records to Redis asynchronously.
     """
     async def preprocess_paper(paper: dict) -> dict:
-        paper['vector'] = np.array(paper['vector'], dtype=np.float32).tobytes()
+        for provider_vector in Provider:
+            paper[provider_vector] = np.array(
+                paper[provider_vector], dtype=np.float32).tobytes()
         paper['paper_id'] = paper.pop('id')
         paper['categories'] = paper['categories'].replace(",", "|")
         return paper
@@ -58,7 +60,7 @@ async def load_data():
     # Load dataset and create index
     try:
         # Check if index exists
-        if await index.exists():
+        if await index.aexists():
             logger.info("Index already exists, skipping data load")
         else:
             logger.info("Creating new index")
@@ -70,7 +72,7 @@ async def load_data():
 
     # Wait for any indexing to finish
     while True:
-        info = await index.info()
+        info = await index.ainfo()
         if info["percent_indexed"] == "1":
             logger.info("Indexing is complete!")
             break
