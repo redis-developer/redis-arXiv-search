@@ -7,8 +7,8 @@ from typing import List, Dict, Any
 from fastapi import APIRouter
 from redis.asyncio import Redis
 
-from redisvl.index import SearchIndex
-from redisvl.schema.schema import IndexSchema
+from redisvl.index import AsyncSearchIndex
+from redisvl.schema import IndexSchema
 from redisvl.query import VectorQuery, FilterQuery, CountQuery
 from redisvl.query.filter import Tag, FilterExpression
 
@@ -21,7 +21,6 @@ from arxivsearch.schema import (
 
 
 logger = logging.getLogger(__name__)
-
 
 # Initialize the API router
 router = APIRouter()
@@ -120,9 +119,9 @@ async def get_papers(
         dict: Dictionary containing total count and list of papers.
     """
     # Attach to index
-    index = SearchIndex(schema=schema, redis_client=client)
+    index = AsyncSearchIndex(schema, client)
 
-    # Build query
+    # Build queries
     filter_expression = build_filter_expression(
         years.split(","),
         categories.split(",")
@@ -135,10 +134,10 @@ async def get_papers(
     count_query = CountQuery(filter_expression)
     # Execute searches
     total_count, result_papers = await asyncio.gather(
-        index.aquery(count_query),
-        index.aquery(filter_query)
+        index.query(count_query),
+        index.query(filter_query)
     )
-    result_papers = await index.aquery(filter_query)
+    result_papers = await index.query(filter_query)
     return prepare_response(total_count, result_papers)
 
 
@@ -157,10 +156,10 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
         dict: Dictionary containing total count and list of similar papers.
     """
     # Attach to index
-    index = SearchIndex(schema=schema, redis_client=client)
+    index = AsyncSearchIndex(schema, client)
 
     # Fetch paper vector from the HASH, cast to numpy array
-    paper = await index.afetch(similarity_request.paper_id)
+    paper = await index.fetch(similarity_request.paper_id)
     paper_vector = np.frombuffer(
         paper[similarity_request.provider], dtype=np.float32
     )
@@ -180,8 +179,8 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     count_query = CountQuery(filter_expression)
     # Execute searches
     total_count, result_papers = await asyncio.gather(
-        index.aquery(count_query),
-        index.aquery(paper_similarity_query)
+        index.query(count_query),
+        index.query(paper_similarity_query)
     )
     # Get Paper records of those results
     return prepare_response(total_count, result_papers)
@@ -202,7 +201,7 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
         dict: Dictionary containing total count and list of similar papers.
     """
     # Attach to index
-    index = SearchIndex(schema=schema, redis_client=client)
+    index = AsyncSearchIndex(schema, client)
 
     # Build filter expression
     filter_expression = build_filter_expression(
@@ -225,7 +224,7 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     )
     # Execute searches
     total_count, result_papers = await asyncio.gather(
-        index.aquery(count_query),
-        index.aquery(paper_similarity_query)
+        index.query(count_query),
+        index.query(paper_similarity_query)
     )    # Get Paper records of those results
     return prepare_response(total_count, result_papers)

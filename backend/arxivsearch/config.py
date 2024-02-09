@@ -7,7 +7,7 @@ OPENAPI_DOCS = "/api/openapi.json"
 API_V1_STR = "/api/v1"
 
 # Configuration
-DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv_papers_1000.json")
+DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv-papers-1000.json")
 DATA_LOCATION = os.environ.get("DATA_LOCATION", "../../data")
 DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)

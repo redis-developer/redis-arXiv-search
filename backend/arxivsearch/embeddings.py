@@ -1,7 +1,7 @@
 import re
 import string
 
-from redisvl.vectorize.text import (
+from redisvl.utils.vectorize import (
     CohereTextVectorizer,
     OpenAITextVectorizer,
     HFTextVectorizer

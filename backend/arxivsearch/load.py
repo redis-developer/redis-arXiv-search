@@ -7,7 +7,7 @@ import logging
 
 from typing import Any, Dict, List
 
-from redisvl.index import SearchIndex
+from redisvl.index import AsyncSearchIndex
 
 from arxivsearch import config
 from arxivsearch.schema import Provider
@@ -29,7 +29,7 @@ def read_paper_json() -> List[Dict[str, Any]]:
     return df
 
 
-async def write_async(index: SearchIndex, papers: list):
+async def write_async(index: AsyncSearchIndex, papers: list):
     """
     Write arXiv paper records to Redis asynchronously.
     """
@@ -43,28 +43,28 @@ async def write_async(index: SearchIndex, papers: list):
 
     logger.info("Loading papers dataset to Redis")
 
-    _ = await index.aload(
+    _ = await index.load(
         data=papers,
         preprocess=preprocess_paper,
         concurrency=config.WRITE_CONCURRENCY,
-        key_field="id"
+        id_field="id"
     )
 
     logger.info("All papers loaded")
 
 
 async def load_data():
-    # Attach to index
-    index = SearchIndex.from_yaml(os.path.join("./schema", "index.yaml"))
-    index.connect(redis_url=config.REDIS_URL, use_async=True)
+    # Load schema specs and create index in Redis
+    index = AsyncSearchIndex.from_yaml(os.path.join("./schema", "index.yaml"))
+    index.connect(redis_url=config.REDIS_URL)
     # Load dataset and create index
     try:
         # Check if index exists
-        if await index.aexists():
+        if await index.exists():
             logger.info("Index already exists, skipping data load")
         else:
             logger.info("Creating new index")
-            await index.acreate(overwrite=True)
+            await index.create(overwrite=True)
             papers = read_paper_json()
             await write_async(index=index, papers=papers)
     except Exception as e:
@@ -72,7 +72,7 @@ async def load_data():
 
     # Wait for any indexing to finish
     while True:
-        info = await index.ainfo()
+        info = await index.info()
         if info["percent_indexed"] == "1":
             logger.info("Indexing is complete!")
             break
