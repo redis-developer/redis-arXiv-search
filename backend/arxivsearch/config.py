@@ -7,11 +7,10 @@ OPENAPI_DOCS = "/api/openapi.json"
 API_V1_STR = "/api/v1"
 
 # Configuration
+DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv-papers-1000.json")
 DATA_LOCATION = os.environ.get("DATA_LOCATION", "../../data")
 DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
-DISTANCE_METRIC = os.environ.get("DISTANCE_METRIC", "COSINE")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
-INDEX_TYPE = os.environ.get("VECSIM_INDEX_TYPE", "HNSW")
 RETURN_FIELDS = [
     "paper_id",
     "authors",
@@ -33,7 +32,5 @@ else:
 # Model Providers
 DEFAULT_PROVIDER = "huggingface"
 SENTENCE_TRANSFORMER_MODEL = os.environ.get("SENTENCE_TRANSFORMER_MODEL", "sentence-transformers/all-mpnet-base-v2")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 OPENAI_EMBEDDING_MODEL = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
-COHERE_API_KEY = os.environ.get("COHERE_API_KEY")
-COHERE_EMBEDDING_MODEL = os.environ.get("COHERE_EMBEDDING_MODEL", "small")
+COHERE_EMBEDDING_MODEL = os.environ.get("COHERE_EMBEDDING_MODEL", "embed-multilingual-v3.0")

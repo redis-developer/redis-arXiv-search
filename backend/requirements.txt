@@ -1,10 +1,8 @@
 fastapi
 uvicorn
-pandas
 ipython
 numpy
-redis>=5.0.0
-redisvl==0.0.5
+redisvl==0.1.0
 cohere
 openai==0.28.1
 sentence-transformers==2.2.2

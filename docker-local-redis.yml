@@ -16,8 +16,8 @@ services:
     ports:
       - "6379:6379"
       - "8001:8001"
-    volumes:
-        - redis-vector-db:/data
+    # volumes:
+    #     - redis-vector-db:/data
     healthcheck:
       test: ["CMD", "redis-cli", "-h", "localhost", "-p", "6379", "ping"]
       interval: 2s
@@ -26,5 +26,5 @@ services:
       start_period: 5s
 
 
-volumes:
-  redis-vector-db:
+# volumes:
+#   redis-vector-db:

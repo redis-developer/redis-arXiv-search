@@ -1,75 +1,83 @@
 #!/usr/bin/env python3
 import asyncio
 import numpy as np
-import pandas as pd
-import pickle
+import json
 import os
+import logging
+
+from typing import Any, Dict, List
+
+from redisvl.index import AsyncSearchIndex
 
 from arxivsearch import config
 from arxivsearch.schema import Provider
 
-from redisvl.index import AsyncSearchIndex
+
+logger = logging.getLogger(__name__)
 
 
-def read_paper_df(provider: str) -> pd.DataFrame:
+def read_paper_json() -> List[Dict[str, Any]]:
     """
-    Load pickled dataframe of arXiv papers and embeddings.
-
-    Args:
-        provider (str): Embedding model provider.
-
-    Returns:
-        pd.DataFrame: Dataframe of papers and associated embeddings.
+    Load JSON array of arXiv papers and embeddings.
     """
-    # TODO improve this data loading method
+    logger.info("Loading papers dataset from disk")
     path = os.path.join(
-        config.DATA_LOCATION, f"arxiv_{provider}_embeddings_1000.pkl"
+        config.DATA_LOCATION, config.DEFAULT_DATASET
     )
-    with open(path, "rb") as f:
-        df = pickle.load(f)
+    with open(path, "r") as f:
+        df = json.load(f)
     return df
 
-async def write_papers(index: AsyncSearchIndex, papers: list):
-    """
-    Write paper records to Redis.
 
-    Args:
-        index (AsyncSearchIndex): Redis search index.
-        papers (list): List of documents to store.
+async def write_async(index: AsyncSearchIndex, papers: list):
     """
-
+    Write arXiv paper records to Redis asynchronously.
+    """
     async def preprocess_paper(paper: dict) -> dict:
-        paper['vector'] = np.array(paper['vector'], dtype=np.float32).tobytes()
+        for provider_vector in Provider:
+            paper[provider_vector] = np.array(
+                paper[provider_vector], dtype=np.float32).tobytes()
         paper['paper_id'] = paper.pop('id')
         paper['categories'] = paper['categories'].replace(",", "|")
         return paper
 
-    await index.load(
+    logger.info("Loading papers dataset to Redis")
+
+    _ = await index.load(
         data=papers,
         preprocess=preprocess_paper,
         concurrency=config.WRITE_CONCURRENCY,
-        key_field="id"
+        id_field="id"
     )
 
-async def load_data():
-    # Iterate through embedding providers and create an index for each
-    for provider in Provider:
-        provider = provider.value
-        yaml_schema_path = os.path.join("./schema", f"{provider}.yaml")
-        index = AsyncSearchIndex.from_yaml(yaml_schema_path)
-        index.connect(redis_url=config.REDIS_URL)
+    logger.info("All papers loaded")
 
+
+async def load_data():
+    # Load schema specs and create index in Redis
+    index = AsyncSearchIndex.from_yaml(os.path.join("./schema", "index.yaml"))
+    index.connect(redis_url=config.REDIS_URL)
+    # Load dataset and create index
+    try:
         # Check if index exists
         if await index.exists():
-            print(f"{provider} index already exists")
+            logger.info("Index already exists, skipping data load")
         else:
-            print(f"Creating {provider} index")
+            logger.info("Creating new index")
             await index.create(overwrite=True)
-            print(f"Loading arXiv papers for {provider} index")
-            papers = read_paper_df(provider)
-            papers = papers.to_dict('records')
-            await write_papers(index=index, papers=papers)
-            print(f"{provider} vectors loaded")
+            papers = read_paper_json()
+            await write_async(index=index, papers=papers)
+    except Exception as e:
+        logger.exception("An exception occurred while trying to load the index and dataset")
+
+    # Wait for any indexing to finish
+    while True:
+        info = await index.info()
+        if info["percent_indexed"] == "1":
+            logger.info("Indexing is complete!")
+            break
+        logger.info(f"{info['percent_indexed']} indexed...")
+        asyncio.sleep(5)
 
 
 if __name__ == "__main__":

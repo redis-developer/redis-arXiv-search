@@ -1,10 +1,13 @@
 import re
 import string
 
-from redisvl.vectorize.text import OpenAITextVectorizer, HFTextVectorizer
+from redisvl.utils.vectorize import (
+    CohereTextVectorizer,
+    OpenAITextVectorizer,
+    HFTextVectorizer
+)
 
 from arxivsearch import config
-from arxivsearch.embeddings.providers import CohereProvider
 from arxivsearch.schema import Provider
 
 
@@ -38,15 +41,15 @@ def preprocess_text(text: str) -> str:
 class Embeddings:
 
     def __init__(self):
-        # Initialize embedding providers if relevant
         self.hf_vectorizer = HFTextVectorizer(
             model=config.SENTENCE_TRANSFORMER_MODEL
         )
         self.oai_vectorizer = OpenAITextVectorizer(
-            model=config.OPENAI_EMBEDDING_MODEL,
-            api_config={"api_key": config.OPENAI_API_KEY}
+            model=config.OPENAI_EMBEDDING_MODEL
         )
-        self.co_vectorizer = CohereProvider()
+        self.co_vectorizer = CohereTextVectorizer(
+            model=config.COHERE_EMBEDDING_MODEL
+        )
 
     async def get(self, provider: str, text: str):
         """
@@ -56,7 +59,6 @@ class Embeddings:
             provider (str): Specified provider to use
             text (str): Text to embed.
         """
-
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
             return self.hf_vectorizer.embed(
@@ -70,9 +72,8 @@ class Embeddings:
                 preprocess=preprocess_text
             )
         elif provider == Provider.cohere.value:
-            return await self.co_vectorizer.embed_query(
+            return self.co_vectorizer.embed(
                 text,
+                input_type="search_query",
                 preprocess=preprocess_text
             )
-
-

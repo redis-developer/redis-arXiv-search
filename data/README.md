@@ -1,21 +1,11 @@
-# Data
+# Dataset Preparation
 
-Document search applications much have embedded documents stored in a low-latency vector database like Redis prior to serving results.
+Document search applications require a dataset of embedded documents stored in a vector database (Redis).
 
 ![document embedding](assets/DocVector.png)
 
-Out of the box, the docker containers shipped with this app/repo can run without manually generating any data. However, if you wish to create your own embeddings, use some of the resources below. Generate data before trying to run this application.
+## Generate your own embeddings
+Out of the box, the docker container shipped with this project runs without manually generating any data. However, if you wish to create your own document embeddings, use this provided [Jupyter Notebook](./create-arxiv-embeddings.ipynb) as a starting point.
 
-## Useful Notebooks
-
-1. `create-arxiv-embeddings.ipynb`
-    - Uses local CPU and creates embeddings for ~1k machine learning papers with HuggingFace Sentence Transformers and OpenAI APIs.
-    - Outputs: `arxiv_huggingface_embeddings_1000.pkl` AND `arxiv_openai_embeddings_1000.pkl`
-
-2. `saturncloud/single-gpu-arxiv-embddings.ipynb`
-    - Uses RAPIDS (CuDF) and GPU on Saturn Cloud to speed up embedding creation with HuggingFace Sentence Transformer models. Much larger subset (100k).
-    - Output: `arxiv_embeddings_100000.pkl`
-
-3. `saturncloud/multi-gpu-arxiv-embeddings.ipynb`
-    - Uses RAPIDS and Dask (Dask CuDF) on Saturn Cloud to parallelize embedding creation with HuggingFace Sentence Transformer models. Much much larger subset (700k). Only output 300k to file.
-    - Output: `arxiv_embeddings_300000pkl`.
+- The notebook will generate a file called `arxiv-papers-1000.json` that contains 1,000 sampled arxiv abstracts & embeddings from a few different embedding providers (OpenAI, Cohere, and HuggingFace).
+- The notebook requires a [Kaggle API key](https://kaggle.com) and all python libraries listed in the main repo requirements.txt.

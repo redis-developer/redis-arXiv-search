@@ -4,7 +4,7 @@
     <br />
     <br />
 <div display="inline-block">
-    <a href="https://docsearch.redisventures.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://docsearch.redisvl.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/"><b>Redis Vector Search Documentation</b></a>&nbsp;&nbsp;&nbsp;
@@ -14,7 +14,7 @@
 </div>
 
 # 🔎 Redis arXiv Search
-*This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisventures.com***
+*This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisvl.com***
 
 [Redis](https://redis.com) is a highly performant, production-ready vector database, which can be used for many types of applications. Here we showcase Redis vector search applied to a document retrieval use case. Read more about AI-powered search in [the technical blog post](https://datasciencedojo.com/blog/ai-powered-document-search/) published by our partners, *[Data Science Dojo](https://datasciencedojo.com)*.
 
@@ -30,7 +30,7 @@ The arXiv papers dataset was sourced from the the following [Kaggle link](https:
 This app was built as a Single Page Application (SPA) with the following components:
 
 - **[Redis Stack](https://redis.io/docs/stack/)** for vector database
-- **[RedisVL](https://redisvl.com)** for vector db client
+- **[RedisVL](https://redisvl.com)** for Python vector db client
 - **[FastAPI](https://fastapi.tiangolo.com/)** for Python API
 - **[Pydantic](https://pydantic-docs.helpmanual.io/)** for schema and validation
 - **[React](https://reactjs.org/)** (with Typescript)
@@ -49,7 +49,7 @@ Embeddings represent the semantic properies of the raw text and enable vector si
 | ------------- |-------------| ----- |
 | HuggingFace      | `sentence-transformers/all-mpnet-base-v2` | Yes |
 | OpenAI      | `text-embedding-ada-002`      |   Yes |
-| Cohere | `small`      |    Yes |
+| Cohere | `embed-multilingual-v3.0`      |    Yes |
 
 **Interested in a different embedding provider?** Feel free to open a PR and make a suggested addition.
 
@@ -77,7 +77,7 @@ Embeddings represent the semantic properies of the raw text and enable vector si
     - **[Redis Stack](#redis-stack-docker)** runs Redis as a local docker container.
     - **[Redis Cloud](#redis-cloud)** will manage a Redis database on your behalf in the cloud.
 
-### Redis Stack Docker
+### Redis Stack Docker (Local)
 Using Redis Stack locally doesn't require any additional steps. However, it will consume more resources on your machine and have performance limitations.
 
 Use the provided `docker-compose` file for running the application locally:
@@ -99,14 +99,12 @@ $ docker compose -f docker-local-redis.yml up
 
 
 ## Customizing (optional)
-- **Customize Data**: You can use the Jupyter Notebooks in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The pickled dataframes will end up stored in the `data/` directory and used when creating your own container.
-
-- **Customize Code**: You can use the `./build.sh` script to build your own docker image based on the application source code changes.
-
-- **Kubernetes??**: If you want to use K8s instead of Docker Compose, we have some [resources to help you get started](k8s/README.md).
+- You can use the provided Jupyter Notebook in the [`data/`](data/README.md) directory to create paper embeddings and metadata. The output JSON files will end up stored in the `data/` directory and used when creating your own container.
+- Use the `./build.sh` script to build your own docker image based on the application source code and dataset changes.
+- If you want to use K8s instead of Docker Compose, we have some [resources to help you get started](k8s/README.md).
 
 ### React Dev Environment
-It's typically easier to write front end code in an interactive environment, testing changes in realtime.
+It's typically easier to build front end in an interactive environment, testing changes in realtime.
 
 1. Deploy the app using steps above.
 2. Install packages (you may need to use `npm` to install `yarn`)
