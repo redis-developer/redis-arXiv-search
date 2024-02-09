@@ -9,11 +9,3 @@ Out of the box, the docker container shipped with this project runs without manu
 
 - The notebook will generate a file called `arxiv-papers-1000.json` that contains 1,000 sampled arxiv abstracts & embeddings from a few different embedding providers (OpenAI, Cohere, and HuggingFace).
 - The notebook requires a [Kaggle API key](https://kaggle.com) and all python libraries listed in the main repo requirements.txt.
-
-## Pull pre-prepared dataset
-If you wish to pull the dataset that's already prepared and packaged with the
-application's hosted docker container, you can fetch it with this command:
-
-```bash
-
-```
