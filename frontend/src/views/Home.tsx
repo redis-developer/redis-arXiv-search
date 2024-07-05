@@ -202,54 +202,42 @@ export const Home = (props: Props) => {
 
   return (
     <>
-      <main role="main">
-        <section className="jumbotron mb-0 bg-white" style={{ paddingTop: '40px', width: "95%" }}>
-          <div className="container" style={{display: "grid"}}>
-            <h1 className="jumbotron-heading">arXiv Paper Search</h1>
-            {/* <p className="lead text-muted">
-              Redis is a real-time data platform that functions as a vector database, ML feature store, and low-latency data serving layer.
-            </p> */}
-            <p className="lead text-muted">
+      <main role="main" style={{ padding: "0 25px" }}>
+        <section style={{ paddingTop: "40px" }}>
+          <div style={{ display: "grid" }}>
+            <h1>arXiv Paper Search</h1>
+            <p>
               <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers.</strong>
             </p>
-            {/* <div className='lead'>
-              Search for arXiv papers using filters and natural language. Test different embedding models and see how they affect search results.
-            </div> */}
             <hr></hr>
-            {/* <div style={{display: "flex", alignItems: "center"}}>
-              <div style={{paddingRight: "2rem"}}>Embedding model:</div>
-            </div> */}
-            <div style={{display: "flex", justifyContent: "space-between"}}>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
               <EmbeddingModelOptions></EmbeddingModelOptions>
               <div>
                 <YearOptions></YearOptions>
                 <CategoryOptions></CategoryOptions>
               </div>
             </div>
-            <div className="container">
+            <div>
               <SearchBar
                 placeholder='Vector search query'
                 value={searchState}
                 onChange={(newValue) => handleSearchChange(newValue)}
                 onRequestSearch={() => queryPapers()}
-                style={{
-                  margin: '20px 0',
-                }}
               />
             </div>
           </div>
         </section>
-        <div className="album py-5 bg-light">
-          <div className="container">
-            <p style={{ fontSize: 15 }}>
+        <div>
+          <div>
+            <p>
               <Tooltip title="Filtered paper count" arrow>
                 <em>{total} searchable arXiv papers</em>
               </Tooltip>
             </p>
           </div>
-          <div className="container">
+          <div>
             {papers && (
-              <div className="row">
+              <div style={{ display: "flex" }}>
                 {papers.map((paper) => (
                   <Card
                     title={paper.title}

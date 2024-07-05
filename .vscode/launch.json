@@ -15,6 +15,7 @@
             "module": "uvicorn",
             "args": [
                 "arxivsearch.main:app",
+                "--port=8888",
                 "--reload"
             ],
             "jinja": true,

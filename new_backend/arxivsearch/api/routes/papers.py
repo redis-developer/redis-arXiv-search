@@ -198,12 +198,12 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     # Check available paper count and create vector from user text
     count_query = CountQuery(filter_expression)
     query_vector = await embeddings.get(
-        provider=similarity_request.provider, text=similarity_request.user_text
+        provider=similarity_request.provider.value, text=similarity_request.user_text
     )
     # Assemble vector query
     paper_similarity_query = VectorQuery(
         vector=query_vector,
-        vector_field_name=similarity_request.provider,
+        vector_field_name=similarity_request.provider.value,
         num_results=similarity_request.number_of_results,
         return_fields=config.RETURN_FIELDS,
         filter_expression=filter_expression,
