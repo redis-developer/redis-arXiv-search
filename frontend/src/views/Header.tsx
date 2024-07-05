@@ -13,28 +13,28 @@ export const Header = (props: Props) => {
   const Navigate = useNavigate();
 
    // This function is called when the input changes
-   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-     const enteredText = event.target.value;
-     setText(enteredText);
-  };
+  //  const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+  //    const enteredText = event.target.value;
+  //    setText(enteredText);
+  // };
 
   return (
    <header>
     <Navbar expand="lg" bg="dark" variant="dark" style={{ padding: '25px'}} >
       <Container fluid>
         <Navbar.Brand style={{marginRight: "-30rem"}} href="#">
-            <img
-              src={BASE_URL + `/data/redis-logo.png`}
-              alt="Redis Logo"
-              style={{
-                height: '7%',
-                width: '7%',
-                paddingRight: '10px',
-                }}>
-            </img>
-          Redis Vector Search Demo
+          <img
+            src={BASE_URL + `/data/redis-logo.png`}
+            alt="Redis Logo"
+            style={{
+              height: '7%',
+              width: '7%',
+              paddingRight: '10px',
+              }}>
+          </img>
         </Navbar.Brand>
-        <Navbar.Toggle aria-controls="navbarScroll" />
+        {/* <h1 style={{textAlign: "center", color: "white"}}>arXiv Paper Search</h1> */}
+        {/* <Navbar.Toggle aria-controls="navbarScroll" />
         <Navbar.Collapse id="navbarScroll" style={{top: "5px"}}>
           <Nav
             className="me-auto my-2 my-lg-0"
@@ -57,7 +57,12 @@ export const Header = (props: Props) => {
               Talk With Us!
             </Nav.Link>
           </Nav>
-        </Navbar.Collapse>
+        </Navbar.Collapse> */}
+        <Nav>
+          <Nav.Link className="btn btn-primary m-2" href="https://redis.com/vss-meeting/" target="_blank">
+            Talk With Us!
+          </Nav.Link>
+        </Nav>
       </Container>
     </Navbar>
    </header>

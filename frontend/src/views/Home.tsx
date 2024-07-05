@@ -20,7 +20,7 @@ import Tooltip from '@mui/material/Tooltip';
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-interface Props {}
+interface Props { }
 
 export const Home = (props: Props) => {
   const [error, setError] = useState<string>('');
@@ -93,7 +93,7 @@ export const Home = (props: Props) => {
         >
           <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
           <FormControlLabel value="openai" control={<Radio />} label="OpenAI" />
-          <FormControlLabel value="cohere" control={<Radio />} label="Cohere"/>
+          <FormControlLabel value="cohere" control={<Radio />} label="Cohere" />
         </RadioGroup>
       </FormControl>
     );
@@ -112,26 +112,26 @@ export const Home = (props: Props) => {
       console.log(years)
     };
     return (
-        <FormControl sx={{ m: 1, width: 150 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={years}
-            onChange={handleChange}
-            input={<OutlinedInput label="Tag" />}
-            renderValue={(selected) => selected.join(', ')}
-            MenuProps={MenuProps}
-          >
-            {yearOptions.map((year) => (
-              <MenuItem key={year} value={year}>
-                <Checkbox checked={years.indexOf(year) > -1} />
-                <ListItemText primary={year} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <FormControl sx={{ m: 1, width: 150 }}>
+        <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
+        <Select
+          labelId="demo-multiple-checkbox-label"
+          id="demo-multiple-checkbox"
+          multiple
+          value={years}
+          onChange={handleChange}
+          input={<OutlinedInput label="Tag" />}
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={MenuProps}
+        >
+          {yearOptions.map((year) => (
+            <MenuItem key={year} value={year}>
+              <Checkbox checked={years.indexOf(year) > -1} />
+              <ListItemText primary={year} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
 
@@ -177,7 +177,7 @@ export const Home = (props: Props) => {
 
   const queryPapers = async () => {
     try {
-      if ( searchState ) {
+      if (searchState) {
         const result = await getSemanticallySimilarPapersbyText(searchState, years, categories, provider)
         setPapers(result.papers)
         setTotal(result.total)
@@ -203,61 +203,70 @@ export const Home = (props: Props) => {
   return (
     <>
       <main role="main">
-      <section className="jumbotron text-center mb-0 bg-white" style={{ paddingTop: '40px', width: "95%"}}>
-      <div className="container">
-       <h1 className="jumbotron-heading">arXiv Paper Search</h1>
-       <p className="lead text-muted">
-           Redis is a real-time data platform that functions as a vector database, ML feature store, and low-latency data serving layer.
-       </p>
-       <p className="lead text-muted">
-           <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers:</strong>
-       </p>
-       <div className="container">
-        <SearchBar
-          placeholder='Search'
-          value={searchState}
-          onChange={(newValue) => handleSearchChange(newValue)}
-          onRequestSearch={() => queryPapers()}
-          style={{
-            margin: '20px 0',
-          }}
-        />
-       </div>
-       <div>
-        <EmbeddingModelOptions></EmbeddingModelOptions>
-        <YearOptions></YearOptions>
-        <CategoryOptions></CategoryOptions>
-    </div>
-      </div>
-     </section>
-      <div className="album py-5 bg-light">
-        <div className="container">
-          <p style={{fontSize: 15}}>
-            <Tooltip title="Filtered paper count" arrow>
-              <em>{total} searchable arXiv papers</em>
-            </Tooltip>
-          </p>
-        </div>
-        <div className="container">
-          {papers && (
-            <div className="row">
-              {papers.map((paper) => (
-                 <Card
-                  title={paper.title}
-                  authors={paper.authors}
-                  paperId={paper.paper_id}
-                  numPapers={15}
-                  paperCat={paper.categories}
-                  paperYear={paper.year}
-                  categories={categories}
-                  years={years}
-                  provider={provider}
-                  similarity_score={paper.similarity_score}
-                  setState={setPapers}
-                  setTotal={setTotal}
+        <section className="jumbotron mb-0 bg-white" style={{ paddingTop: '40px', width: "95%" }}>
+          <div className="container" style={{display: "grid"}}>
+            <h1 className="jumbotron-heading">arXiv Paper Search</h1>
+            {/* <p className="lead text-muted">
+              Redis is a real-time data platform that functions as a vector database, ML feature store, and low-latency data serving layer.
+            </p> */}
+            <p className="lead text-muted">
+              <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers.</strong>
+            </p>
+            {/* <div className='lead'>
+              Search for arXiv papers using filters and natural language. Test different embedding models and see how they affect search results.
+            </div> */}
+            <hr></hr>
+            {/* <div style={{display: "flex", alignItems: "center"}}>
+              <div style={{paddingRight: "2rem"}}>Embedding model:</div>
+            </div> */}
+            <div style={{display: "flex", justifyContent: "space-between"}}>
+              <EmbeddingModelOptions></EmbeddingModelOptions>
+              <div>
+                <YearOptions></YearOptions>
+                <CategoryOptions></CategoryOptions>
+              </div>
+            </div>
+            <div className="container">
+              <SearchBar
+                placeholder='Vector search query'
+                value={searchState}
+                onChange={(newValue) => handleSearchChange(newValue)}
+                onRequestSearch={() => queryPapers()}
+                style={{
+                  margin: '20px 0',
+                }}
+              />
+            </div>
+          </div>
+        </section>
+        <div className="album py-5 bg-light">
+          <div className="container">
+            <p style={{ fontSize: 15 }}>
+              <Tooltip title="Filtered paper count" arrow>
+                <em>{total} searchable arXiv papers</em>
+              </Tooltip>
+            </p>
+          </div>
+          <div className="container">
+            {papers && (
+              <div className="row">
+                {papers.map((paper) => (
+                  <Card
+                    title={paper.title}
+                    authors={paper.authors}
+                    paperId={paper.paper_id}
+                    numPapers={15}
+                    paperCat={paper.categories}
+                    paperYear={paper.year}
+                    categories={categories}
+                    years={years}
+                    provider={provider}
+                    similarity_score={paper.similarity_score}
+                    setState={setPapers}
+                    setTotal={setTotal}
                   />
                 ))}
-            </div>
+              </div>
             )}
           </div>
         </div>
