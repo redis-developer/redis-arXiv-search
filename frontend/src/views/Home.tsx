@@ -16,6 +16,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Box from '@mui/material/Box';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -31,6 +33,7 @@ export const Home = (props: Props) => {
   const [categories, setCategories] = useState<string[]>([]);
   const [provider, setProvider] = useState<string>('huggingface');
   const [searchState, setSearchState] = useState<string>('');
+  const [loading, setLoadingState] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
 
   const ITEM_HEIGHT = 48;
@@ -83,7 +86,6 @@ export const Home = (props: Props) => {
     };
     return (
       <FormControl>
-        <FormLabel id="demo-row-radio-buttons-group-label">Embedding Model</FormLabel>
         <RadioGroup
           row
           aria-labelledby="demo-controlled-radio-buttons-group"
@@ -91,9 +93,9 @@ export const Home = (props: Props) => {
           value={provider}
           onChange={handleChange}
         >
-          <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
-          <FormControlLabel value="openai" control={<Radio />} label="OpenAI" />
-          <FormControlLabel value="cohere" control={<Radio />} label="Cohere" />
+          <FormControlLabel value="huggingface" control={<Radio />} label="all-mpnet-base-v2" />
+          <FormControlLabel value="openai" control={<Radio />} label="text-embedding-ada-002" />
+          <FormControlLabel value="cohere" control={<Radio />} label="embed-multilingual-v3.0" />
         </RadioGroup>
       </FormControl>
     );
@@ -112,7 +114,7 @@ export const Home = (props: Props) => {
       console.log(years)
     };
     return (
-      <FormControl sx={{ m: 1, width: 150 }}>
+      <FormControl sx={{ m: 1, width: "35%", marginLeft: 0 }}>
         <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
@@ -148,7 +150,7 @@ export const Home = (props: Props) => {
       console.log(years)
     };
     return (
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <FormControl sx={{ m: 1, width: "45%" }}>
         <InputLabel id="demo-multiple-checkbox-label">Category</InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
@@ -172,6 +174,7 @@ export const Home = (props: Props) => {
   }
 
   const handleSearchChange = async (newValue: string) => {
+    setLoadingState(true);
     setSearchState(newValue);
   }
 
@@ -180,11 +183,13 @@ export const Home = (props: Props) => {
       if (searchState) {
         const result = await getSemanticallySimilarPapersbyText(searchState, years, categories, provider)
         setPapers(result.papers)
+        setLoadingState(false);
         setTotal(result.total)
       } else {
         setSkip(skip + limit);
         const result = await getPapers(limit, skip, years, categories);
         setPapers(result.papers)
+        setLoadingState(false);
         setTotal(result.total)
       }
     } catch (err) {
@@ -204,40 +209,50 @@ export const Home = (props: Props) => {
     <>
       <main role="main" style={{ padding: "0 25px" }}>
         <section style={{ paddingTop: "40px" }}>
-          <div style={{ display: "grid" }}>
-            <h1>arXiv Paper Search</h1>
-            <p>
-              <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers.</strong>
-            </p>
+          <div>
+            <div style={{ textAlign: "center" }}>
+              <h1>arXiv Paper Search</h1>
+              <p>
+                Search for scholarly papers on <a href="https://arxiv.org/" target="_blank">arXiv</a> using natural language queries and filters, or use the "more like this" button to find semantically similar papers.
+              </p>
+            </div>
             <hr></hr>
-            <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <EmbeddingModelOptions></EmbeddingModelOptions>
+            <div style={{ padding: "5%" }}>
               <div>
+                <div>Embedding model</div>
+                <EmbeddingModelOptions></EmbeddingModelOptions>
+              </div>
+              <div style={{ padding: "1rem 0" }}>
+                <div>Filters</div>
                 <YearOptions></YearOptions>
                 <CategoryOptions></CategoryOptions>
               </div>
-            </div>
-            <div>
-              <SearchBar
-                placeholder='Vector search query'
-                value={searchState}
-                onChange={(newValue) => handleSearchChange(newValue)}
-                onRequestSearch={() => queryPapers()}
-              />
+              <div>
+                <div>Vector query</div>
+                <SearchBar
+                  placeholder='Search'
+                  value={searchState}
+                  onChange={(newValue) => handleSearchChange(newValue)}
+                  onRequestSearch={() => queryPapers()}
+                />
+              </div>
+              <div>
+                <p>
+                  <Tooltip title="Filtered paper count" arrow>
+                    <em>{total} searchable arXiv papers</em>
+                  </Tooltip>
+                </p>
+              </div>
             </div>
           </div>
         </section>
         <div>
+          {loading && <Box sx={{ display: 'flex', padding: '0 5%' }}>
+            <CircularProgress />
+          </Box>}
           <div>
-            <p>
-              <Tooltip title="Filtered paper count" arrow>
-                <em>{total} searchable arXiv papers</em>
-              </Tooltip>
-            </p>
-          </div>
-          <div>
-            {papers && (
-              <div style={{ display: "flex" }}>
+            {!loading && papers && (
+              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
                 {papers.map((paper) => (
                   <Card
                     title={paper.title}

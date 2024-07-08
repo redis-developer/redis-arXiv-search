@@ -40,7 +40,7 @@ export const Card = (props: Props) => {
   };
 
   return (
-    <div style={{ border: "1px solid black", padding: "1rem", margin: "1rem", width: "30rem" }}>
+    <div style={{ border: "1px solid black", borderRadius: "0.5rem", padding: "1rem", margin: "1rem", width: "26rem" }}>
       <a href={`https://arxiv.org/abs/${props.paperId}`}>
         <strong>{props.title}</strong>
       </a>

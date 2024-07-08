@@ -6,9 +6,9 @@ import { Footer } from './views/Footer';
 export const Layout: FC = () => {
     return (
         <>
-        <Header/>
-        <Home/>
-        <Footer/>
+            <Header />
+            <Home />
+            <Footer />
         </>
     );
 };
