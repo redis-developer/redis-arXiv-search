@@ -8,7 +8,7 @@ API_V1_STR = "/api/v1"
 
 # Configuration
 DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv-papers-1000.json")
-DATA_LOCATION = os.environ.get("DATA_LOCATION", "../../data")
+DATA_LOCATION = os.environ.get("DATA_LOCATION", "../data")
 DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
 RETURN_FIELDS = [
@@ -17,7 +17,7 @@ RETURN_FIELDS = [
     "categories",
     "year",
     "title",
-    "vector_distance"
+    "vector_distance",
 ]
 
 # Redis
@@ -31,6 +31,12 @@ else:
 
 # Model Providers
 DEFAULT_PROVIDER = "huggingface"
-SENTENCE_TRANSFORMER_MODEL = os.environ.get("SENTENCE_TRANSFORMER_MODEL", "sentence-transformers/all-mpnet-base-v2")
-OPENAI_EMBEDDING_MODEL = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
-COHERE_EMBEDDING_MODEL = os.environ.get("COHERE_EMBEDDING_MODEL", "embed-multilingual-v3.0")
+SENTENCE_TRANSFORMER_MODEL = os.environ.get(
+    "SENTENCE_TRANSFORMER_MODEL", "sentence-transformers/all-mpnet-base-v2"
+)
+OPENAI_EMBEDDING_MODEL = os.environ.get(
+    "OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002"
+)
+COHERE_EMBEDDING_MODEL = os.environ.get(
+    "COHERE_EMBEDDING_MODEL", "embed-multilingual-v3.0"
+)

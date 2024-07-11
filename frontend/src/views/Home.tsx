@@ -217,7 +217,7 @@ export const Home = (props: Props) => {
               </p>
             </div>
             <hr></hr>
-            <div style={{ padding: "5%" }}>
+            <div style={{ padding: "2rem 5%" }}>
               <div>
                 <div>Embedding model</div>
                 <EmbeddingModelOptions></EmbeddingModelOptions>
@@ -247,7 +247,8 @@ export const Home = (props: Props) => {
           </div>
         </section>
         <div>
-          {loading && <Box sx={{ display: 'flex', padding: '0 5%' }}>
+          <div style={{ padding: "0 0 0 5%" }}>Search results</div>
+          {loading && <Box sx={{ display: 'flex', padding: '2rem 5%' }}>
             <CircularProgress />
           </Box>}
           <div>

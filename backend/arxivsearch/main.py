@@ -7,7 +7,7 @@ from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from arxivsearch import config
-from arxivsearch.api import routes
+from arxivsearch.api.main import api_router
 from arxivsearch.spa import SinglePageApplication
 
 
@@ -29,10 +29,13 @@ app.add_middleware(
 )
 
 # Routers
-app.include_router(routes.router, prefix=config.API_V1_STR + "/paper", tags=["papers"])
+app.include_router(
+    api_router,
+    prefix=config.API_V1_STR,
+)
 
 # static image files
-app.mount("data", StaticFiles(directory="data"), name="data")
+app.mount("/data", StaticFiles(directory="data"), name="data")
 
 ## mount the built GUI react files into the static dir to be served.
 current_file = Path(__file__)
@@ -40,7 +43,8 @@ project_root = current_file.parent.resolve()
 gui_build_dir = project_root / "templates" / "build"
 app.mount(path="/", app=SinglePageApplication(directory=gui_build_dir), name="SPA")
 
-if __name__ == "__main__":
+
+def main():
     server_attr = {"host": "0.0.0.0", "reload": True, "port": 8888, "workers": 1}
     if config.DEPLOYMENT_ENV == "prod":
         server_attr.update(
@@ -52,4 +56,8 @@ if __name__ == "__main__":
             }
         )
 
-    uvicorn.run("main:app", **server_attr)
+    uvicorn.run(app, **server_attr)
+
+
+if __name__ == "__main__":
+    main()

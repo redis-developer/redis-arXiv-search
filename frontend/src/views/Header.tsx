@@ -20,17 +20,29 @@ export const Header = (props: Props) => {
 
   return (
     <header>
-      <div style={{ background: "black", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "25px" }}>
+      <div style={{ background: "#091a23", display: "flex", justifyContent: "space-between", alignItems: "center", padding: "25px" }}>
         <img
           src={BASE_URL + `/data/redis-logo.png`}
           alt="Redis Logo"
           style={{
-            height: '15%',
-            width: '15%',
+            height: '2rem',
           }}>
         </img>
-        {/* <h1 style={{ color: "white" }}>arXiv Paper Search</h1> */}
-        <a className="btn" style={{ color: "white" }}>Talk with us!</a>
+        <div>
+          <a href='https://x.com/Redisinc'>
+            <img
+              src={"x-logo.svg"}
+              style={{ height: "1.5rem", width: "1.5rem", marginRight: "1rem" }}
+            ></img>
+          </a>
+          <a href='https://github.com/redis-developer/redis-arXiv-search'>
+            <img
+              src={"github-mark-white.svg"}
+              style={{ height: "1.5rem", width: "1.5rem", marginRight: "1rem" }}
+            ></img>
+          </a>
+          <a className="btn" style={{ background: "#dcff1e" }}>Talk with us!</a>
+        </div>
       </div>
 
       {/* <Navbar expand="lg" bg="dark" variant="dark" style={{ padding: '25px' }} >
