@@ -1,17 +1,18 @@
 import asyncio
 import numpy as np
 import logging
+from fastapi import FastAPI
+from contextlib import asynccontextmanager
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query, Depends
 from redis.asyncio import Redis
 
 from redisvl.index import AsyncSearchIndex
 from redisvl.query import VectorQuery, FilterQuery, CountQuery
 
 from arxivsearch import config
-from arxivsearch.redis import helpers
+from arxivsearch.db import redis_helpers
 from arxivsearch.utils.embeddings import Embeddings
-from arxivsearch.utils.utils import build_filter_expression, prepare_response
 from arxivsearch.schema.similarity import (
     PaperSimilarityRequest,
     UserTextSimilarityRequest,
@@ -22,23 +23,49 @@ from arxivsearch.schema.similarity import (
 
 logger = logging.getLogger(__name__)
 
-# Initialize the API router
-router = APIRouter()
 
-# TODO: these could move to a deps file and be injected potentially
-# Initialize embeddings and paper vector field name
+# class DB:
+#     client = None
+#     schema = None
+#     index = None
+
+
+# db = DB()
+
+# Initialize embeddings once
 embeddings = Embeddings()
 
-# Preload Redis connection details
-client = Redis.from_url(config.REDIS_URL)
+# client = Redis.from_url(config.REDIS_URL)
+# schema = redis_helpers.get_schema()
+# index = AsyncSearchIndex(schema, client)
 
-# Preload schema
-schema = helpers.get_index()
+
+# @asynccontextmanager
+# async def lifespan(app: FastAPI):
+#     db.client = Redis.from_url(config.REDIS_URL)
+#     db.schema = redis_helpers.get_schema()
+#     db.index = AsyncSearchIndex(db.schema, db.client)
+#     yield
+#     db.client.aclose()
+
+
+# Initialize the API router
+router = APIRouter()
 
 
 @router.get("/", response_model=SearchResponse)
 async def get_papers(
-    limit: int = 20, skip: int = 0, years: str = "", categories: str = ""
+    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+    limit: int = Query(default=20, description="Maximum number of papers to return."),
+    skip: int = Query(
+        default=0, description="Number of papers to skip for pagination."
+    ),
+    years: str = Query(
+        default="", description="Comma-separated string of years to filter papers."
+    ),
+    categories: str = Query(
+        default="", description="Comma-separated string of categories to filter papers."
+    ),
 ):
     """Fetch and return papers with optional filtering by years and categories.
 
@@ -55,24 +82,28 @@ async def get_papers(
     Returns:
         dict: Dictionary containing total count and list of papers.
     """
-    # Attach to index
-    index = AsyncSearchIndex(schema, client)
 
     # Build queries
-    filter_expression = build_filter_expression(years.split(","), categories.split(","))
+    filter_expression = redis_helpers.build_filter_expression(
+        years.split(","), categories.split(",")
+    )
     filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
     filter_query.set_paging(skip, limit)
     count_query = CountQuery(filter_expression)
+
     # Execute searches
     total_count, result_papers = await asyncio.gather(
         index.query(count_query), index.query(filter_query)
     )
-    result_papers = await index.query(filter_query)
+    # await index.client.aclose()
     return SearchResponse(total=total_count, papers=result_papers)
 
 
 @router.post("/vector_search/by_paper", response_model=VectorSearchResponse)
-async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
+async def find_papers_by_paper(
+    similarity_request: PaperSimilarityRequest,
+    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+):
     """
     Find and return papers similar to a given paper based on vector
     similarity.
@@ -85,20 +116,20 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
     Returns:
         dict: Dictionary containing total count and list of similar papers.
     """
-    # Attach to index
-    index = AsyncSearchIndex(schema, client)
 
     # Fetch paper vector from the HASH, cast to numpy array
     paper = await index.fetch(similarity_request.paper_id)
-    paper_vector = np.frombuffer(paper[similarity_request.provider], dtype=np.float32)
+    paper_vector = np.frombuffer(
+        paper[similarity_request.provider.value], dtype=np.float32
+    )
     # Build filter expression
-    filter_expression = build_filter_expression(
+    filter_expression = redis_helpers.build_filter_expression(
         similarity_request.years, similarity_request.categories
     )
     # Create queries
     paper_similarity_query = VectorQuery(
         vector=paper_vector,
-        vector_field_name=similarity_request.provider,
+        vector_field_name=similarity_request.provider.value,
         num_results=similarity_request.number_of_results,
         return_fields=config.RETURN_FIELDS,
         filter_expression=filter_expression,
@@ -109,11 +140,15 @@ async def find_papers_by_paper(similarity_request: PaperSimilarityRequest):
         index.query(count_query), index.query(paper_similarity_query)
     )
     # Get Paper records of those results
+    # await index.client.aclose()
     return VectorSearchResponse(total=total_count, papers=result_papers)
 
 
 @router.post("/vector_search/by_text", response_model=VectorSearchResponse)
-async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
+async def find_papers_by_text(
+    similarity_request: UserTextSimilarityRequest,
+    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+):
     """
     Find and return papers similar to user-provided text based on
     vector similarity.
@@ -126,11 +161,9 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     Returns:
         dict: Dictionary containing total count and list of similar papers.
     """
-    # Attach to index
-    index = AsyncSearchIndex(schema, client)
 
     # Build filter expression
-    filter_expression = build_filter_expression(
+    filter_expression = redis_helpers.build_filter_expression(
         similarity_request.years, similarity_request.categories
     )
     # Check available paper count and create vector from user text
@@ -150,4 +183,6 @@ async def find_papers_by_text(similarity_request: UserTextSimilarityRequest):
     total_count, result_papers = await asyncio.gather(
         index.query(count_query), index.query(paper_similarity_query)
     )  # Get Paper records of those results
+
+    # await index.client.aclose()
     return VectorSearchResponse(total=total_count, papers=result_papers)

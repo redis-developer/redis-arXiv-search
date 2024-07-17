@@ -1,12 +1,11 @@
-from typing import Any
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field
 
 from arxivsearch.schema.provider import Provider
 
 
 class BaseRequest(BaseModel):
-    categories: list
-    years: list
+    categories: list[str]
+    years: list[str]
     provider: Provider
     number_of_results: int = 15
     search_type: str = "KNN"
@@ -21,8 +20,7 @@ class UserTextSimilarityRequest(BaseRequest):
 
 
 class Paper(BaseModel):
-    id: str
-    paper_id: str
+    paper_id: str = Field(alias="id")
     authors: str
     categories: str
     year: str

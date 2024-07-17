@@ -7,7 +7,7 @@
         {
             "name": "Python Debugger: FastAPI",
             "type": "debugpy",
-            "cwd": "${workspaceFolder}/new_backend/",
+            "cwd": "${workspaceFolder}/backend/",
             "env": {
                 "PYTHONPATH": "${cwd}"
             },

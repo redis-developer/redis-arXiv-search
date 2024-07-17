@@ -2,7 +2,9 @@ import uvicorn
 import logging
 
 from pathlib import Path
+
 from fastapi import FastAPI
+
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
@@ -14,7 +16,6 @@ from arxivsearch.spa import SinglePageApplication
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
-
 
 app = FastAPI(
     title=config.PROJECT_NAME, docs_url=config.API_DOCS, openapi_url=config.OPENAPI_DOCS

@@ -8,7 +8,7 @@ from typing import Any, Dict, List
 
 from arxivsearch import config
 from arxivsearch.schema.provider import Provider
-from arxivsearch.redis import helpers
+from arxivsearch.db import redis_helpers
 
 from redisvl.index import AsyncSearchIndex
 
@@ -55,8 +55,8 @@ async def write_async(index: AsyncSearchIndex, papers: list):
 
 async def load_data():
     # Load schema specs and create index in Redis
-    index = helpers.get_async_index()
-    index.connect(redis_url=config.REDIS_URL)
+    index = await redis_helpers.get_async_index()
+
     # Load dataset and create index
     try:
         # Check if index exists
@@ -72,6 +72,8 @@ async def load_data():
         logger.exception(
             "An exception occurred while trying to load the index and dataset"
         )
+    finally:
+        await index.client.aclose()
 
     # Wait for any indexing to finish
     while True:

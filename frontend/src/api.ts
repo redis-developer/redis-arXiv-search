@@ -56,6 +56,7 @@ export const getSemanticallySimilarPapers = async (paper_id: string,
   search = 'KNN',
   limit = 15) => {
   console.log(paper_id);
+
   let body = {
     paper_id: paper_id,
     provider: provider,
@@ -70,12 +71,14 @@ export const getSemanticallySimilarPapers = async (paper_id: string,
 };
 
 
-export const getSemanticallySimilarPapersbyText = async (text: string,
+export const getSemanticallySimilarPapersbyText = async (
+  text: string,
   years: string[],
   categories: string[],
   provider: string,
   search = 'KNN',
-  limit = 15) => {
+  limit = 15
+) => {
   let body = {
     user_text: text,
     provider: provider,
@@ -84,6 +87,8 @@ export const getSemanticallySimilarPapersbyText = async (text: string,
     years: years,
     categories: categories
   }
+
+  console.log(body)
 
   const url = MASTER_URL + "vector_search/by_text";
   return fetchFromBackend(url, 'POST', body);
