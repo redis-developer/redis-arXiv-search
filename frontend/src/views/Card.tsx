@@ -40,7 +40,7 @@ export const Card = (props: Props) => {
   };
 
   return (
-    <div style={{ border: "1px solid black", borderRadius: "0.5rem", padding: "1rem", margin: "1rem", width: "26rem" }}>
+    <div className="card">
       <a href={`https://arxiv.org/abs/${props.paperId}`}>
         <strong>{props.title}</strong>
       </a>
@@ -52,7 +52,7 @@ export const Card = (props: Props) => {
           {props.similarity_score ? (<div><strong>Vector search similarity score:</strong> <em>{props.similarity_score.toFixed(2)}</em></div>) : <></>}
         </div>
       </div>
-      <div style={{ paddingTop: "1rem" }}>
+      <div className="card-top">
         <Tooltip title="Search for more papers like this one">
           <button
             type="button"
@@ -62,7 +62,7 @@ export const Card = (props: Props) => {
             More Like This
           </button>
         </Tooltip>
-        <div style={{ width: "0.5rem", display: "inline-block" }}></div>
+        <div className="card-btns"></div>
         <a href={`https://arxiv.org/pdf/${props.paperId}`} rel="noreferrer">
           <button
             type="button"

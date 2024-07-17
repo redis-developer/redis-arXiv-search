@@ -207,22 +207,22 @@ export const Home = (props: Props) => {
 
   return (
     <>
-      <main role="main" style={{ padding: "0 25px" }}>
+      <main role="main" className='home-padding'>
         <section style={{ paddingTop: "40px" }}>
           <div>
-            <div style={{ textAlign: "center" }}>
+            <div className='home-heading'>
               <h1>arXiv Paper Search</h1>
               <p>
                 Search for scholarly papers on <a href="https://arxiv.org/" target="_blank">arXiv</a> using natural language queries and filters, or use the "more like this" button to find semantically similar papers.
               </p>
             </div>
             <hr></hr>
-            <div style={{ padding: "2rem 5%" }}>
+            <div className="home-options">
               <div>
                 <div>Embedding model</div>
                 <EmbeddingModelOptions></EmbeddingModelOptions>
               </div>
-              <div style={{ padding: "1rem 0" }}>
+              <div className='home-filters'>
                 <div>Filters</div>
                 <YearOptions></YearOptions>
                 <CategoryOptions></CategoryOptions>
@@ -247,13 +247,13 @@ export const Home = (props: Props) => {
           </div>
         </section>
         <div>
-          <div style={{ padding: "0 0 0 5%" }}>Search results</div>
+          <div className='home-search-results'>Search results</div>
           {loading && <Box sx={{ display: 'flex', padding: '2rem 5%' }}>
             <CircularProgress />
           </Box>}
           <div>
             {!loading && papers && (
-              <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "space-evenly" }}>
+              <div className='home-cards'>
                 {papers.map((paper) => (
                   <Card
                     title={paper.title}

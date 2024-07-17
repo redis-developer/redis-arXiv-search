@@ -1,0 +1,43 @@
+html,
+body {
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.home-padding {
+    padding: 40px 25px 0 25px;
+}
+
+.home-heading {
+    text-align: center;
+}
+
+.home-options {
+    padding: 2rem 5%;
+}
+
+.home-filters {
+    padding: 1rem 0;
+}
+
+.home-search-results {
+    padding: 0 0 0 5%;
+}
+
+.home-cards {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+}
+
+.home-loader {
+    display: flex;
+    padding: 2rem 5%;
+}
+
+.card {
+    width: 26rem;
+    margin: 1rem;
+    padding: 1rem;
+    border: 1px solid black;
+    border-radius: 0.5rem;
+}
