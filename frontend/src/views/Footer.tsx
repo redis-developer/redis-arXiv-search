@@ -1,4 +1,5 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import { EMAIL } from '../config'
 import '../styles/Footer.css';
 
 export const Footer = () => {
@@ -8,7 +9,6 @@ export const Footer = () => {
                 <div>
                     All Redis software used in this demo is licensed according to the  <a href="https://redis.io/docs/stack/license/" > Redis Stack License. </a>
                 </div>
-                <div>-</div>
                 <div>
                     <a href="https://github.com/redis-developer/redis-ai-resources">
                         Redis AI Resources
@@ -26,6 +26,7 @@ export const Footer = () => {
                         Vector Search Docs
                     </a>
                 </div>
+                <div>contact: {EMAIL}</div>
             </div>
         </footer>
     );

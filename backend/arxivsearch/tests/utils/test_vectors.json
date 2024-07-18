@@ -1,6 +1,6 @@
 [
     {
-        "id": "1234.5678",
+        "paper_id": "1234.5678",
         "title": "Exploring the Universe of Deep Learning",
         "authors": "Jane Doe",
         "year": "3000",
@@ -3342,7 +3342,7 @@
         ]
     },
     {
-        "id": "8765.4321",
+        "paper_id": "8765.4321",
         "title": "Exploring the Galaxy of Deep Learning",
         "authors": "John Doe",
         "year": "2021",

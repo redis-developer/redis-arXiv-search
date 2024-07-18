@@ -107,12 +107,11 @@ export const Home = (props: Props) => {
       const {
         target: { value },
       } = event;
+      setSkip(0);
       setYears(
         // On autofill we get a stringified value.
         typeof value === 'string' ? value.split(',') : value,
-      );
-      setSkip(0);
-      console.log(years)
+      )
     };
     return (
       <FormControl sx={{ m: 1, width: "35%", marginLeft: 0 }}>
@@ -139,7 +138,7 @@ export const Home = (props: Props) => {
   }
 
   function CategoryOptions() {
-    const handleChange = (event: SelectChangeEvent<typeof years>) => {
+    const handleChange = (event: SelectChangeEvent<typeof categories>) => {
       const {
         target: { value },
       } = event;
@@ -148,7 +147,6 @@ export const Home = (props: Props) => {
         typeof value === 'string' ? value.split(',') : value,
       );
       setSkip(0);
-      console.log(years)
     };
     return (
       <FormControl sx={{ m: 1, width: "45%" }}>
@@ -198,13 +196,13 @@ export const Home = (props: Props) => {
     }
   };
 
-  // Execute this one when the component loads up
   useEffect(() => {
-    setPapers([]);
-    setCategories([]);
-    setYears([]);
     queryPapers();
-  }, []);
+  }, [categories])
+
+  useEffect(() => {
+    queryPapers();
+  }, [years])
 
   return (
     <>
@@ -257,6 +255,7 @@ export const Home = (props: Props) => {
               <div className='home-cards'>
                 {papers.map((paper) => (
                   <Card
+                    key={paper.paper_id}
                     title={paper.title}
                     authors={paper.authors}
                     paperId={paper.paper_id}

@@ -1,6 +1,6 @@
-import { BASE_URL } from "../config";
+import { BASE_URL, EMAIL } from "../config";
+import Tooltip from '@mui/material/Tooltip';
 import '../styles/Header.css';
-
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 export const Header = () => {
@@ -25,7 +25,9 @@ export const Header = () => {
               className="header-icon-link"
             ></img>
           </a>
-          <a className="btn header-cta">Talk with us!</a>
+          <Tooltip title={`${EMAIL}`} arrow>
+            <a className="btn header-cta" href={`mailto:${EMAIL}`}>Talk with us!</a>
+          </Tooltip>
         </div>
       </div>
     </header>

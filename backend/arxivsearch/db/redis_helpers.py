@@ -1,28 +1,19 @@
 import os
 import logging
 from typing import List
-from redis.asyncio import Redis, ConnectionPool
+from redis.asyncio import Redis
 from arxivsearch import config
 from redisvl.schema import IndexSchema
 from redisvl.index import AsyncSearchIndex, SearchIndex
 from redisvl.query.filter import Tag, FilterExpression
-from contextlib import asynccontextmanager
 
 logger = logging.getLogger(__name__)
 
 
-async def get_async_client():
-    async with Redis.from_url(config.REDIS_URL) as session:
-        yield session
-    await session.aclose()
-
-
-print("\n getting in pool \n")
 dir_path = os.path.dirname(os.path.realpath(__file__))
 schema = IndexSchema.from_yaml(os.path.join(dir_path, "index.yaml"))
 client = Redis.from_url(config.REDIS_URL)
 global_index = None
-# client = get_async_client(
 
 
 def get_schema():
@@ -35,33 +26,11 @@ def get_index():
     return SearchIndex.from_yaml(os.path.join(dir_path, "index.yaml"))
 
 
-# async def get_async_client():
-#     return Redis.from_url(config.REDIS_URL)
-
-
 async def get_async_index():
-    try:
-        # schema = IndexSchema.from_yaml(os.path.join(dir_path, "index.yaml"))
-        # client = Redis.from_url(config.REDIS_URL)
-        global global_index
-        if not global_index:
-            global_index = AsyncSearchIndex(schema, client)
-        yield global_index
-        # yield AsyncSearchIndex(schema, client)
-
-    finally:
-        # await global_index.client.aclose()
-        pass
-    # yield AsyncSearchIndex(schema, client)
-    # await client.aclose()
-    # async with Redis.from_pool(pool) as session:
-    #     print("using session")
-    #     index = AsyncSearchIndex(schema, session)
-    #     yield index
-    # await index.client.aclose()
-
-    # yield index
-    # await index.client.aclose()
+    global global_index
+    if not global_index:
+        global_index = AsyncSearchIndex(schema, client)
+    yield global_index
 
 
 def build_filter_expression(

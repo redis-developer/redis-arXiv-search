@@ -20,7 +20,7 @@ class UserTextSimilarityRequest(BaseRequest):
 
 
 class Paper(BaseModel):
-    paper_id: str = Field(alias="id")
+    paper_id: str  # = Field(alias="id")
     authors: str
     categories: str
     year: str

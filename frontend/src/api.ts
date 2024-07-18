@@ -49,12 +49,14 @@ export const getPapers = async (limit = 15, skip = 0, years: string[] = [], cate
 // get papers from Redis through the FastAPI backend
 
 
-export const getSemanticallySimilarPapers = async (paper_id: string,
+export const getSemanticallySimilarPapers = async (
+  paper_id: string,
   years: string[],
   categories: string[],
   provider: string,
   search = 'KNN',
-  limit = 15) => {
+  limit = 15
+) => {
   console.log(paper_id);
 
   let body = {

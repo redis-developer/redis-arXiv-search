@@ -20,5 +20,5 @@ def seed_test_db():
 
     index = redis_helpers.get_index()
     index.connect(redis_url=config.REDIS_URL)
-    index.load(data=papers, id_field="id")
+    index.load(data=papers, id_field="paper_id")
     return papers

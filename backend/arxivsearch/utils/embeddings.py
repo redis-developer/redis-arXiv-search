@@ -63,3 +63,6 @@ class Embeddings:
             return self.co_vectorizer.embed(
                 text, input_type="search_query", preprocess=preprocess_text
             )
+
+
+embeddings = Embeddings()

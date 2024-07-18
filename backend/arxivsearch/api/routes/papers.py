@@ -1,18 +1,15 @@
 import asyncio
 import numpy as np
 import logging
-from fastapi import FastAPI
-from contextlib import asynccontextmanager
 
 from fastapi import APIRouter, Query, Depends
-from redis.asyncio import Redis
 
 from redisvl.index import AsyncSearchIndex
 from redisvl.query import VectorQuery, FilterQuery, CountQuery
 
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
-from arxivsearch.utils.embeddings import Embeddings
+from arxivsearch.utils.embeddings import embeddings
 from arxivsearch.schema.similarity import (
     PaperSimilarityRequest,
     UserTextSimilarityRequest,
@@ -20,33 +17,7 @@ from arxivsearch.schema.similarity import (
     VectorSearchResponse,
 )
 
-
 logger = logging.getLogger(__name__)
-
-
-# class DB:
-#     client = None
-#     schema = None
-#     index = None
-
-
-# db = DB()
-
-# Initialize embeddings once
-embeddings = Embeddings()
-
-# client = Redis.from_url(config.REDIS_URL)
-# schema = redis_helpers.get_schema()
-# index = AsyncSearchIndex(schema, client)
-
-
-# @asynccontextmanager
-# async def lifespan(app: FastAPI):
-#     db.client = Redis.from_url(config.REDIS_URL)
-#     db.schema = redis_helpers.get_schema()
-#     db.index = AsyncSearchIndex(db.schema, db.client)
-#     yield
-#     db.client.aclose()
 
 
 # Initialize the API router
