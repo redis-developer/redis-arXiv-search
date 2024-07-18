@@ -1,9 +1,10 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
+import '../styles/Footer.css';
 
 export const Footer = () => {
     return (
         <footer>
-            <div style={{ background: "#f0f0f0", padding: "2rem", textAlign: "center" }}>
+            <div className='footer'>
                 <div>
                     All Redis software used in this demo is licensed according to the  <a href="https://redis.io/docs/stack/license/" > Redis Stack License. </a>
                 </div>

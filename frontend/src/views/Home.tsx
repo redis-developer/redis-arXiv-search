@@ -11,13 +11,14 @@ import FormControl from '@mui/material/FormControl';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
 import Box from '@mui/material/Box';
+
+import '../styles/Home.css';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -93,9 +94,9 @@ export const Home = (props: Props) => {
           value={provider}
           onChange={handleChange}
         >
-          <FormControlLabel value="huggingface" control={<Radio />} label="all-mpnet-base-v2" />
-          <FormControlLabel value="openai" control={<Radio />} label="text-embedding-ada-002" />
-          <FormControlLabel value="cohere" control={<Radio />} label="embed-multilingual-v3.0" />
+          <FormControlLabel value="huggingface" control={<Radio />} label="all-mpnet-base-v2 (huggingface)" />
+          <FormControlLabel value="openai" control={<Radio />} label="text-embedding-ada-002 (openai)" />
+          <FormControlLabel value="cohere" control={<Radio />} label="embed-multilingual-v3.0 (cohere)" />
         </RadioGroup>
       </FormControl>
     );

@@ -1,11 +1,7 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { getSemanticallySimilarPapers } from "../api"
-import useCheckMobileScreen from "../mobile"
 import Tooltip from '@mui/material/Tooltip';
-import Chip from '@mui/material/Chip';
-// import '../styles/Card.css'
-import { makeStyles } from '@material-ui/core/styles';
-import { useNavigate } from 'react-router';
+import '../styles/Card.css'
 
 interface Props {
   paperId: string;

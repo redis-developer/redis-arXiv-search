@@ -1,6 +1,6 @@
 import { FC } from 'react';
 import { AppRoutes } from './Routes';
-import './App.css';
+import './styles/App.css';
 
 const App: FC = () => <AppRoutes />;
 
