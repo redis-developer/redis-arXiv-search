@@ -1,17 +1,15 @@
 import asyncio
-import numpy as np
 import json
-import os
 import logging
-
+import os
 from typing import Any, Dict, List
 
-from arxivsearch import config
-from arxivsearch.schema.provider import Provider
-from arxivsearch.db import redis_helpers
-
+import numpy as np
 from redisvl.index import AsyncSearchIndex
 
+from arxivsearch import config
+from arxivsearch.db import redis_helpers
+from arxivsearch.schema.provider import Provider
 
 logger = logging.getLogger(__name__)
 

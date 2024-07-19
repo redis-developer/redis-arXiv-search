@@ -3,8 +3,8 @@ import string
 
 from redisvl.utils.vectorize import (
     CohereTextVectorizer,
-    OpenAITextVectorizer,
     HFTextVectorizer,
+    OpenAITextVectorizer,
 )
 
 from arxivsearch import config

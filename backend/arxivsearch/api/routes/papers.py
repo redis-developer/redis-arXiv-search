@@ -1,21 +1,20 @@
 import asyncio
-import numpy as np
 import logging
 
-from fastapi import APIRouter, Query, Depends
-
+import numpy as np
+from fastapi import APIRouter, Depends, Query
 from redisvl.index import AsyncSearchIndex
-from redisvl.query import VectorQuery, FilterQuery, CountQuery
+from redisvl.query import CountQuery, FilterQuery, VectorQuery
 
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
-from arxivsearch.utils.embeddings import embeddings
 from arxivsearch.schema.similarity import (
     PaperSimilarityRequest,
-    UserTextSimilarityRequest,
     SearchResponse,
+    UserTextSimilarityRequest,
     VectorSearchResponse,
 )
+from arxivsearch.utils.embeddings import embeddings
 
 logger = logging.getLogger(__name__)
 

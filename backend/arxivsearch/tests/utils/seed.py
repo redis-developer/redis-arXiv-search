@@ -1,6 +1,8 @@
 import json
 import os
+
 import numpy as np
+
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
 

@@ -1,0 +1,71 @@
+name: Test Suite
+
+on:
+  pull_request:
+    branches:
+      - main
+
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    name: Python ${{ matrix.python-version }} - ${{ matrix.connection }} [redis-stack ${{matrix.redis-stack-version}}]
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9, 3.10, 3.11]
+        redis-stack-version: ['latest']
+        # python-version: [3.9, 3.10, 3.11] # idk if we need all of this for a demo repo
+        # connection: ['hiredis', 'plain']
+        # redis-stack-version: ['6.2.6-v9', 'latest', 'edge']
+
+    services:
+      redis:
+        image: redis/redis-stack-server:${{matrix.redis-stack-version}}
+        ports:
+          - 6379:6379
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+        cache: 'pip'
+
+    - name: Install Poetry
+      uses: snok/install-poetry@v1
+
+    - name: change directory
+      run: cd backend/
+
+    - name: Install dependencies
+      run: |
+        poetry install --all-extras
+
+    - name: Install hiredis if needed
+      if: matrix.connection == 'hiredis'
+      run: |
+        poetry add hiredis
+
+    - name: Set Redis version
+      run: |
+        echo "REDIS_VERSION=${{ matrix.redis-stack-version }}" >> $GITHUB_ENV
+
+    # - name: Authenticate to Google Cloud
+    #   uses: google-github-actions/auth@v1
+    #   with:
+    #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+    - name: Run tests
+      if: matrix.connection == 'plain' && matrix.redis-stack-version == 'latest'
+      env:
+        OPENAI_API_VERSION: ${{secrets.OPENAI_API_VERSION}}
+        OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+      run: |
+        poetry run test

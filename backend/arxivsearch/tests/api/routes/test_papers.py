@@ -4,8 +4,8 @@ from httpx import AsyncClient
 
 from arxivsearch.main import app
 from arxivsearch.schema.similarity import (
-    UserTextSimilarityRequest,
     PaperSimilarityRequest,
+    UserTextSimilarityRequest,
 )
 
 
@@ -100,24 +100,24 @@ async def test_vector_by_text_bad_input(async_client: AsyncClient, bad_req_json:
     assert response.status_code == 422
 
 
-# @pytest.mark.asyncio(scope="session")
-# async def test_vector_by_paper(
-#     async_client: AsyncClient,
-#     paper_req: PaperSimilarityRequest,
-# ):
-#     response = await async_client.post(
-#         f"papers/vector_search/by_paper", json=paper_req.model_dump()
-#     )
+@pytest.mark.asyncio(scope="session")
+async def test_vector_by_paper(
+    async_client: AsyncClient,
+    paper_req: PaperSimilarityRequest,
+):
+    response = await async_client.post(
+        f"papers/vector_search/by_paper", json=paper_req.model_dump()
+    )
 
-#     assert response.status_code == 200
-#     content = response.json()
+    assert response.status_code == 200
+    content = response.json()
 
-#     assert content["total"] == 2
-#     assert len(content["papers"]) == 2
+    assert content["total"] == 2
+    assert len(content["papers"]) == 2
 
 
 @pytest.mark.asyncio(scope="session")
-async def test_vector_by_text_bad_input(async_client: AsyncClient, bad_req_json: dict):
+async def test_vector_by_paper_bad_input(async_client: AsyncClient, bad_req_json: dict):
 
     response = await async_client.post(
         f"papers/vector_search/by_paper", json=bad_req_json

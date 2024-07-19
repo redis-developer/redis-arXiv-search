@@ -1,11 +1,13 @@
-import os
 import logging
+import os
 from typing import List
+
 from redis.asyncio import Redis
-from arxivsearch import config
-from redisvl.schema import IndexSchema
 from redisvl.index import AsyncSearchIndex, SearchIndex
-from redisvl.query.filter import Tag, FilterExpression
+from redisvl.query.filter import FilterExpression, Tag
+from redisvl.schema import IndexSchema
+
+from arxivsearch import config
 
 logger = logging.getLogger(__name__)
 
@@ -34,7 +36,7 @@ async def get_async_index():
 
 
 def build_filter_expression(
-    years: List[int], categories: List[str]
+    years: List[str], categories: List[str]
 ) -> FilterExpression:
     """
     Construct a filter expression based on the provided years and categories.

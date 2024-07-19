@@ -11,3 +11,6 @@ venv
 __pycache__
 new_backend/arxivsearch/templates/
 */.nvm
+.coverage*
+coverage.*
+htmlcov/

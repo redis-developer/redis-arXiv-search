@@ -1,17 +1,14 @@
-import uvicorn
 import logging
-
 from pathlib import Path
 
+import uvicorn
 from fastapi import FastAPI
-
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
 
 from arxivsearch import config
 from arxivsearch.api.main import api_router
 from arxivsearch.spa import SinglePageApplication
-
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"

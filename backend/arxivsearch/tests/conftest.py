@@ -1,16 +1,17 @@
-from typing import Generator
-import pytest_asyncio
-import pytest
-from redis.asyncio import Redis as AsyncRedis
-from httpx import AsyncClient
 from asyncio import get_event_loop
+from typing import Generator
+
+import pytest
+import pytest_asyncio
+from httpx import AsyncClient
 from redis.asyncio import Redis
-from arxivsearch.db import redis_helpers
-from arxivsearch.tests.utils.seed import seed_test_db
-from arxivsearch import config
+from redis.asyncio import Redis as AsyncRedis
 from redisvl.index import AsyncSearchIndex
 
+from arxivsearch import config
+from arxivsearch.db import redis_helpers
 from arxivsearch.main import app
+from arxivsearch.tests.utils.seed import seed_test_db
 
 
 @pytest.fixture(scope="module")
