@@ -28,10 +28,10 @@ def get_index():
     index = SearchIndex.from_yaml(os.path.join(dir_path, "index.yaml"))
     index.connect(redis_url=config.REDIS_URL)
 
-    if index.exists():
-        return index
-    else:
+    if not index.exists():
         index.create(overwrite=True)
+
+    return index
 
 
 async def get_async_index():
