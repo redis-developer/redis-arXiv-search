@@ -37,7 +37,7 @@ def text_req(years, categories):
 @pytest.fixture
 def paper_req(papers):
     return PaperSimilarityRequest(
-        categories=[], years=[], provider="huggingface", paper_id=papers[0]["id"]
+        categories=[], years=[], provider="huggingface", paper_id=papers[0]["paper_id"]
     )
 
 
