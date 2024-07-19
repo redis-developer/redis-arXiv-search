@@ -17,7 +17,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: [3.9, 3.10, 3.11]
+        python-version: ["3.11"]
+        # python-version: ["3.9", "3.10", "3.11"]
         redis-stack-version: ['latest']
         # python-version: [3.9, 3.10, 3.11] # idk if we need all of this for a demo repo
         # connection: ['hiredis', 'plain']
@@ -43,14 +44,17 @@ jobs:
     - name: change directory
       run: cd backend/
 
+    - name: ls
+      run: ls
+
     - name: Install dependencies
       run: |
         poetry install --all-extras
 
-    - name: Install hiredis if needed
-      if: matrix.connection == 'hiredis'
-      run: |
-        poetry add hiredis
+    # - name: Install hiredis if needed
+    #   if: matrix.connection == 'hiredis'
+    #   run: |
+    #     poetry add hiredis
 
     - name: Set Redis version
       run: |
