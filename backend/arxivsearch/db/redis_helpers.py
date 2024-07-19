@@ -25,7 +25,13 @@ def get_schema():
 
 def get_index():
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    return SearchIndex.from_yaml(os.path.join(dir_path, "index.yaml"))
+    index = SearchIndex.from_yaml(os.path.join(dir_path, "index.yaml"))
+    index.connect(redis_url=config.REDIS_URL)
+
+    if index.exists():
+        return index
+    else:
+        index.create(overwrite=True)
 
 
 async def get_async_index():

@@ -21,6 +21,5 @@ def seed_test_db():
         paper["cohere"] = np.array(paper["cohere"], dtype=np.float32).tobytes()
 
     index = redis_helpers.get_index()
-    index.connect(redis_url=config.REDIS_URL)
     index.load(data=papers, id_field="paper_id")
     return papers
