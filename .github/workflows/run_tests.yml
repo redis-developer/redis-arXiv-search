@@ -41,13 +41,8 @@ jobs:
     - name: Install Poetry
       uses: snok/install-poetry@v1
 
-    - name: change directory
-      run: cd backend/
-
-    - name: ls
-      run: ls
-
     - name: Install dependencies
+      working-directory: ./backend
       run: |
         poetry install --all-extras
 
@@ -71,5 +66,6 @@ jobs:
         OPENAI_API_VERSION: ${{secrets.OPENAI_API_VERSION}}
         OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
         COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+      working-directory: ./backend
       run: |
         poetry run test
