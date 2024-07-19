@@ -61,9 +61,9 @@ jobs:
     #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
 
     - name: Run tests
-      # env:
-      #   OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
-      #   COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
+      env:
+        OPENAI_API_KEY: ${{ secrets.OPENAI_KEY }}
+        COHERE_API_KEY: ${{ secrets.COHERE_API_KEY }}
       working-directory: ./backend
       run: |
         poetry run test
