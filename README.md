@@ -1,12 +1,12 @@
 
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://github.com/RedisVentures/redis-arXiv-search/blob/main/backend/arxivsearch/data/redis-logo.png?raw=true" width="30%"><img></a>
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://redis.io/wp-content/uploads/2024/04/Logotype.svg?raw=true" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">
     <a href="https://docsearch.redisvl.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/redis-developer/redis-ai-resources"><b>More AI Recipes</b></a>&nbsp;&nbsp;&nbsp;
-    <!-- <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp; -->
     <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/"><b>Redis Vector Search Documentation</b></a>&nbsp;&nbsp;&nbsp;
   </div>
@@ -24,7 +24,9 @@
 The arXiv papers dataset was sourced from the the following [Kaggle link](https://www.kaggle.com/Cornell-University/arxiv). arXiv is commonly used for scientific research in a variety of fields. Exposing a semantic search layer enables natural human language to be used to discover relevant papers.
 
 
-![Demo](data/assets/arXivSearch.png)
+<!-- ![Demo](data/assets/arXivSearch.png) -->
+
+![Demo](image.png)
 
 ## Application
 
@@ -111,11 +113,11 @@ It's typically easier to build front end in an interactive environment, testing 
 2. Install packages (you may need to use `npm` to install `yarn`)
     ```bash
     $ cd frontend/
-    $ yarn install --no-optional
+    $ npm install
     ````
-4. Use `yarn` to serve the application from your machine
+4. Use `npm` to serve the application from your machine
     ```bash
-    $ yarn start
+    $ npm start
     ```
 5. Navigate to `http://localhost:3000` in a browser.
 

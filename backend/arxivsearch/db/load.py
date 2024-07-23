@@ -53,7 +53,7 @@ async def write_async(index: AsyncSearchIndex, papers: list):
 
 async def load_data():
     # Load schema specs and create index in Redis
-    index = await redis_helpers.get_async_index()
+    index = AsyncSearchIndex(redis_helpers.schema, redis_helpers.client)
 
     # Load dataset and create index
     try:
@@ -70,8 +70,7 @@ async def load_data():
         logger.exception(
             "An exception occurred while trying to load the index and dataset"
         )
-    finally:
-        await index.client.aclose()
+        raise
 
     # Wait for any indexing to finish
     while True:

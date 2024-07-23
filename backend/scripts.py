@@ -5,6 +5,13 @@ def load_data():
     subprocess.run(["python", "-m", "arxivsearch.db.load"], check=True)
 
 
+def start_app():
+    # load data
+    subprocess.run(["python", "-m", "arxivsearch.db.load"], check=True)
+    # start app
+    subprocess.run(["uvicorn", "arxivsearch.main:app"], check=True)
+
+
 def format():
     subprocess.run(
         ["isort", "./arxivsearch", "./tests/", "--profile", "black"], check=True
