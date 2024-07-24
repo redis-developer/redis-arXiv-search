@@ -14,7 +14,7 @@ ADD ./frontend ./
 RUN npm run build
 
 
-FROM python:3.11-slim-buster AS ApiImage
+FROM python:3.11 AS ApiImage
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -38,10 +38,9 @@ RUN mkdir -p /app/backend
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./backend/
 
 WORKDIR /app/backend
-RUN poetry install
+RUN poetry install --all-extras --no-interaction
 
 COPY ./backend/ .
-RUN poetry install --no-interaction --no-ansi
 
 # add static react files to fastapi image
 COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/build

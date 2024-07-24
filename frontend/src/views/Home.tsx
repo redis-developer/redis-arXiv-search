@@ -228,12 +228,6 @@ export const Home = (props: Props) => {
               </div>
               <div>
                 <div style={{ paddingBottom: '1rem' }}>Vector query</div>
-                {/* <SearchBar
-                  placeholder='Search'
-                  value={searchState}
-                  onChange={(newValue) => handleSearchChange(newValue)}
-                  onRequestSearch={() => queryPapers()}
-                /> */}
                 <TextField
                   id="standard-basic"
                   label="Search"
@@ -243,7 +237,6 @@ export const Home = (props: Props) => {
                   value={searchState}
                   onChange={(newValue) => handleSearchChange(newValue.target.value)}
                   onKeyDown={() => { queryPapers() }}
-                // onRequestSearch={() => queryPapers()}
                 />
               </div>
               <div>

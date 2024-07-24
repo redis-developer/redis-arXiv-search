@@ -23,3 +23,8 @@
     color: black;
     text-decoration: none;
 }
+
+.cta-nav {
+    display: flex;
+    align-items: center;
+}

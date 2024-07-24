@@ -41,9 +41,12 @@ def preprocess_text(text: str) -> str:
 class Embeddings:
 
     def __init__(self):
-        self.hf_vectorizer = HFTextVectorizer(model=config.SENTENCE_TRANSFORMER_MODEL)
         self.oai_vectorizer = OpenAITextVectorizer(model=config.OPENAI_EMBEDDING_MODEL)
         self.co_vectorizer = CohereTextVectorizer(model=config.COHERE_EMBEDDING_MODEL)
+        self.hf_vectorizer = HFTextVectorizer(
+            model=config.SENTENCE_TRANSFORMER_MODEL
+        )  # resume_download=True
+        # self.hf_vectorizer = None
 
     async def get(self, provider: str, text: str):
         """
@@ -56,6 +59,7 @@ class Embeddings:
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
             return self.hf_vectorizer.embed(text, preprocess=preprocess_text)
+            # return None
         elif provider == Provider.openai.value:
             # Use OpenAI Embeddings API
             return await self.oai_vectorizer.aembed(text, preprocess=preprocess_text)
@@ -65,14 +69,14 @@ class Embeddings:
             )
 
 
-embedding_singleton = None
+# embedding_singleton = None
 
 
-def get_embeddings():
-    global embedding_singleton
-    if not embedding_singleton:
-        embedding_singleton = Embeddings()
-    return embedding_singleton
+# def get_embeddings():
+#     global embedding_singleton
+#     if not embedding_singleton:
+#         embedding_singleton = Embeddings()
+#     return embedding_singleton
 
 
 # embeddings = Embeddings()

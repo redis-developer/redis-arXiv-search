@@ -15,13 +15,15 @@ from arxivsearch.schema.similarity import (
     VectorSearchResponse,
 )
 
-from arxivsearch.utils.embeddings import get_embeddings, Embeddings
+from arxivsearch.utils.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)
 
 
 # Initialize the API router
 router = APIRouter()
+
+embeddings = Embeddings()
 
 
 @router.get("/", response_model=SearchResponse)
@@ -119,7 +121,7 @@ async def find_papers_by_paper(
 async def find_papers_by_text(
     similarity_request: UserTextSimilarityRequest,
     index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
-    embeddings: Embeddings = Depends(get_embeddings),
+    # embeddings: Embeddings = Depends(get_embeddings),
 ):
     """
     Find and return papers similar to user-provided text based on

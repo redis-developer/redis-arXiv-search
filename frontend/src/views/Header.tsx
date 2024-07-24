@@ -12,20 +12,24 @@ export const Header = () => {
           alt="Redis Logo"
           className="header-logo">
         </img>
-        <div>
+        <div className="cta-nav">
           <a href='https://x.com/Redisinc'>
-            <img
-              alt="x logo"
-              src={"/x-logo.svg"}
-              className="header-icon-link"
-            ></img>
+            <Tooltip title="Redis twitter" arrow>
+              <img
+                alt="x logo"
+                src={"/x-logo.svg"}
+                className="header-icon-link"
+              ></img>
+            </Tooltip>
           </a>
           <a href='https://github.com/redis-developer/redis-arXiv-search'>
-            <img
-              alt="Github logo"
-              src="/github-mark-white.svg"
-              className="header-icon-link"
-            ></img>
+            <Tooltip title="Project source" arrow>
+              <img
+                alt="Github logo"
+                src="/github-mark-white.svg"
+                className="header-icon-link"
+              ></img>
+            </Tooltip>
           </a>
           <Tooltip title={`${EMAIL}`} arrow>
             <a className="header-cta" href={`mailto:${EMAIL}`}>

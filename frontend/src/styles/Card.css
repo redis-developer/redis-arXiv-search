@@ -3,7 +3,7 @@
     flex-direction: column;
     justify-content: space-around;
     width: 26rem;
-    margin: 1rem;
+    margin: 1rem 0;
     padding: 1rem;
     border: 1px solid black;
     border-radius: 0.5rem;
