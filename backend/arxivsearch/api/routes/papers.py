@@ -14,7 +14,6 @@ from arxivsearch.schema.similarity import (
     UserTextSimilarityRequest,
     VectorSearchResponse,
 )
-
 from arxivsearch.utils.embeddings import Embeddings
 
 logger = logging.getLogger(__name__)

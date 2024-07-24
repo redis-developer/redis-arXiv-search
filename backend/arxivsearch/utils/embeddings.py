@@ -59,7 +59,6 @@ class Embeddings:
         if provider == Provider.huggingface.value:
             # Use HuggingFace Sentence Transformer
             return self.hf_vectorizer.embed(text, preprocess=preprocess_text)
-            # return None
         elif provider == Provider.openai.value:
             # Use OpenAI Embeddings API
             return await self.oai_vectorizer.aembed(text, preprocess=preprocess_text)
@@ -67,16 +66,3 @@ class Embeddings:
             return self.co_vectorizer.embed(
                 text, input_type="search_query", preprocess=preprocess_text
             )
-
-
-# embedding_singleton = None
-
-
-# def get_embeddings():
-#     global embedding_singleton
-#     if not embedding_singleton:
-#         embedding_singleton = Embeddings()
-#     return embedding_singleton
-
-
-# embeddings = Embeddings()
