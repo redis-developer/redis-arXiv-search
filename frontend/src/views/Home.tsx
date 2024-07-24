@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getPapers, getSemanticallySimilarPapersbyText } from '../api';
 import { Card } from "./Card"
-import SearchBar from "material-ui-search-bar";
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -16,7 +17,6 @@ import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
 
 import '../styles/Home.css';
 
@@ -227,12 +227,23 @@ export const Home = (props: Props) => {
                 <CategoryOptions></CategoryOptions>
               </div>
               <div>
-                <div>Vector query</div>
-                <SearchBar
+                <div style={{ paddingBottom: '1rem' }}>Vector query</div>
+                {/* <SearchBar
                   placeholder='Search'
                   value={searchState}
                   onChange={(newValue) => handleSearchChange(newValue)}
                   onRequestSearch={() => queryPapers()}
+                /> */}
+                <TextField
+                  id="standard-basic"
+                  label="Search"
+                  variant="outlined"
+                  placeholder='Search'
+                  style={{ width: '100%' }}
+                  value={searchState}
+                  onChange={(newValue) => handleSearchChange(newValue.target.value)}
+                  onKeyDown={() => { queryPapers() }}
+                // onRequestSearch={() => queryPapers()}
                 />
               </div>
               <div>

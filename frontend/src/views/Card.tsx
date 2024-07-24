@@ -52,17 +52,17 @@ export const Card = (props: Props) => {
         <Tooltip title="Search for more papers like this one">
           <button
             type="button"
-            className="btn btn-sm btn-outline-secondary"
+            className="card-btn"
             onClick={() => querySemanticallySimilarPapers()}
           >
             More Like This
           </button>
         </Tooltip>
-        <div className="card-btns"></div>
+        <div className="card-btns-space"></div>
         <a href={`https://arxiv.org/pdf/${props.paperId}`} rel="noreferrer">
           <button
             type="button"
-            className="btn btn-sm btn-outline-secondary"
+            className="card-btn"
           >Download
           </button>
         </a>

@@ -41,6 +41,8 @@ project_root = current_file.parent.resolve()
 gui_build_dir = project_root / "templates" / "build"
 app.mount(path="/", app=SinglePageApplication(directory=gui_build_dir), name="SPA")
 
+import os
+
 
 def main():
     server_attr = {"host": "0.0.0.0", "reload": True, "port": 8888, "workers": 1}

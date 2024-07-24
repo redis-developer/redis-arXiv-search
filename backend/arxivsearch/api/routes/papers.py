@@ -14,7 +14,8 @@ from arxivsearch.schema.similarity import (
     UserTextSimilarityRequest,
     VectorSearchResponse,
 )
-from arxivsearch.utils.embeddings import embeddings
+
+from arxivsearch.utils.embeddings import get_embeddings, Embeddings
 
 logger = logging.getLogger(__name__)
 
@@ -118,6 +119,7 @@ async def find_papers_by_paper(
 async def find_papers_by_text(
     similarity_request: UserTextSimilarityRequest,
     index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+    embeddings: Embeddings = Depends(get_embeddings),
 ):
     """
     Find and return papers similar to user-provided text based on

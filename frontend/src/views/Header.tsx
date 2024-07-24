@@ -15,18 +15,22 @@ export const Header = () => {
         <div>
           <a href='https://x.com/Redisinc'>
             <img
-              src={"x-logo.svg"}
+              alt="x logo"
+              src={"/x-logo.svg"}
               className="header-icon-link"
             ></img>
           </a>
           <a href='https://github.com/redis-developer/redis-arXiv-search'>
             <img
-              src={"github-mark-white.svg"}
+              alt="Github logo"
+              src="/github-mark-white.svg"
               className="header-icon-link"
             ></img>
           </a>
           <Tooltip title={`${EMAIL}`} arrow>
-            <a className="btn header-cta" href={`mailto:${EMAIL}`}>Talk with us!</a>
+            <a className="header-cta" href={`mailto:${EMAIL}`}>
+              Talk with us!
+            </a>
           </Tooltip>
         </div>
       </div>

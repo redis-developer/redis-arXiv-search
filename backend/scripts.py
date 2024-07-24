@@ -9,7 +9,11 @@ def start_app():
     # load data
     subprocess.run(["python", "-m", "arxivsearch.db.load"], check=True)
     # start app
-    subprocess.run(["uvicorn", "arxivsearch.main:app"], check=True)
+    subprocess.run(
+        ["uvicorn", "arxivsearch.main:app", "--port", "8888", "--host", "0.0.0.0"],
+        check=True,
+    )
+    # subprocess.run(["python", "-m", "arxivsearch.main"], check=True)
 
 
 def format():

@@ -65,4 +65,14 @@ class Embeddings:
             )
 
 
-embeddings = Embeddings()
+embedding_singleton = None
+
+
+def get_embeddings():
+    global embedding_singleton
+    if not embedding_singleton:
+        embedding_singleton = Embeddings()
+    return embedding_singleton
+
+
+# embeddings = Embeddings()

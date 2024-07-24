@@ -11,6 +11,8 @@ from arxivsearch import config
 from arxivsearch.db import redis_helpers
 from arxivsearch.schema.provider import Provider
 
+from redisvl.index import AsyncSearchIndex, SearchIndex
+
 logger = logging.getLogger(__name__)
 
 
@@ -82,5 +84,55 @@ async def load_data():
         await asyncio.sleep(5)
 
 
+def write_sync(index: redis_helpers.SearchIndex, papers: list):
+    """
+    Write arXiv paper records to Redis synchronously.
+    """
+
+    def preprocess_paper(paper: dict) -> dict:
+        for provider_vector in Provider:
+            paper[provider_vector] = np.array(
+                paper[provider_vector], dtype=np.float32
+            ).tobytes()
+        paper["paper_id"] = paper.pop("id")
+        paper["categories"] = paper["categories"].replace(",", "|")
+        return paper
+
+    logger.info("Loading papers dataset to Redis")
+
+    _ = index.load(
+        data=papers,
+        preprocess=preprocess_paper,
+        id_field="id",
+    )
+
+    logger.info("All papers loaded")
+
+
+def load_data_sync():
+    # Load schema specs and create index in Redis
+    print("Loading data sync")
+    index = redis_helpers.get_index()
+
+    # Load dataset and create index
+    try:
+        # Check if data inserted
+        res = index.search("*")
+        if len(res.docs) > 0:
+            logger.info("Index already exists, skipping data load")
+        else:
+            logger.info("Creating new index")
+            print("Creating new index")
+            index.create(overwrite=True)
+            papers = read_paper_json()
+            write_sync(index=index, papers=papers)
+    except Exception as e:
+        logger.exception(
+            "An exception occurred while trying to load the index and dataset"
+        )
+        raise
+
+
 if __name__ == "__main__":
-    asyncio.run(load_data())
+    # asyncio.run(load_data())
+    load_data_sync()
