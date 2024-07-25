@@ -8,6 +8,7 @@ API_V1_STR = "/api/v1"
 
 # Configuration
 DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv-papers-1000.json")
+S3_DATA_URL = "https://arxiv-search.s3.us-east-2.amazonaws.com/arxiv-papers-1000.json"
 DATA_LOCATION = os.environ.get("DATA_LOCATION", "../data")
 DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
@@ -22,7 +23,7 @@ RETURN_FIELDS = [
 
 # Redis
 REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
-# REDIS_HOST = "localhost"
+REDIS_HOST = "localhost"
 REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 if REDIS_PASSWORD:

@@ -1,4 +1,3 @@
-# FROM node:18.8-alpine AS ReactImage
 FROM node:22.0.0 AS ReactImage
 
 WORKDIR /app/frontend
@@ -6,7 +5,6 @@ WORKDIR /app/frontend
 ENV NODE_PATH=/app/frontend/node_modules
 ENV PATH=$PATH:/app/frontend/node_modules/.bin
 
-# test that removing yarn works in this case
 COPY ./frontend/package.json ./
 RUN npm install
 
@@ -21,7 +19,6 @@ ENV PYTHONDONTWRITEBYTECODE 1
 
 WORKDIR /app/
 VOLUME [ "/data" ]
-# COPY ./data/ ./data
 
 RUN apt-get update && \
     apt-get install -y curl && \
@@ -47,7 +44,4 @@ COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/bu
 
 LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
 
-# WORKDIR /app/backend/arxivsearch
-
 CMD ["poetry", "run", "start-app"]
-# CMD ["sh", "./entrypoint.sh"]

@@ -5,6 +5,7 @@ import os
 from typing import Any, Dict, List
 
 import numpy as np
+import requests
 from redisvl.index import AsyncSearchIndex
 
 from arxivsearch import config
@@ -20,9 +21,23 @@ def read_paper_json() -> List[Dict[str, Any]]:
     """
     logger.info("Loading papers dataset from disk")
     path = os.path.join(config.DATA_LOCATION, config.DEFAULT_DATASET)
-    with open(path, "r") as f:
-        df = json.load(f)
-    return df
+    try:
+        with open(path, "r") as f:
+            data = json.load(f)
+    except:
+        logger.info(f"Failed to read {path} => getting from s3")
+        res = requests.get(config.S3_DATA_URL)
+        data = res.json()
+
+        if os.path.isdir(config.DATA_LOCATION):
+            logger.info(f"Writing s3 file to {path}")
+            with open(path, "w") as f:
+                json.dump(data, f)
+        else:
+            logger.warning(
+                f"Data directory {config.DATA_LOCATION} not found. Skipping write of S3 data"
+            )
+    return data
 
 
 async def write_async(index: AsyncSearchIndex, papers: list):
@@ -58,9 +73,9 @@ async def load_data():
     # Load dataset and create index
     try:
         # Check if index exists
-        if await index.exists():
+        if await index.exists() and len((await index.search("*")).docs) > 0:
             # if running local and not seeing logger logs make sure index isn't already created
-            logger.info("Index already exists, skipping data load")
+            logger.info("Index and data already exists, skipping load")
         else:
             logger.info("Creating new index")
             await index.create(overwrite=True)
