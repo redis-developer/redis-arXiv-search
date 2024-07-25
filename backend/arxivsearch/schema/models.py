@@ -1,8 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel
 
-from arxivsearch.schema.models import Provider
-
 
 class Provider(str, Enum):
     """Embedding model provider"""
