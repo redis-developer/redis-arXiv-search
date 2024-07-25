@@ -15,6 +15,21 @@ from arxivsearch.schema.provider import Provider
 logger = logging.getLogger(__name__)
 
 
+def read_from_s3(path):
+    res = requests.get(config.S3_DATA_URL)
+    data = res.json()
+
+    if os.path.isdir(config.DATA_LOCATION):
+        logger.info(f"Writing s3 file to {path}")
+        with open(path, "w") as f:
+            json.dump(data, f)
+    else:
+        logger.warning(
+            f"Data directory {config.DATA_LOCATION} not found. Skipping write of S3 data"
+        )
+    return data
+
+
 def read_paper_json() -> List[Dict[str, Any]]:
     """
     Load JSON array of arXiv papers and embeddings.
@@ -26,17 +41,8 @@ def read_paper_json() -> List[Dict[str, Any]]:
             data = json.load(f)
     except:
         logger.info(f"Failed to read {path} => getting from s3")
-        res = requests.get(config.S3_DATA_URL)
-        data = res.json()
+        data = read_from_s3(path)
 
-        if os.path.isdir(config.DATA_LOCATION):
-            logger.info(f"Writing s3 file to {path}")
-            with open(path, "w") as f:
-                json.dump(data, f)
-        else:
-            logger.warning(
-                f"Data directory {config.DATA_LOCATION} not found. Skipping write of S3 data"
-            )
     return data
 
 

@@ -52,7 +52,7 @@ async def get_papers(
             filter papers. Defaults to "".
 
     Returns:
-        dict: Dictionary containing total count and list of papers.
+        SearchResponse: Pydantic model containing papers and total count.
     """
 
     # Build queries
@@ -67,7 +67,6 @@ async def get_papers(
     total_count, result_papers = await asyncio.gather(
         index.query(count_query), index.query(filter_query)
     )
-    # await index.client.aclose()
     return SearchResponse(total=total_count, papers=result_papers)
 
 
@@ -81,12 +80,12 @@ async def find_papers_by_paper(
     similarity.
 
     Args:
-        similarity_request (SimilarityRequest): Similarity request object
+        PaperSimilarityRequest: Similarity request object
             containing paper_id, provider, number_of_results, years, and
             categories for filtering.
 
     Returns:
-        dict: Dictionary containing total count and list of similar papers.
+        VectorSearchResponse: Pydantic model with paper content.
     """
 
     # Fetch paper vector from the HASH, cast to numpy array
@@ -111,8 +110,6 @@ async def find_papers_by_paper(
     total_count, result_papers = await asyncio.gather(
         index.query(count_query), index.query(paper_similarity_query)
     )
-    # Get Paper records of those results
-    # await index.client.aclose()
     return VectorSearchResponse(total=total_count, papers=result_papers)
 
 
@@ -120,19 +117,18 @@ async def find_papers_by_paper(
 async def find_papers_by_text(
     similarity_request: UserTextSimilarityRequest,
     index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
-    # embeddings: Embeddings = Depends(get_embeddings),
 ):
     """
     Find and return papers similar to user-provided text based on
     vector similarity.
 
     Args:
-        similarity_request (UserTextSimilarityRequest): Similarity request
+        UserTextSimilarityRequest: Similarity request
             object containing user_text, provider, number_of_results, years,
             and categories for filtering.
 
     Returns:
-        dict: Dictionary containing total count and list of similar papers.
+        VectorSearchResponse: Pydantic model with paper content.
     """
 
     # Build filter expression
@@ -155,7 +151,5 @@ async def find_papers_by_text(
     # Execute searches
     total_count, result_papers = await asyncio.gather(
         index.query(count_query), index.query(paper_similarity_query)
-    )  # Get Paper records of those results
-
-    # await index.client.aclose()
+    )
     return VectorSearchResponse(total=total_count, papers=result_papers)
