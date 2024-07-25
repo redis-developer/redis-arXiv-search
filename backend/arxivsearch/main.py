@@ -51,8 +51,8 @@ def main():
             {
                 "reload": False,
                 "workers": 2,
-                "ssl_keyfile": "key.pem",
-                "ssl_certfile": "full.pem",
+                "ssl_keyfile": "app/backend/arxivsearch/key.pem",
+                "ssl_certfile": "app/backend/arxivsearch/full.pem",
             }
         )
 
