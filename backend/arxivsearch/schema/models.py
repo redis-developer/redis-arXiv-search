@@ -1,6 +1,15 @@
-from pydantic import BaseModel, Field
+from enum import Enum
+from pydantic import BaseModel
 
-from arxivsearch.schema.provider import Provider
+from arxivsearch.schema.models import Provider
+
+
+class Provider(str, Enum):
+    """Embedding model provider"""
+
+    huggingface = "huggingface"
+    openai = "openai"
+    cohere = "cohere"
 
 
 class BaseRequest(BaseModel):
@@ -20,7 +29,7 @@ class UserTextSimilarityRequest(BaseRequest):
 
 
 class Paper(BaseModel):
-    paper_id: str  # = Field(alias="id")
+    paper_id: str
     authors: str
     categories: str
     year: str

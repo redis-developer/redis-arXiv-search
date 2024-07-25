@@ -8,7 +8,7 @@ from redisvl.query import CountQuery, FilterQuery, VectorQuery
 
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
-from arxivsearch.schema.similarity import (
+from arxivsearch.schema.models import (
     PaperSimilarityRequest,
     SearchResponse,
     UserTextSimilarityRequest,

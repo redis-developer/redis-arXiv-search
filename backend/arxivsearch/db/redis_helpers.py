@@ -23,7 +23,7 @@ def get_schema():
     return IndexSchema.from_yaml(os.path.join(dir_path, "index.yaml"))
 
 
-def get_index():
+def get_test_index():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     index = SearchIndex.from_yaml(os.path.join(dir_path, "index.yaml"))
     index.connect(redis_url=config.REDIS_URL)

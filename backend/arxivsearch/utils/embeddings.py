@@ -8,7 +8,7 @@ from redisvl.utils.vectorize import (
 )
 
 from arxivsearch import config
-from arxivsearch.schema.provider import Provider
+from arxivsearch.schema.models import Provider
 
 
 def preprocess_text(text: str) -> str:
@@ -43,10 +43,7 @@ class Embeddings:
     def __init__(self):
         self.oai_vectorizer = OpenAITextVectorizer(model=config.OPENAI_EMBEDDING_MODEL)
         self.co_vectorizer = CohereTextVectorizer(model=config.COHERE_EMBEDDING_MODEL)
-        self.hf_vectorizer = HFTextVectorizer(
-            model=config.SENTENCE_TRANSFORMER_MODEL
-        )  # resume_download=True
-        # self.hf_vectorizer = None
+        self.hf_vectorizer = HFTextVectorizer(model=config.SENTENCE_TRANSFORMER_MODEL)
 
     async def get(self, provider: str, text: str):
         """

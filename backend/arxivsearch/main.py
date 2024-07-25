@@ -56,7 +56,6 @@ def main():
             }
         )
 
-    # uvicorn.run(app, **server_attr)
     uvicorn.run("arxivsearch.main:app", **server_attr)
 
 

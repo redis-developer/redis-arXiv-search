@@ -10,7 +10,7 @@ from redisvl.index import AsyncSearchIndex
 
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
-from arxivsearch.schema.provider import Provider
+from arxivsearch.schema.models import Provider
 
 logger = logging.getLogger(__name__)
 

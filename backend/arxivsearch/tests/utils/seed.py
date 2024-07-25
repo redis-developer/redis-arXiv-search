@@ -20,6 +20,6 @@ def seed_test_db():
         paper["openai"] = np.array(paper["openai"], dtype=np.float32).tobytes()
         paper["cohere"] = np.array(paper["cohere"], dtype=np.float32).tobytes()
 
-    index = redis_helpers.get_index()
+    index = redis_helpers.get_test_index()
     index.load(data=papers, id_field="paper_id")
     return papers

@@ -1,9 +1,8 @@
 import pytest
-import pytest_asyncio
 from httpx import AsyncClient
 
 from arxivsearch.main import app
-from arxivsearch.schema.similarity import (
+from arxivsearch.schema.models import (
     PaperSimilarityRequest,
     UserTextSimilarityRequest,
 )
