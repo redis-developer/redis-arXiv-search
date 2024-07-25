@@ -55,11 +55,6 @@ jobs:
       run: |
         echo "REDIS_VERSION=${{ matrix.redis-stack-version }}" >> $GITHUB_ENV
 
-    # - name: Authenticate to Google Cloud
-    #   uses: google-github-actions/auth@v1
-    #   with:
-    #     credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
-
     - name: Run tests
       env:
         OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}

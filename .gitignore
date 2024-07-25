@@ -15,3 +15,4 @@ new_backend/arxivsearch/templates/
 coverage.*
 htmlcov/
 legacy-data/
+backend/arxivsearch/templates/
