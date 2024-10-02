@@ -1,4 +1,4 @@
-FROM node:18.8-alpine AS ReactImage
+FROM node:22.0.0 AS ReactImage
 
 WORKDIR /app/frontend
 
@@ -6,33 +6,42 @@ ENV NODE_PATH=/app/frontend/node_modules
 ENV PATH=$PATH:/app/frontend/node_modules/.bin
 
 COPY ./frontend/package.json ./
-RUN yarn install --no-optional
+RUN npm install
 
 ADD ./frontend ./
-RUN yarn build
+RUN npm run build
 
 
-FROM python:3.9-slim-buster AS ApiImage
+FROM python:3.11 AS ApiImage
 
 ENV PYTHONUNBUFFERED 1
 ENV PYTHONDONTWRITEBYTECODE 1
 
-RUN python3 -m pip install --upgrade pip setuptools wheel
-
 WORKDIR /app/
-COPY ./data/ ./data
+VOLUME [ "/data" ]
+
+RUN apt-get update && \
+    apt-get install -y curl && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -sSL https://install.python-poetry.org | POETRY_HOME=/opt/poetry python && \
+    cd /usr/local/bin && \
+    ln -s /opt/poetry/bin/poetry && \
+    poetry config virtualenvs.create false
 
 RUN mkdir -p /app/backend
+
+# copy deps first so we don't have to reload everytime
+COPY ./backend/poetry.lock ./backend/pyproject.toml ./backend/
+
 WORKDIR /app/backend
+RUN poetry install --all-extras --no-interaction
 
 COPY ./backend/ .
-RUN pip install -e . --no-cache-dir
 
 # add static react files to fastapi image
 COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/build
 
 LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
 
-WORKDIR /app/backend/arxivsearch
-
-CMD ["sh", "./entrypoint.sh"]
+CMD ["poetry", "run", "start-app"]

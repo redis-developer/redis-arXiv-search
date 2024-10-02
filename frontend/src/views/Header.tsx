@@ -1,65 +1,43 @@
-import React, { useState } from 'react';
-import { Navbar, Container, NavDropdown, Nav } from 'react-bootstrap';
-import { BASE_URL } from "../config";
-import { useNavigate } from 'react-router-dom';
-
-interface Props {
-}
-
+import { BASE_URL, EMAIL } from "../config";
+import Tooltip from '@mui/material/Tooltip';
+import '../styles/Header.css';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
-export const Header = (props: Props) => {
-  const [searchText, setText] = useState("");
-  const Navigate = useNavigate();
-
-   // This function is called when the input changes
-   const inputHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
-     const enteredText = event.target.value;
-     setText(enteredText);
-  };
-
+export const Header = () => {
   return (
-   <header>
-    <Navbar expand="lg" bg="dark" variant="dark" style={{ padding: '25px'}} >
-      <Container fluid>
-        <Navbar.Brand style={{marginRight: "-30rem"}} href="#">
-            <img
-              src={BASE_URL + `/data/redis-logo.png`}
-              alt="Redis Logo"
-              style={{
-                height: '7%',
-                width: '7%',
-                paddingRight: '10px',
-                }}>
-            </img>
-          Redis Vector Search Demo
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="navbarScroll" />
-        <Navbar.Collapse id="navbarScroll" style={{top: "5px"}}>
-          <Nav
-            className="me-auto my-2 my-lg-0"
-            style={{ maxHeight: '175px'}}
-            navbarScroll
-          >
-            <NavDropdown title="About" id="navbarScrollingDropdown">
-              <NavDropdown.Item href="https://github.com/RedisVentures/redis-arXiv-search">Code</NavDropdown.Item>
-              <NavDropdown.Item href="https://datasciencedojo.com/blog/ai-powered-document-search/">Blog</NavDropdown.Item>
-              <NavDropdown.Item href="https://github.com/RedisVentures/redis-ai-resources">Redis AI Resources List</NavDropdown.Item>
-              <NavDropdown.Item href="https://redis.com/vss-meeting/" target="_blank">Talk With Us</NavDropdown.Item>
-              <NavDropdown.Divider />
-              <NavDropdown.Item href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/">
-                Vector Search Docs
-              </NavDropdown.Item>
-            </NavDropdown>
-          </Nav>
-          <Nav>
-            <Nav.Link className="btn btn-primary m-2" href="https://redis.com/vss-meeting/" target="_blank">
-              Talk With Us!
-            </Nav.Link>
-          </Nav>
-        </Navbar.Collapse>
-      </Container>
-    </Navbar>
-   </header>
+    <header>
+      <div className="header">
+        <img
+          src={BASE_URL + `/data/redis-logo.png`}
+          alt="Redis Logo"
+          className="header-logo">
+        </img>
+        <div className="cta-nav">
+          <a href='https://x.com/Redisinc'>
+            <Tooltip title="Redis twitter" arrow>
+              <img
+                alt="x logo"
+                src={"/x-logo.svg"}
+                className="header-icon-link"
+              ></img>
+            </Tooltip>
+          </a>
+          <a href='https://github.com/redis-developer/redis-arXiv-search'>
+            <Tooltip title="Project source" arrow>
+              <img
+                alt="Github logo"
+                src="/github-mark-white.svg"
+                className="header-icon-link"
+              ></img>
+            </Tooltip>
+          </a>
+          <Tooltip title={`${EMAIL}`} arrow>
+            <a className="header-cta" href={`mailto:${EMAIL}`}>
+              Talk with us!
+            </a>
+          </Tooltip>
+        </div>
+      </div>
+    </header>
   );
- };
+};

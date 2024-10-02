@@ -1,9 +1,0 @@
-fastapi
-uvicorn
-ipython
-numpy
-redisvl==0.1.0
-cohere
-openai==0.28.1
-sentence-transformers==2.2.2
-sentencepiece==0.1.97

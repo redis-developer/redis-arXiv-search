@@ -8,7 +8,8 @@ API_V1_STR = "/api/v1"
 
 # Configuration
 DEFAULT_DATASET = os.environ.get("DEFAULT_DATASET", "arxiv-papers-1000.json")
-DATA_LOCATION = os.environ.get("DATA_LOCATION", "../../data")
+S3_DATA_URL = "https://arxiv-search.s3.us-east-2.amazonaws.com/arxiv-papers-1000.json"
+DATA_LOCATION = os.environ.get("DATA_LOCATION", "../data")
 DEPLOYMENT_ENV = os.environ.get("DEPLOYMENT", "dev")
 WRITE_CONCURRENCY = os.environ.get("WRITE_CONCURRENCY", 150)
 RETURN_FIELDS = [
@@ -17,11 +18,11 @@ RETURN_FIELDS = [
     "categories",
     "year",
     "title",
-    "vector_distance"
+    "vector_distance",
 ]
 
 # Redis
-REDIS_HOST = os.environ.get("REDIS_HOST", "redis")
+REDIS_HOST = os.environ.get("REDIS_HOST", "localhost")
 REDIS_PORT = os.environ.get("REDIS_PORT", 6379)
 REDIS_PASSWORD = os.environ.get("REDIS_PASSWORD")
 if REDIS_PASSWORD:
@@ -31,6 +32,12 @@ else:
 
 # Model Providers
 DEFAULT_PROVIDER = "huggingface"
-SENTENCE_TRANSFORMER_MODEL = os.environ.get("SENTENCE_TRANSFORMER_MODEL", "sentence-transformers/all-mpnet-base-v2")
-OPENAI_EMBEDDING_MODEL = os.environ.get("OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002")
-COHERE_EMBEDDING_MODEL = os.environ.get("COHERE_EMBEDDING_MODEL", "embed-multilingual-v3.0")
+SENTENCE_TRANSFORMER_MODEL = os.environ.get(
+    "SENTENCE_TRANSFORMER_MODEL", "sentence-transformers/all-mpnet-base-v2"
+)
+OPENAI_EMBEDDING_MODEL = os.environ.get(
+    "OPENAI_EMBEDDING_MODEL", "text-embedding-ada-002"
+)
+COHERE_EMBEDDING_MODEL = os.environ.get(
+    "COHERE_EMBEDDING_MODEL", "embed-multilingual-v3.0"
+)

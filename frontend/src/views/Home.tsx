@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { getPapers, getSemanticallySimilarPapersbyText } from '../api';
 import { Card } from "./Card"
-import SearchBar from "material-ui-search-bar";
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 
 
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -11,16 +12,18 @@ import FormControl from '@mui/material/FormControl';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
-import FormLabel from '@mui/material/FormLabel';
 import ListItemText from '@mui/material/ListItemText';
 import Select, { SelectChangeEvent } from '@mui/material/Select';
 import Checkbox from '@mui/material/Checkbox';
 import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
+
+import '../styles/Home.css';
 
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-interface Props {}
+interface Props { }
 
 export const Home = (props: Props) => {
   const [error, setError] = useState<string>('');
@@ -31,6 +34,7 @@ export const Home = (props: Props) => {
   const [categories, setCategories] = useState<string[]>([]);
   const [provider, setProvider] = useState<string>('huggingface');
   const [searchState, setSearchState] = useState<string>('');
+  const [loading, setLoadingState] = useState<boolean>(false);
   const [total, setTotal] = useState<number>(0);
 
   const ITEM_HEIGHT = 48;
@@ -83,7 +87,6 @@ export const Home = (props: Props) => {
     };
     return (
       <FormControl>
-        <FormLabel id="demo-row-radio-buttons-group-label">Embedding Model</FormLabel>
         <RadioGroup
           row
           aria-labelledby="demo-controlled-radio-buttons-group"
@@ -91,9 +94,9 @@ export const Home = (props: Props) => {
           value={provider}
           onChange={handleChange}
         >
-          <FormControlLabel value="huggingface" control={<Radio />} label="HuggingFace" />
-          <FormControlLabel value="openai" control={<Radio />} label="OpenAI" />
-          <FormControlLabel value="cohere" control={<Radio />} label="Cohere"/>
+          <FormControlLabel value="huggingface" control={<Radio />} label="all-mpnet-base-v2 (huggingface)" />
+          <FormControlLabel value="openai" control={<Radio />} label="text-embedding-ada-002 (openai)" />
+          <FormControlLabel value="cohere" control={<Radio />} label="embed-multilingual-v3.0 (cohere)" />
         </RadioGroup>
       </FormControl>
     );
@@ -104,39 +107,38 @@ export const Home = (props: Props) => {
       const {
         target: { value },
       } = event;
+      setSkip(0);
       setYears(
         // On autofill we get a stringified value.
         typeof value === 'string' ? value.split(',') : value,
-      );
-      setSkip(0);
-      console.log(years)
+      )
     };
     return (
-        <FormControl sx={{ m: 1, width: 150 }}>
-          <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
-          <Select
-            labelId="demo-multiple-checkbox-label"
-            id="demo-multiple-checkbox"
-            multiple
-            value={years}
-            onChange={handleChange}
-            input={<OutlinedInput label="Tag" />}
-            renderValue={(selected) => selected.join(', ')}
-            MenuProps={MenuProps}
-          >
-            {yearOptions.map((year) => (
-              <MenuItem key={year} value={year}>
-                <Checkbox checked={years.indexOf(year) > -1} />
-                <ListItemText primary={year} />
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
+      <FormControl sx={{ m: 1, width: "35%", marginLeft: 0 }}>
+        <InputLabel id="demo-multiple-checkbox-label">Year</InputLabel>
+        <Select
+          labelId="demo-multiple-checkbox-label"
+          id="demo-multiple-checkbox"
+          multiple
+          value={years}
+          onChange={handleChange}
+          input={<OutlinedInput label="Tag" />}
+          renderValue={(selected) => selected.join(', ')}
+          MenuProps={MenuProps}
+        >
+          {yearOptions.map((year) => (
+            <MenuItem key={year} value={year}>
+              <Checkbox checked={years.indexOf(year) > -1} />
+              <ListItemText primary={year} />
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
     );
   }
 
   function CategoryOptions() {
-    const handleChange = (event: SelectChangeEvent<typeof years>) => {
+    const handleChange = (event: SelectChangeEvent<typeof categories>) => {
       const {
         target: { value },
       } = event;
@@ -145,10 +147,9 @@ export const Home = (props: Props) => {
         typeof value === 'string' ? value.split(',') : value,
       );
       setSkip(0);
-      console.log(years)
     };
     return (
-      <FormControl sx={{ m: 1, width: 300 }}>
+      <FormControl sx={{ m: 1, width: "45%" }}>
         <InputLabel id="demo-multiple-checkbox-label">Category</InputLabel>
         <Select
           labelId="demo-multiple-checkbox-label"
@@ -172,19 +173,22 @@ export const Home = (props: Props) => {
   }
 
   const handleSearchChange = async (newValue: string) => {
+    setLoadingState(true);
     setSearchState(newValue);
   }
 
   const queryPapers = async () => {
     try {
-      if ( searchState ) {
+      if (searchState) {
         const result = await getSemanticallySimilarPapersbyText(searchState, years, categories, provider)
         setPapers(result.papers)
+        setLoadingState(false);
         setTotal(result.total)
       } else {
         setSkip(skip + limit);
         const result = await getPapers(limit, skip, years, categories);
         setPapers(result.papers)
+        setLoadingState(false);
         setTotal(result.total)
       }
     } catch (err) {
@@ -192,72 +196,85 @@ export const Home = (props: Props) => {
     }
   };
 
-  // Execute this one when the component loads up
   useEffect(() => {
-    setPapers([]);
-    setCategories([]);
-    setYears([]);
     queryPapers();
-  }, []);
+  }, [categories])
+
+  useEffect(() => {
+    queryPapers();
+  }, [years])
 
   return (
     <>
-      <main role="main">
-      <section className="jumbotron text-center mb-0 bg-white" style={{ paddingTop: '40px', width: "95%"}}>
-      <div className="container">
-       <h1 className="jumbotron-heading">arXiv Paper Search</h1>
-       <p className="lead text-muted">
-           Redis is a real-time data platform that functions as a vector database, ML feature store, and low-latency data serving layer.
-       </p>
-       <p className="lead text-muted">
-           <strong>Search with natural language (and other settings or filters) to discover <a href="https://arxiv.org/" target="_blank">arXiv</a> scholarly papers:</strong>
-       </p>
-       <div className="container">
-        <SearchBar
-          placeholder='Search'
-          value={searchState}
-          onChange={(newValue) => handleSearchChange(newValue)}
-          onRequestSearch={() => queryPapers()}
-          style={{
-            margin: '20px 0',
-          }}
-        />
-       </div>
-       <div>
-        <EmbeddingModelOptions></EmbeddingModelOptions>
-        <YearOptions></YearOptions>
-        <CategoryOptions></CategoryOptions>
-    </div>
-      </div>
-     </section>
-      <div className="album py-5 bg-light">
-        <div className="container">
-          <p style={{fontSize: 15}}>
-            <Tooltip title="Filtered paper count" arrow>
-              <em>{total} searchable arXiv papers</em>
-            </Tooltip>
-          </p>
-        </div>
-        <div className="container">
-          {papers && (
-            <div className="row">
-              {papers.map((paper) => (
-                 <Card
-                  title={paper.title}
-                  authors={paper.authors}
-                  paperId={paper.paper_id}
-                  numPapers={15}
-                  paperCat={paper.categories}
-                  paperYear={paper.year}
-                  categories={categories}
-                  years={years}
-                  provider={provider}
-                  similarity_score={paper.similarity_score}
-                  setState={setPapers}
-                  setTotal={setTotal}
+      <main role="main" className='home-padding'>
+        <section style={{ paddingTop: "40px" }}>
+          <div>
+            <div className='home-heading'>
+              <h1>arXiv Paper Search</h1>
+              <p>
+                Search for scholarly papers on <a href="https://arxiv.org/" target="_blank">arXiv</a> using natural language queries and filters, or use the "more like this" button to find semantically similar papers.
+              </p>
+            </div>
+            <hr></hr>
+            <div className="home-options">
+              <div>
+                <div>Embedding model</div>
+                <EmbeddingModelOptions></EmbeddingModelOptions>
+              </div>
+              <div className='home-filters'>
+                <div>Filters</div>
+                <YearOptions></YearOptions>
+                <CategoryOptions></CategoryOptions>
+              </div>
+              <div>
+                <div style={{ paddingBottom: '1rem' }}>Vector query</div>
+                <TextField
+                  id="standard-basic"
+                  label="Search"
+                  variant="outlined"
+                  placeholder='Search'
+                  style={{ width: '100%' }}
+                  value={searchState}
+                  onChange={(newValue) => handleSearchChange(newValue.target.value)}
+                  onKeyDown={() => { queryPapers() }}
+                />
+              </div>
+              <div>
+                <p>
+                  <Tooltip title="Filtered paper count" arrow>
+                    <em>{total} searchable arXiv papers</em>
+                  </Tooltip>
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div>
+          <div className='home-search-results'>Search results</div>
+          {loading && <Box sx={{ display: 'flex', padding: '2rem 5%' }}>
+            <CircularProgress />
+          </Box>}
+          <div>
+            {!loading && papers && (
+              <div className='home-cards'>
+                {papers.map((paper) => (
+                  <Card
+                    key={paper.paper_id}
+                    title={paper.title}
+                    authors={paper.authors}
+                    paperId={paper.paper_id}
+                    numPapers={15}
+                    paperCat={paper.categories}
+                    paperYear={paper.year}
+                    categories={categories}
+                    years={years}
+                    provider={provider}
+                    similarity_score={paper.similarity_score}
+                    setState={setPapers}
+                    setTotal={setTotal}
                   />
                 ))}
-            </div>
+              </div>
             )}
           </div>
         </div>
