@@ -35,7 +35,7 @@ RUN mkdir -p /app/backend
 COPY ./backend/poetry.lock ./backend/pyproject.toml ./backend/
 
 WORKDIR /app/backend
-RUN poetry install --all-extras --no-interaction
+RUN poetry install --all-extras --no-interaction --no-root
 
 COPY ./backend/ .
 
