@@ -2,10 +2,6 @@ import asyncio
 import logging
 
 import numpy as np
-from fastapi import APIRouter, Depends, Query
-from redisvl.index import AsyncSearchIndex
-from redisvl.query import CountQuery, FilterQuery, VectorQuery
-
 from arxivsearch import config
 from arxivsearch.db import redis_helpers
 from arxivsearch.schema.models import (
@@ -15,6 +11,9 @@ from arxivsearch.schema.models import (
     VectorSearchResponse,
 )
 from arxivsearch.utils.embeddings import Embeddings
+from fastapi import APIRouter, Depends, Query
+from redisvl.index import AsyncSearchIndex
+from redisvl.query import CountQuery, FilterQuery, VectorQuery
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +59,7 @@ async def get_papers(
         years.split(","), categories.split(",")
     )
     filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
-    filter_query.set_paging(skip, limit)
+    filter_query.paging(skip, limit)
     count_query = CountQuery(filter_expression)
 
     # Execute searches

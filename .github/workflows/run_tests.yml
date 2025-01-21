@@ -9,6 +9,9 @@ on:
     branches:
       - main
 
+  schedule:
+    - cron: '0 0 * * 0' # Runs every Sunday
+
 jobs:
   test:
     name: Python ${{ matrix.python-version }} - ${{ matrix.connection }} [redis-stack ${{matrix.redis-stack-version}}]
