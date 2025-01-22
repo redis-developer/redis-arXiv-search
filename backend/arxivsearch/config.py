@@ -30,6 +30,7 @@ if REDIS_PASSWORD:
 else:
     REDIS_URL = f"redis://{REDIS_HOST}:{REDIS_PORT}"
 
+
 # Model Providers
 DEFAULT_PROVIDER = "huggingface"
 SENTENCE_TRANSFORMER_MODEL = os.environ.get(

@@ -2,13 +2,12 @@ import logging
 from pathlib import Path
 
 import uvicorn
-from fastapi import FastAPI
-from fastapi.staticfiles import StaticFiles
-from starlette.middleware.cors import CORSMiddleware
-
 from arxivsearch import config
 from arxivsearch.api.main import api_router
 from arxivsearch.spa import SinglePageApplication
+from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
+from starlette.middleware.cors import CORSMiddleware
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -40,8 +39,6 @@ current_file = Path(__file__)
 project_root = current_file.parent.resolve()
 gui_build_dir = project_root / "templates" / "build"
 app.mount(path="/", app=SinglePageApplication(directory=gui_build_dir), name="SPA")
-
-import os
 
 
 def main():
