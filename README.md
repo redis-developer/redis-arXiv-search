@@ -1,11 +1,11 @@
 
 <div align="center">
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><img src="https://redis.io/wp-content/uploads/2024/04/Logotype.svg?raw=true" width="30%"><img></a>
+    <a href="https://github.com/redis-developer/redis-arxiv-search"><img src="https://redis.io/wp-content/uploads/2024/04/Logotype.svg?raw=true" width="30%"><img></a>
     <br />
     <br />
 <div display="inline-block">
     <a href="https://docsearch.redisvl.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
-    <a href="https://github.com/RedisVentures/redis-arXiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
+    <a href="https://github.com/redis-developer/redis-arxiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/redis-developer/redis-ai-resources"><b>More AI Recipes</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://datasciencedojo.com/blog/ai-powered-document-search/"><b>Blog Post</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://redis.io/docs/interact/search-and-query/advanced-concepts/vectors/"><b>Redis Vector Search Documentation</b></a>&nbsp;&nbsp;&nbsp;
@@ -110,29 +110,11 @@ Embeddings represent the semantic properies of the raw text and enable vector si
     ```
     - Add your `OPENAI_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://platform.openai.com)
     - Add you `COHERE_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://cohere.ai)
-4. Decide which Redis you plan to use, choose one of the methods below
-    - **[Redis Stack](#redis-stack-docker)** runs Redis as a local docker container.
-    - **[Redis Cloud](#redis-cloud)** will manage a Redis database on your behalf in the cloud.
 
-### Redis Stack Docker (Local)
-Using Redis Stack locally doesn't require any additional steps. However, it will consume more resources on your machine and have performance limitations.
-
-Use the provided `docker-compose` file for running the application locally:
+### Redis Stack Docker (Local) with make
 ```bash
-$ docker compose -f docker-local-redis.yml up
+make build
 ```
-
-
-### Redis Cloud
-
-1. [Get a FREE Redis Cloud Database](https://redis.com/try-free/). Make sure to include the Search module.
-
-2. Add the `REDIS_HOST`, `REDIS_PASSWORD`, and `REDIS_PORT` environment variables to your `.env` file.
-
-3. Run the App:
-    ```bash
-    $ docker compose -f docker-cloud-redis.yml up
-    ```
 
 
 ## Customizing (optional)

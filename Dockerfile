@@ -42,6 +42,4 @@ COPY ./backend/ .
 # add static react files to fastapi image
 COPY --from=ReactImage /app/frontend/build /app/backend/arxivsearch/templates/build
 
-LABEL org.opencontainers.image.source https://github.com/RedisVentures/redis-arxiv-search
-
 CMD ["poetry", "run", "start-app"]
