@@ -1,1 +1,0 @@
-docker build -t ghcr.io/redisventures/redis-arxiv-search:latest .
