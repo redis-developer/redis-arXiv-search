@@ -65,7 +65,7 @@ async def write_async(index: AsyncSearchIndex, papers: list):
     _ = await index.load(
         data=papers,
         preprocess=preprocess_paper,
-        concurrency=config.WRITE_CONCURRENCY,
+        concurrency=int(config.WRITE_CONCURRENCY),
         id_field="id",
     )
 
@@ -74,7 +74,8 @@ async def write_async(index: AsyncSearchIndex, papers: list):
 
 async def load_data():
     # Load schema specs and create index in Redis
-    index = AsyncSearchIndex(redis_helpers.schema, redis_helpers.client)
+    index = AsyncSearchIndex(redis_helpers.schema)
+    await index.set_client(redis_helpers.client)
 
     # Load dataset and create index
     try:
