@@ -1,4 +1,4 @@
-.PHONY: build
+.PHONY: deploy
 
-build:
+deploy:
 	docker compose -f docker-local-redis.yml up

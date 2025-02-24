@@ -2,11 +2,12 @@ import logging
 import os
 from typing import List
 
-from arxivsearch import config
 from redis.asyncio import Redis
 from redisvl.index import AsyncSearchIndex, SearchIndex
 from redisvl.query.filter import FilterExpression, Tag
 from redisvl.schema import IndexSchema
+
+from arxivsearch import config
 
 logger = logging.getLogger(__name__)
 
@@ -35,8 +36,7 @@ def get_test_index():
 async def get_async_index():
     global global_index
     if not global_index:
-        global_index = AsyncSearchIndex.from_yaml(schema_path)
-        await global_index.set_client(client)
+        global_index = AsyncSearchIndex.from_yaml(schema_path, redis_client=client)
     yield global_index
 
 

@@ -1,10 +1,11 @@
 import pytest
 import pytest_asyncio
+from httpx import AsyncClient
+from redis.asyncio import Redis
+
 from arxivsearch import config
 from arxivsearch.main import app
 from arxivsearch.tests.utils.seed import seed_test_db
-from httpx import AsyncClient
-from redis.asyncio import Redis
 
 
 @pytest.fixture(scope="module")

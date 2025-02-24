@@ -3,6 +3,7 @@
     <a href="https://github.com/redis-developer/redis-arxiv-search"><img src="https://redis.io/wp-content/uploads/2024/04/Logotype.svg?raw=true" width="30%"><img></a>
     <br />
     <br />
+    <h1>🔎 arXiv Search API</h1>
 <div display="inline-block">
     <a href="https://docsearch.redisvl.com"><b>Hosted Demo</b></a>&nbsp;&nbsp;&nbsp;
     <a href="https://github.com/redis-developer/redis-arxiv-search"><b>Code</b></a>&nbsp;&nbsp;&nbsp;
@@ -14,7 +15,7 @@
     <br />
 </div>
 
-# 🔎 Redis arXiv Search
+
 *This repository is the official codebase for the arxiv paper search app hosted at: **https://docsearch.redisvl.com***
 
 
@@ -111,9 +112,9 @@ Embeddings represent the semantic properies of the raw text and enable vector si
     - Add your `OPENAI_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://platform.openai.com)
     - Add you `COHERE_API_KEY` to the `.env` file. **Need one?** [Get an API key](https://cohere.ai)
 
-### Redis Stack Docker (Local) with make
+### Run locally with Redis 8 CE
 ```bash
-make build
+make deploy
 ```
 
 
@@ -121,7 +122,7 @@ make build
 
 ### Run local redis with Docker
 ```bash
-docker run -d --name redis -p 6379:6379 -p 8001:8001 redis/redis-stack:latest
+docker run -d --name redis -p 6379:6379 -p 8001:8001 redis:8.0-M03
 ```
 
 ### FastApi with poetry
