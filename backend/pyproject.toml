@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "arxivsearch"
-version = "0.1.0"
+version = "0.2.0"
 description = "Reference architecture for vector search application with Redis"
 authors = ["Robert Shelton  <robert.shelton@redis.com>"]
 readme = "README.md"

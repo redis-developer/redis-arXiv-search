@@ -74,9 +74,7 @@ async def write_async(index: AsyncSearchIndex, papers: list):
 
 async def load_data():
     # Load schema specs and create index in Redis
-    index = AsyncSearchIndex(
-        schema=redis_helpers.schema, redis_client=redis_helpers.client
-    )
+    index = AsyncSearchIndex(schema=redis_helpers.schema, redis_url=config.REDIS_URL)
 
     # Load dataset and create index
     try:
