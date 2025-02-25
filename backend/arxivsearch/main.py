@@ -1,20 +1,34 @@
 import logging
+from contextlib import asynccontextmanager
 from pathlib import Path
 
 import uvicorn
-from arxivsearch import config
-from arxivsearch.api.main import api_router
-from arxivsearch.spa import SinglePageApplication
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.cors import CORSMiddleware
+
+from arxivsearch import config
+from arxivsearch.api.main import api_router
+from arxivsearch.db.utils import get_async_index
+from arxivsearch.spa import SinglePageApplication
 
 logging.basicConfig(
     level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
 )
 
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    index = await get_async_index()
+    async with index:
+        yield
+
+
 app = FastAPI(
-    title=config.PROJECT_NAME, docs_url=config.API_DOCS, openapi_url=config.OPENAPI_DOCS
+    title=config.PROJECT_NAME,
+    docs_url=config.API_DOCS,
+    openapi_url=config.OPENAPI_DOCS,
+    lifespan=lifespan,
 )
 
 app.add_middleware(

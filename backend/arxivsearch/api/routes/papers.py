@@ -2,8 +2,12 @@ import asyncio
 import logging
 
 import numpy as np
+from fastapi import APIRouter, Depends, Query
+from redisvl.index import AsyncSearchIndex
+from redisvl.query import CountQuery, FilterQuery, VectorQuery
+
 from arxivsearch import config
-from arxivsearch.db import redis_helpers
+from arxivsearch.db import utils
 from arxivsearch.schema.models import (
     PaperSimilarityRequest,
     SearchResponse,
@@ -11,9 +15,6 @@ from arxivsearch.schema.models import (
     VectorSearchResponse,
 )
 from arxivsearch.utils.embeddings import Embeddings
-from fastapi import APIRouter, Depends, Query
-from redisvl.index import AsyncSearchIndex
-from redisvl.query import CountQuery, FilterQuery, VectorQuery
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +27,7 @@ embeddings = Embeddings()
 
 @router.get("/", response_model=SearchResponse)
 async def get_papers(
-    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+    index: AsyncSearchIndex = Depends(utils.get_async_index),
     limit: int = Query(default=20, description="Maximum number of papers to return."),
     skip: int = Query(
         default=0, description="Number of papers to skip for pagination."
@@ -53,9 +54,8 @@ async def get_papers(
     Returns:
         SearchResponse: Pydantic model containing papers and total count.
     """
-
     # Build queries
-    filter_expression = redis_helpers.build_filter_expression(
+    filter_expression = utils.build_filter_expression(
         years.split(","), categories.split(",")
     )
     filter_query = FilterQuery(return_fields=[], filter_expression=filter_expression)
@@ -72,7 +72,7 @@ async def get_papers(
 @router.post("/vector_search/by_paper", response_model=VectorSearchResponse)
 async def find_papers_by_paper(
     similarity_request: PaperSimilarityRequest,
-    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+    index: AsyncSearchIndex = Depends(utils.get_async_index),
 ):
     """
     Find and return papers similar to a given paper based on vector
@@ -93,7 +93,7 @@ async def find_papers_by_paper(
         paper[similarity_request.provider.value], dtype=np.float32
     )
     # Build filter expression
-    filter_expression = redis_helpers.build_filter_expression(
+    filter_expression = utils.build_filter_expression(
         similarity_request.years, similarity_request.categories
     )
     # Create queries
@@ -115,7 +115,7 @@ async def find_papers_by_paper(
 @router.post("/vector_search/by_text", response_model=VectorSearchResponse)
 async def find_papers_by_text(
     similarity_request: UserTextSimilarityRequest,
-    index: AsyncSearchIndex = Depends(redis_helpers.get_async_index),
+    index: AsyncSearchIndex = Depends(utils.get_async_index),
 ):
     """
     Find and return papers similar to user-provided text based on
@@ -131,7 +131,7 @@ async def find_papers_by_text(
     """
 
     # Build filter expression
-    filter_expression = redis_helpers.build_filter_expression(
+    filter_expression = utils.build_filter_expression(
         similarity_request.years, similarity_request.categories
     )
     # Check available paper count and create vector from user text
