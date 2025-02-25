@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 
 import httpx
@@ -21,27 +20,6 @@ def index():
     index.create()
     yield index
     index.disconnect()
-
-
-@pytest_asyncio.fixture(scope="session", autouse=True)
-async def async_index():
-    index = await get_async_index()
-    async with index:
-        yield index
-
-
-@pytest_asyncio.fixture(scope="session", autouse=True)
-def cleanup_logging_handlers():
-    """
-    Pytest closes logging handlers when running tests, so any atexit handlers or
-    weakref finalizers that try to log will generate I/O errors. Clearing the
-    handlers with an autouse fixture prevents this.
-    """
-    try:
-        yield
-    finally:
-        logger = logging.getLogger()
-        logger.handlers.clear()
 
 
 @pytest.fixture(scope="session", autouse=True)
