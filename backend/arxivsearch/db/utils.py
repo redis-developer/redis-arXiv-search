@@ -2,7 +2,7 @@ import logging
 import os
 from typing import List
 
-from redisvl.index import AsyncSearchIndex, SearchIndex
+from redisvl.index import AsyncSearchIndex
 from redisvl.query.filter import FilterExpression, Tag
 from redisvl.schema import IndexSchema
 
@@ -11,32 +11,21 @@ from arxivsearch import config
 logger = logging.getLogger(__name__)
 
 
-dir_path = os.path.dirname(os.path.realpath(__file__))
-schema_path = os.path.join(dir_path, "index.yaml")
-schema = IndexSchema.from_yaml(schema_path)
-global_index = None
+# global search index
+_global_index = None
 
 
-def get_schema():
-    return IndexSchema.from_yaml(schema_path)
-
-
-def get_test_index():
-    index = SearchIndex.from_yaml(schema_path, redis_url=config.REDIS_URL)
-
-    if not index.exists():
-        index.create(overwrite=True)
-
-    return index
+def get_schema() -> IndexSchema:
+    dir_path = os.path.dirname(os.path.realpath(__file__)) + "/schema"
+    file_path = os.path.join(dir_path, "index.yaml")
+    return IndexSchema.from_yaml(file_path)
 
 
 async def get_async_index():
-    global global_index
-    if not global_index:
-        global_index = AsyncSearchIndex.from_yaml(
-            schema_path, redis_url=config.REDIS_URL
-        )
-    yield global_index
+    global _global_index
+    if not _global_index:
+        _global_index = AsyncSearchIndex(get_schema(), redis_url=config.REDIS_URL)
+    return _global_index
 
 
 def build_filter_expression(

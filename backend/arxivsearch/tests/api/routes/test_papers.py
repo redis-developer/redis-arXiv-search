@@ -1,26 +1,25 @@
 import pytest
 from httpx import AsyncClient
 
-from arxivsearch.main import app
 from arxivsearch.schema.models import PaperSimilarityRequest, UserTextSimilarityRequest
 
 
-@pytest.fixture
-def years(papers):
-    return papers[0]["year"]
+@pytest.fixture(scope="module")
+def years(test_data):
+    return test_data[0]["year"]
 
 
-@pytest.fixture
-def categories(papers):
-    return papers[0]["categories"]
+@pytest.fixture(scope="module")
+def categories(test_data):
+    return test_data[0]["categories"]
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def bad_req_json():
     return {"not": "valid"}
 
 
-@pytest.fixture
+@pytest.fixture(scope="module")
 def text_req(years, categories):
     return UserTextSimilarityRequest(
         categories=[categories],
@@ -30,10 +29,13 @@ def text_req(years, categories):
     )
 
 
-@pytest.fixture
-def paper_req(papers):
+@pytest.fixture(scope="module")
+def paper_req(test_data):
     return PaperSimilarityRequest(
-        categories=[], years=[], provider="huggingface", paper_id=papers[0]["paper_id"]
+        categories=[],
+        years=[],
+        provider="huggingface",
+        paper_id=test_data[0]["paper_id"],
     )
 
 
