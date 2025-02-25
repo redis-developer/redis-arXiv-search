@@ -9,7 +9,7 @@ import requests
 from redisvl.index import AsyncSearchIndex
 
 from arxivsearch import config
-from arxivsearch.db.utils import get_schema
+from arxivsearch.db.utils import get_async_index, get_schema
 from arxivsearch.schema.models import Provider
 
 logger = logging.getLogger(__name__)
@@ -74,7 +74,7 @@ async def write_async(index: AsyncSearchIndex, papers: list):
 
 async def load_data():
     # Load schema specs and create index in Redis
-    index = AsyncSearchIndex(schema=get_schema(), redis_url=config.REDIS_URL)
+    index = await get_async_index()
 
     # Load dataset and create index
     try:
