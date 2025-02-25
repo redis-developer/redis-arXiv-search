@@ -9,7 +9,7 @@ from httpx import AsyncClient
 from redisvl.index import SearchIndex
 
 from arxivsearch import config
-from arxivsearch.db.utils import get_schema
+from arxivsearch.db.utils import get_async_index, get_schema
 from arxivsearch.main import app
 
 
@@ -19,6 +19,13 @@ def index():
     index.create()
     yield index
     index.disconnect()
+
+
+@pytest_asyncio.fixture(scope="session", autouse=True)
+async def async_index():
+    index = await get_async_index()
+    async with index:
+        yield index
 
 
 @pytest.fixture(scope="session", autouse=True)
