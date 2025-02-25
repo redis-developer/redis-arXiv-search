@@ -14,7 +14,7 @@ from arxivsearch.db.utils import get_async_index, get_schema
 from arxivsearch.main import app
 
 
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="session")
 def index():
     index = SearchIndex(schema=get_schema(), redis_url=config.REDIS_URL)
     index.create()
