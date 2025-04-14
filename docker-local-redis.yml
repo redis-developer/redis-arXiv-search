@@ -2,7 +2,6 @@ version: '3.9'
 
 services:
   backend:
-    # image: ghcr.io/redisventures/redis-arxiv-search:latest
     build:
       context: "."
       dockerfile: Dockerfile
