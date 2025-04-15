@@ -102,7 +102,7 @@ Embeddings represent the semantic properies of the raw text and enable vector si
 1. Before running the app, install [Docker Desktop](https://www.docker.com/products/docker-desktop/).
 2. Clone (and optionally fork) this Github repo to your machine.
     ```bash
-    $ git clone https://github.com/RedisVentures/redis-arXiv-search.git
+    $ git clone https://github.com/redis-developer/redis-arxiv-search
     ```
 3. Make a copy of the `.env.template` file:
     ```bash

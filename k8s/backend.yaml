@@ -26,7 +26,7 @@ spec:
               value: testing123
             - name: REDIS_PORT
               value: "6379"
-          image: ghcr.io/redisventures/redis-arxiv-search:latest
+          image: ghcr.io/redis-developer/redis-arxiv-search:latest
           name: backend
           ports:
             - containerPort: 8888
